@@ -116,6 +116,14 @@ public static class VLib
         return new Vector2(x, y);
     }
 
+    public static Vector3 Euler2dAngleToVector3(float a_angle)
+    {
+        float x = -Mathf.Sin(a_angle * Mathf.PI / 180f);
+        float y = Mathf.Cos(a_angle * Mathf.PI / 180f);
+        float z = 0f;
+        return new Vector3(x, y, z);
+    }
+
     public static Quaternion Vector2DirectionToQuaternion(Vector2 a_vector2)
     {
         return Quaternion.Euler(0f,0f,Vector2ToEulerAngle(a_vector2));
@@ -159,6 +167,13 @@ public static class VLib
     {
         return Vector2ToEulerAngles(a_vector3.ToVector2());
     }
+
+    public static Quaternion Vector3ToQuaternion(Vector3 a_vector3)
+    {
+        return Quaternion.Euler(Vector3ToEulerAngles(a_vector3));
+    }
+
+
 
     public static int SafeMod(int a_value, int a_mod)
     {
