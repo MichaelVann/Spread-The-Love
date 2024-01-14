@@ -17,7 +17,7 @@ public class Soul : MonoBehaviour
     const float m_soulAttractionConstant = 1f;
     const float m_attractionExponent = 1f;
     const float m_soulRepulsionConstant = 1f;
-    const float m_repulsionExponent = 3f;
+    const float m_repulsionExponent = 4f;
 
     const float m_soulToSoulForceConstant = 10f;
     internal const bool m_repulsedByOtherSouls = true;
@@ -137,8 +137,8 @@ public class Soul : MonoBehaviour
             Vector2 collisionDirection = VLib.RotateVector3In2D(a_collisionNormal, spawnAngle);
 
             Vector3 spawnOffset = collisionDirection * m_loveVibeSpawnOffset;
-            LoveVibe newLoveVibe = Instantiate(m_loveVibePrefab, transform.position + spawnOffset, VLib.Vector3ToQuaternion(collisionDirection)).GetComponent<LoveVibe>();
-            newLoveVibe.Init(this);
+            LoveVibe newLoveVibe = Instantiate(m_loveVibePrefab, transform.position + spawnOffset, Quaternion.identity).GetComponent<LoveVibe>();
+            newLoveVibe.Init(this, collisionDirection);
         }
     }
 

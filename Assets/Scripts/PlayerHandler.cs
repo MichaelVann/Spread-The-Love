@@ -36,12 +36,14 @@ public class PlayerHandler : MonoBehaviour
     {
         Vector3 worldMousePoint = m_cameraRef.ScreenToWorldPoint(Input.mousePosition);
 
-        Vector3 deltaMousePos =  worldMousePoint - transform.position;
+        Vector2 deltaMousePos =  worldMousePoint - transform.position;
         //deltaMousePos = new Vector2(1f,0f);
         if (Input.GetMouseButton(0) && m_readyToShoot)
         {
             m_readyToShoot = false;
-            Instantiate(m_loveVibePrefab, transform.position, VLib.Vector3ToQuaternion(deltaMousePos));
+            LoveVibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<LoveVibe>();
+            loveVibe.Init(null, deltaMousePos.normalized);
+
         }
         UpdateShootTimer();
     }
