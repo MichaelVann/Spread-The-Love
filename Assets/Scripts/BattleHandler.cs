@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -27,8 +28,9 @@ public class BattleHandler : MonoBehaviour
     {
         m_soulList = new List<Vessel>();
         //SpawnStarterSouls(5, 2f, new Vector2[] { m_peacefulSoul });
-        SpawnStarterSouls(10, 3f, new Vector2[] { m_manicSoul });
-        SpawnStarterSouls(10, 4f, new Vector2[] { m_manicSoul });
+        SpawnStarterSouls(10, 3f, new Vector2[] { m_manicSoul, m_sadSoul});
+        //SpawnStarterSouls(10, 3f, new Vector2[] { m_manicSoul, m_sadSoul, m_peacefulSoul, m_scaredSoul });
+        //SpawnStarterSouls(10, 4f, new Vector2[] { m_manicSoul });
         RefreshScoreText();
         //SpawnStarterSouls(6, 4f, new Vector2[] { m_manicSoul, m_scaredSoul });
     }
@@ -53,5 +55,15 @@ public class BattleHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        for (int i = 0; i < m_soulList.Count; i++)
+        {
+            for (int j = 0; j < m_soulList.Count; j++)
+            {
+                if (i != j)
+                {
+                    m_soulList[i].ExchangeForceWithSoul(m_soulList[j].GetComponent<Soul>());
+                }
+            }
+        }
     }
 }

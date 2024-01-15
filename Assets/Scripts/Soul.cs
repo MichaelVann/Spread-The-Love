@@ -5,12 +5,11 @@ namespace Assets.Scripts
 {
     public class Soul : MonoBehaviour
     {
-
+        [SerializeField] protected SpriteRenderer m_spriteRendererRef;
         static internal Color m_afraidColorRef = new Color(0.1982f, 0.7641f, 0.5605f, 1f);
         static internal Color m_sadColorRef   = new Color(0.2512523f, 0.2090156f, 0.7264151f, 1f);
         static internal Color m_angryColorRef = new Color(0.6749428f, 0.7264151f, 0.2227216f, 1f);
         static internal Color m_loveColorRef  = new Color(1f,0f, 0.3422555f, 1f);
-
 
         protected static Vector2 m_afraidPosition = new Vector2(0f, 0f);
         protected static Vector2 m_sadPosition = new Vector2(1f, 0f);
@@ -49,6 +48,11 @@ namespace Assets.Scripts
             color += m_angryColorRef * Mathf.Clamp((1f - Vector2.Distance(m_angryPosition, a_emotion)), 0f, 1f);
             color += m_loveColorRef * Mathf.Clamp((1f - Vector2.Distance(m_lovePosition, a_emotion)), 0f, 1f);
             return color;
+        }
+
+        protected void CalculateEmotionColor()
+        {
+            m_spriteRendererRef.color = CalculateEmotionColor(m_emotion);
         }
 
         protected void AffectEmotion(Vector2 a_emotion, float a_emotionStrength)

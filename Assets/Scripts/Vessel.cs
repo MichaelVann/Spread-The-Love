@@ -6,7 +6,6 @@ using UnityEngine;
 public class Vessel : Soul
 {
     [SerializeField] GameObject m_loveVibePrefab;
-    [SerializeField] SpriteRenderer m_spriteRendererRef;
     [SerializeField] Rigidbody2D m_rigidBodyRef;
     [SerializeField] MouthLineHandler m_mouthLineHandlerRef;
     [SerializeField] EyebrowHandler[] m_eyebrowHandlers; 
@@ -18,8 +17,8 @@ public class Vessel : Soul
     const float m_soulAttractionConstant = 1f;
     const float m_attractionExponent = 1f;
     const float m_soulRepulsionConstant = 1f;
-    const float m_repulsionExponent = 4f;
-    const float m_fearRepulsionConstant = 2f;
+    const float m_repulsionExponent = 2f;
+    const float m_fearRepulsionConstant = 0f;
 
     const float m_soulToSoulForceConstant = 10f;
     internal const bool m_repulsedByOtherSouls = true;
@@ -87,6 +86,7 @@ public class Vessel : Soul
 
     void UpdateVisuals()
     {
+        CalculateEmotionColor();
         m_spriteRendererRef.color = CalculateEmotionColor(m_emotion);
         m_mouthLineHandlerRef.Refresh(GetJoyScale());
         for (int i = 0; i < m_eyebrowHandlers.Length; i++)
@@ -108,21 +108,26 @@ public class Vessel : Soul
             Vector3 directionVector = deltaVector.normalized;
             float distanceMagnitude = deltaVector.magnitude;
 
-            float attractiveForce = m_soulAttractionConstant / Mathf.Pow(distanceMagnitude, m_attractionExponent);
-            float repulsiveForce = m_soulRepulsionConstant / Mathf.Pow(distanceMagnitude, m_repulsionExponent);
-            
-            float soulAngle = VLib.Vector2ToEulerAngle(a_soul.GetEmotion() - m_emotion);
-            float centreAngle = VLib.Vector2ToEulerAngle(new Vector2(0.5f, 0.5f) - m_emotion);
-            float deltaAngle = soulAngle - centreAngle;
-            float soulDifference = Mathf.Abs(Mathf.Sin(Mathf.PI * deltaAngle / 180f));
-            repulsiveForce *= 1f + soulDifference;
-            repulsiveForce += (1f - a_soul.GetEmotion().x) * m_fearRepulsionConstant;
+            float baseAttractiveForce = m_soulAttractionConstant / Mathf.Pow(distanceMagnitude, m_attractionExponent);
+            float baseRepulsiveForce = m_soulRepulsionConstant / Mathf.Pow(distanceMagnitude, m_repulsionExponent);
 
-            //float sadnessEffect = 1f-GetLoveRatio();
-            //repulsiveForce *= 1f + sadnessEffect * 10f;
+            //Soul Line force
+            
+            float soulDistance = Vector2.Distance(a_soul.GetEmotion(), m_emotion);
+            Vector2 soulDelta = a_soul.GetEmotion() - m_emotion;
+            float soulAngle = VLib.Vector2ToEulerAngle(soulDelta);
+            float centreAngle = VLib.Vector2ToEulerAngle(new Vector2(0.5f, 0.5f) - m_emotion);
+            float deltaAngle = VLib.Vector2ToEulerAngle(m_emotion - new Vector2(0.5f, 0.5f)) - VLib.Vector2ToEulerAngle(a_soul.GetEmotion()- new Vector2(0.5f, 0.5f));// soulAngle - centreAngle;
+            float soulDifference = Mathf.Abs(Mathf.Sin(Mathf.PI * deltaAngle / 180f));
+            baseRepulsiveForce *= 1f + (soulDifference* soulDistance);
+            //baseRepulsiveForce += (1f - a_soul.GetEmotion().x) * m_fearRepulsionConstant;
+
+            //float fearEffect = 2f-Vector2.Distance(a_soul.GetEmotion(), new Vector2(0f,0f));
+            //baseRepulsiveForce *= 1f + fearEffect;
+            //baseAttractiveForce /= 1f + fearEffect;
 
             //attractiveForce += loveEffect;
-            Vector3 forceVector = directionVector * (repulsiveForce - attractiveForce);
+            Vector3 forceVector = directionVector * (baseRepulsiveForce - baseAttractiveForce);
             forceVector *= m_soulToSoulForceConstant;
             m_rigidBodyRef.AddForce(forceVector);
         }

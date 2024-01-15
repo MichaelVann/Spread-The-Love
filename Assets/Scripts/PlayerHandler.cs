@@ -24,6 +24,7 @@ public class PlayerHandler : Soul
     {
         m_emotion = new Vector2(1f, 1f);
         m_battleHandlerRef = FindObjectOfType<BattleHandler>();
+        CalculateEmotionColor();
     }
 
     void UpdateShootTimer()
@@ -46,7 +47,12 @@ public class PlayerHandler : Soul
             m_readyToShoot = false;
             Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
             loveVibe.Init(m_battleHandlerRef, null, deltaMousePos.normalized, m_emotion, 10f);
-
+        }
+        else if (Input.GetMouseButton(1) && m_readyToShoot)
+        {
+            m_readyToShoot = false;
+            Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
+            loveVibe.Init(m_battleHandlerRef, null, deltaMousePos.normalized, new Vector2(0f,0f), 10f);
         }
         UpdateShootTimer();
     }

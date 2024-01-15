@@ -334,6 +334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c289adc86e100049a546b2b11d37e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_spriteRendererRef: {fileID: 417330168}
   m_loveVibePrefab: {fileID: 5519909977801287951, guid: b56912027e6427f44b43be0e61695d52, type: 3}
   m_cameraRef: {fileID: 1749459936}
   m_fireRate: 0.2
@@ -858,10 +859,10 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
-  m_StopNaN: 0
+  m_StopNaN: 1
   m_Dithering: 0
   m_ClearDepth: 1
   m_AllowXRRendering: 1
