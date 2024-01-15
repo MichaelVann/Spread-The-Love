@@ -8,7 +8,6 @@ public class Vibe : MonoBehaviour
     [SerializeField] Rigidbody2D m_rigidBodyRef;
     [SerializeField] SpriteRenderer m_spriteRendererRef;
 
-
     Vessel m_originSoul;
 
     //Absorption
@@ -36,8 +35,13 @@ public class Vibe : MonoBehaviour
         //m_rigidBodyRef.velocity = VLib.Euler2dAngleToVector3(transform.eulerAngles.z).normalized * m_startingSpeed;
     }
 
-    internal void Init(Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_emotionValue, float a_emotionalAffect = 1f)
+    internal void Init(BattleHandler a_battleHandler, Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_emotionValue, float a_emotionalAffect = 1f)
     {
+        float peaceDistance = Vector2.Distance(a_emotionValue, new Vector2(1f, 1f));
+        if (peaceDistance < 0.5f)
+        {
+            a_battleHandler.ChangeScore(1f-peaceDistance);
+        }
         m_originSoul = a_originSoul;
         m_rigidBodyRef.velocity = a_travelDirection * m_startingSpeed;
         m_emotionValue = a_emotionValue;

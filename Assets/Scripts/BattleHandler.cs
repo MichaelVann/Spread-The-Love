@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class BattleHandler : MonoBehaviour
 {
     [SerializeField] GameObject m_soulPrefab;
     [SerializeField] PlayerHandler m_playerHandlerRef;
+    [SerializeField] TextMeshProUGUI m_scoreText;
+
+    float m_score = 0f;
 
     int starterSouls = 20;
     float m_spawnDistance = 2f;
@@ -16,6 +20,8 @@ public class BattleHandler : MonoBehaviour
     static Vector2 m_sadSoul = new Vector2(0.5f + m_starterDeviance, 0.5f - m_starterDeviance);
     static Vector2 m_peacefulSoul = new Vector2(0.5f + m_starterDeviance, 0.5f + m_starterDeviance);
 
+    internal void ChangeScore(float a_score) { m_score += a_score; RefreshScoreText(); }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +29,7 @@ public class BattleHandler : MonoBehaviour
         //SpawnStarterSouls(5, 2f, new Vector2[] { m_peacefulSoul });
         SpawnStarterSouls(10, 3f, new Vector2[] { m_manicSoul });
         SpawnStarterSouls(10, 4f, new Vector2[] { m_manicSoul });
+        RefreshScoreText();
         //SpawnStarterSouls(6, 4f, new Vector2[] { m_manicSoul, m_scaredSoul });
     }
 
@@ -38,9 +45,13 @@ public class BattleHandler : MonoBehaviour
         }
     }
 
+    void RefreshScoreText()
+    {
+        m_scoreText.text = VLib.RoundToDecimalPlaces(m_score*10f, 1).ToString();
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
     }
 }

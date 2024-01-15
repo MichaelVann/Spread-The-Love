@@ -132,7 +132,7 @@ public class Vessel : Soul
     {
         Vector3 spawnOffset = a_direction * m_loveVibeSpawnOffset;
         Vibe newLoveVibe = Instantiate(m_loveVibePrefab, transform.position + spawnOffset, Quaternion.identity).GetComponent<Vibe>();
-        newLoveVibe.Init(this, a_direction, a_emotion);
+        newLoveVibe.Init(m_battleHandlerRef, this, a_direction, a_emotion);
     }
 
     void ExpressEmotion()

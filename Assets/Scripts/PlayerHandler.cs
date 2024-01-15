@@ -8,10 +8,11 @@ public class PlayerHandler : Soul
     [SerializeField] GameObject m_loveVibePrefab;
     [SerializeField] Camera m_cameraRef;
 
+    BattleHandler m_battleHandlerRef;
+
     bool m_readyToShoot = false;
     [SerializeField] float m_fireRate;
     vTimer m_shootTimer;
-
 
     void Awake()
     {
@@ -22,6 +23,7 @@ public class PlayerHandler : Soul
     void Start()
     {
         m_emotion = new Vector2(1f, 1f);
+        m_battleHandlerRef = FindObjectOfType<BattleHandler>();
     }
 
     void UpdateShootTimer()
@@ -43,7 +45,7 @@ public class PlayerHandler : Soul
         {
             m_readyToShoot = false;
             Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
-            loveVibe.Init(null, deltaMousePos.normalized, m_emotion, 10f);
+            loveVibe.Init(m_battleHandlerRef, null, deltaMousePos.normalized, m_emotion, 10f);
 
         }
         UpdateShootTimer();
