@@ -1,18 +1,19 @@
+using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LoveVibe : MonoBehaviour
+public class Vibe : MonoBehaviour
 {
     [SerializeField] Rigidbody2D m_rigidBodyRef;
     [SerializeField] SpriteRenderer m_spriteRendererRef;
 
 
-    Soul m_originSoul;
+    Vessel m_originSoul;
 
     //Absorption
     Vector3 m_originalLocalScale;
-    Soul m_targetSoul;
+    Vessel m_targetSoul;
     vTimer m_absorptionTimer;
     Vector3 m_absorptionStartingLocalPosition;
     const float m_absorptionTime = 0.4f;
@@ -20,20 +21,34 @@ public class LoveVibe : MonoBehaviour
 
     float m_startingSpeed = 5f;
 
-    internal bool IsOriginSoul(Soul a_soul) { return m_originSoul == a_soul; }
+    Vector2 m_emotionValue;
+    float m_emotionalAffect = 1f;
+
+    internal bool IsOriginSoul(Vessel a_soul) { return m_originSoul == a_soul; }
+
+    internal Vector2 GetEmotionValue() { return m_emotionValue; }
+    internal float GetEmotionalAffect() { return m_emotionalAffect; }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         m_originalLocalScale = transform.localScale;
         //m_rigidBodyRef.velocity = VLib.Euler2dAngleToVector3(transform.eulerAngles.z).normalized * m_startingSpeed;
     }
 
-    internal void Init(Soul a_originSoul, Vector2 a_travelDirection)
+    internal void Init(Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_emotionValue, float a_emotionalAffect = 1f)
     {
         m_originSoul = a_originSoul;
         m_rigidBodyRef.velocity = a_travelDirection * m_startingSpeed;
+        m_emotionValue = a_emotionValue;
+        m_emotionalAffect = a_emotionalAffect;
+        UpdateColorFromEmotion();
         //transform.rotation = VLib.Vector3ToQuaternion(a_travelDirection);
+    }
+
+    void UpdateColorFromEmotion()
+    {
+        m_spriteRendererRef.color = Soul.CalculateEmotionColor(m_emotionValue);
     }
 
     // Update is called once per frame
@@ -59,7 +74,7 @@ public class LoveVibe : MonoBehaviour
         }
     }
 
-    void StartAbsorption(Soul a_absorbingSoul)
+    void StartAbsorption(Vessel a_absorbingSoul)
     {
         m_beingAbsorbed = true;
         m_rigidBodyRef.isKinematic = true;
@@ -72,7 +87,7 @@ public class LoveVibe : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D a_collision)
     {
-        Soul collidedSoul = a_collision.gameObject.GetComponent<Soul>();
+        Vessel collidedSoul = a_collision.gameObject.GetComponent<Vessel>();
         if (collidedSoul != null && collidedSoul != m_originSoul)
         {
             StartAbsorption(collidedSoul);

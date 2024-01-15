@@ -1,171 +1,64 @@
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 
-public class Soul : MonoBehaviour
+namespace Assets.Scripts
 {
-    [SerializeField] GameObject m_loveVibePrefab;
-    [SerializeField] SpriteRenderer m_spriteRendererRef;
-    [SerializeField] Rigidbody2D m_rigidBodyRef;
-    [SerializeField] MouthLineHandler m_mouthLineHandlerRef;
-    [SerializeField] EyebrowHandler[] m_eyebrowHandlers; 
-
-    BattleHandler m_battleHandlerRef;
-    PlayerHandler m_playerHandlerRef;
-
-    //Soul Attraction
-    const float m_soulAttractionConstant = 1f;
-    const float m_attractionExponent = 1f;
-    const float m_soulRepulsionConstant = 1f;
-    const float m_repulsionExponent = 4f;
-
-    const float m_soulToSoulForceConstant = 10f;
-    internal const bool m_repulsedByOtherSouls = true;
-
-    //Player Attraction
-    //const float m_playerAttractionConstant = 1f;
-    //const float m_playerRepulsionConstant = 2f;
-    //const float m_playerForceMult = 10f;
-
-    const float m_loveVibeSpawnOffset = 0.42f;
-    const float m_loveVibeSpawnAngleRange = 90f;
-    float m_love = 50f;
-    float m_maxLove = 100f;
-    int m_loveToSpawn = 2;
-    float m_reEmitTime = 0.5f;
-
-    [SerializeField] Color m_sadColorRef;
-    [SerializeField] Color m_happyColorRef;
-
-    struct AbsorbedLove
+    public class Soul : MonoBehaviour
     {
-        internal vTimer timer;
-        internal Vector2 collisionNormal;
-    } 
 
-    List<AbsorbedLove> m_absorbedLoveList;
+        static internal Color m_afraidColorRef = new Color(0.1982f, 0.7641f, 0.5605f, 1f);
+        static internal Color m_sadColorRef   = new Color(0.2512523f, 0.2090156f, 0.7264151f, 1f);
+        static internal Color m_angryColorRef = new Color(0.6749428f, 0.7264151f, 0.2227216f, 1f);
+        static internal Color m_loveColorRef  = new Color(1f,0f, 0.3422555f, 1f);
 
-    float GetLoveRatio() { return m_love/m_maxLove;}
-    float GetLoveScale() { return 2 * (GetLoveRatio() - 0.5f); }
 
-    void Awake()
-    {
-        m_absorbedLoveList = new List<AbsorbedLove>();
-    }
+        protected static Vector2 m_afraidPosition = new Vector2(0f, 0f);
+        protected static Vector2 m_sadPosition = new Vector2(1f, 0f);
+        protected static Vector2 m_angryPosition = new Vector2(0f, 1f);
+        protected static Vector2 m_lovePosition = new Vector2(1f, 1f);
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
+        protected Vector2 m_emotion;
+        protected float m_emotionalInertia = 100f;
 
-    internal void Init(BattleHandler a_battleHandler, PlayerHandler a_playerHandler)
-    {
-        m_battleHandlerRef = a_battleHandler;
-        m_playerHandlerRef = a_playerHandler;
-        UpdateVisuals();
-    }
+        internal Vector2 GetEmotion() { return m_emotion;}
 
-    void AbsorbedLoveUpdate()
-    {
-        for (int i = 0; i < m_absorbedLoveList.Count; i++)
+        internal float GetJoy() { return m_emotion.y; }
+        internal float GetSadness() { return 1f - GetJoy(); }
+        internal float GetPeace() { return m_emotion.x; }
+        internal float GetFear() { return 1f - GetPeace(); }
+        internal float GetJoyScale() { return 2 * (m_emotion.y - 0.5f); }
+        internal float GetPeaceScale() { return 2 * (m_emotion.x - 0.5f); }
+
+        // Use this for initialization
+        void Start()
         {
-            if (m_absorbedLoveList[i].timer.Update())
+            m_emotion = new Vector2(0.5f, 0.5f);
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
+
+        internal static Color CalculateEmotionColor(Vector2 a_emotion)
+        {
+            Color color = new Color(0f, 0f, 0f, 1f);
+            color += m_afraidColorRef * Mathf.Clamp((1f - Vector2.Distance(m_afraidPosition, a_emotion)), 0f, 1f);
+            color += m_sadColorRef * Mathf.Clamp((1f - Vector2.Distance(m_sadPosition, a_emotion)), 0f, 1f);
+            color += m_angryColorRef * Mathf.Clamp((1f - Vector2.Distance(m_angryPosition, a_emotion)), 0f, 1f);
+            color += m_loveColorRef * Mathf.Clamp((1f - Vector2.Distance(m_lovePosition, a_emotion)), 0f, 1f);
+            return color;
+        }
+
+        protected void AffectEmotion(Vector2 a_emotion, float a_emotionStrength)
+        {
+            m_emotion = Vector2.Lerp(m_emotion, a_emotion, a_emotionStrength / m_emotionalInertia);
+
+            for (int i = 0; i < 2; i++)
             {
-                EmitLove(m_absorbedLoveList[i].collisionNormal);
-                m_absorbedLoveList.RemoveAt(i);
-                i--;
+                m_emotion[i] = Mathf.Clamp(m_emotion[i], 0f, 1f);
             }
         }
-    }
-
-    void UpdateVisuals()
-    {
-        m_spriteRendererRef.color = Color.Lerp(m_sadColorRef, m_happyColorRef, m_love / m_maxLove);
-        m_mouthLineHandlerRef.Refresh(GetLoveScale());
-        for (int i = 0; i < m_eyebrowHandlers.Length; i++)
-        {
-            m_eyebrowHandlers[i].SetEybrowRotation(GetLoveScale());
-        }
-    }
-
-    void AttractToPlayer()
-    {
-        AttractToSoul(m_playerHandlerRef.transform.position);
-
-        //Vector3 deltaVector = m_playerHandlerRef.transform.position - transform.position;
-        //Vector3 directionVector = deltaVector.normalized;
-        //float distanceMagnitude = deltaVector.magnitude;
-        //
-        //float attractiveForce = m_playerAttractionConstant / Mathf.Pow(distanceMagnitude, 1f);
-        //float repulsiveForce = m_playerRepulsionConstant / Mathf.Pow(distanceMagnitude, 2f);
-        //Vector3 forceVector = directionVector * m_playerForceMult * (attractiveForce - repulsiveForce);
-        //
-        //m_rigidBodyRef.AddForce(forceVector);
-    }
-
-    internal void AttractToSoul(Vector3 a_otherSoulsPosition)
-    {
-        Vector3 deltaVector = gameObject.transform.position - a_otherSoulsPosition;
-        Vector3 directionVector = deltaVector.normalized;
-        float distanceMagnitude = deltaVector.magnitude;
-
-        float attractiveForce = m_soulAttractionConstant / Mathf.Pow(distanceMagnitude, m_attractionExponent);
-        float repulsiveForce = m_soulRepulsionConstant / Mathf.Pow(distanceMagnitude, m_repulsionExponent);
-        float sadnessEffect = 1f-GetLoveRatio();
-
-        repulsiveForce *= 1f + sadnessEffect * 10f;
-
-        //attractiveForce += loveEffect;
-        Vector3 forceVector = directionVector * (repulsiveForce-attractiveForce);
-        forceVector *= m_soulToSoulForceConstant;
-        m_rigidBodyRef.AddForce(forceVector);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        AbsorbedLoveUpdate();
-        AttractToPlayer();
-    }
-
-    void EmitLove(Vector2 a_collisionNormal)
-    {
-        for (int i = 0; i < m_loveToSpawn; i++)
-        {
-            float spawnAngle = ((float)(i+1)/(m_loveToSpawn+1)) * m_loveVibeSpawnAngleRange;
-            spawnAngle -= m_loveVibeSpawnAngleRange/2f;
-            Vector2 collisionDirection = VLib.RotateVector3In2D(a_collisionNormal, spawnAngle);
-
-            Vector3 spawnOffset = collisionDirection * m_loveVibeSpawnOffset;
-            LoveVibe newLoveVibe = Instantiate(m_loveVibePrefab, transform.position + spawnOffset, Quaternion.identity).GetComponent<LoveVibe>();
-            newLoveVibe.Init(this, collisionDirection);
-        }
-    }
-
-    void AddLove(float a_love)
-    {
-        m_love += a_love;
-        m_love = Mathf.Clamp(m_love, 0f, m_maxLove);
-        UpdateVisuals();
-    }
-
-    void AbsorbLove(Vector3 a_collisionNormal)
-    {
-        AbsorbedLove absorbedLove = new AbsorbedLove();
-        absorbedLove.timer = new vTimer(m_reEmitTime);
-        absorbedLove.collisionNormal = a_collisionNormal;
-        m_absorbedLoveList.Add(absorbedLove);
-        AddLove(1f);
-    }
-
-    private void OnCollisionEnter2D(Collision2D a_collision)
-    {
-        LoveVibe loveVibe = a_collision.gameObject.GetComponent<LoveVibe>();
-        if (loveVibe != null && !loveVibe.IsOriginSoul(this)) 
-        {
-            AbsorbLove(a_collision.contacts[0].normal);
-        }
-
-        
     }
 }

@@ -1,8 +1,9 @@
+using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerHandler : MonoBehaviour
+public class PlayerHandler : Soul
 {
     [SerializeField] GameObject m_loveVibePrefab;
     [SerializeField] Camera m_cameraRef;
@@ -20,7 +21,7 @@ public class PlayerHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        m_emotion = new Vector2(1f, 1f);
     }
 
     void UpdateShootTimer()
@@ -41,8 +42,8 @@ public class PlayerHandler : MonoBehaviour
         if (Input.GetMouseButton(0) && m_readyToShoot)
         {
             m_readyToShoot = false;
-            LoveVibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<LoveVibe>();
-            loveVibe.Init(null, deltaMousePos.normalized);
+            Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
+            loveVibe.Init(null, deltaMousePos.normalized, m_emotion, 10f);
 
         }
         UpdateShootTimer();

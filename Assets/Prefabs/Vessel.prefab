@@ -330,7 +330,7 @@ GameObject:
   - component: {fileID: 7709478569602345254}
   - component: {fileID: 2133658048314038017}
   m_Layer: 9
-  m_Name: Soul
+  m_Name: Vessel
   m_TagString: Soul
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -368,15 +368,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbad2f6f0950c5c47ad6bcbaf3cee10a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_loveVibePrefab: {fileID: 1230357749014541359, guid: b56912027e6427f44b43be0e61695d52, type: 3}
+  m_afraidColorRef: {r: 0.19824673, g: 0.764151, b: 0.5605217, a: 1}
+  m_sadColorRef: {r: 0.25125232, g: 0.20901564, b: 0.7264151, a: 1}
+  m_angryColorRef: {r: 0.6749428, g: 0.7264151, b: 0.22272162, a: 1}
+  m_loveColorRef: {r: 1, g: 0, b: 0.34225553, a: 1}
+  m_loveVibePrefab: {fileID: 5519909977801287951, guid: b56912027e6427f44b43be0e61695d52, type: 3}
   m_spriteRendererRef: {fileID: 390601125728031491}
   m_rigidBodyRef: {fileID: 2133658048314038017}
   m_mouthLineHandlerRef: {fileID: 530503840524506310}
   m_eyebrowHandlers:
   - {fileID: 6248055444138891354}
   - {fileID: 1460208321626614557}
-  m_sadColorRef: {r: 0.25490198, g: 0.27450982, b: 0.4784314, a: 1}
-  m_happyColorRef: {r: 0.8862746, g: 0.24313727, b: 0.54901963, a: 1}
 --- !u!58 &7709478569602345254
 CircleCollider2D:
   m_ObjectHideFlags: 0
