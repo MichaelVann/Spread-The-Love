@@ -14,7 +14,11 @@ public class Vessel : Soul
     PlayerHandler m_playerHandlerRef;
 
     //Soul Attraction
-    const float m_soulAttractionConstant = 1f;
+
+    float m_driftSpeed = 1.0f;
+    float m_driftRotationSpeed = 5f;
+
+    const float m_soulAttractionConstant = 1.3f;
     const float m_attractionExponent = 1f;
     const float m_soulRepulsionConstant = 1f;
     const float m_repulsionExponent = 2f;
@@ -23,17 +27,12 @@ public class Vessel : Soul
     const float m_soulToSoulForceConstant = 10f;
     internal const bool m_repulsedByOtherSouls = true;
 
-    //Player Attraction
-    //const float m_playerAttractionConstant = 1f;
-    //const float m_playerRepulsionConstant = 2f;
-    //const float m_playerForceMult = 10f;
-
-    const float m_loveVibeSpawnOffset = 0.42f;
+    const float m_loveVibeSpawnOffset = 0.52f;
     const float m_loveVibeSpawnAngleRange = 90f;
     //float m_love = 50f;
     //float m_maxLove = 100f;
     int m_loveToSpawn = 2;
-    float m_reEmitTime = 0.5f;
+    float m_reEmitTime = 0.2f;
 
     const float m_fearfulToCalmExpressionIncrease = 1f;
     float m_expressInterval = 4f;
@@ -43,7 +42,7 @@ public class Vessel : Soul
     {
         internal vTimer timer;
         internal Vector2 collisionNormal;
-        internal Vector2 emotion;
+        internal float emotion;
     } 
 
     List<AbsorbedLove> m_absorbedLoveList;
@@ -59,10 +58,10 @@ public class Vessel : Soul
     // Start is called before the first frame update
     void Start()
     {
-
+        m_rigidBodyRef.velocity = VLib.RotateVector3In2D(new Vector2(1f, 0f), VLib.vRandom(0f, 360f)) * m_driftSpeed;
     }
 
-    internal void Init(BattleHandler a_battleHandler, PlayerHandler a_playerHandler, Vector2 a_emotion)
+    internal void Init(BattleHandler a_battleHandler, PlayerHandler a_playerHandler, float a_emotion)
     {
         m_battleHandlerRef = a_battleHandler;
         m_playerHandlerRef = a_playerHandler;
@@ -83,15 +82,14 @@ public class Vessel : Soul
         }
     }
 
-
     void UpdateVisuals()
     {
         CalculateEmotionColor();
         m_spriteRendererRef.color = CalculateEmotionColor(m_emotion);
-        m_mouthLineHandlerRef.Refresh(GetJoyScale());
+        m_mouthLineHandlerRef.Refresh(GetPeace());
         for (int i = 0; i < m_eyebrowHandlers.Length; i++)
         {
-            m_eyebrowHandlers[i].SetEybrowRotation(GetPeaceScale());
+            m_eyebrowHandlers[i].SetEybrowRotation(GetPeace());
         }
     }
 
@@ -111,20 +109,7 @@ public class Vessel : Soul
             float baseAttractiveForce = m_soulAttractionConstant / Mathf.Pow(distanceMagnitude, m_attractionExponent);
             float baseRepulsiveForce = m_soulRepulsionConstant / Mathf.Pow(distanceMagnitude, m_repulsionExponent);
 
-            //Soul Line force
-            
-            float soulDistance = Vector2.Distance(a_soul.GetEmotion(), m_emotion);
-            Vector2 soulDelta = a_soul.GetEmotion() - m_emotion;
-            float soulAngle = VLib.Vector2ToEulerAngle(soulDelta);
-            float centreAngle = VLib.Vector2ToEulerAngle(new Vector2(0.5f, 0.5f) - m_emotion);
-            float deltaAngle = VLib.Vector2ToEulerAngle(m_emotion - new Vector2(0.5f, 0.5f)) - VLib.Vector2ToEulerAngle(a_soul.GetEmotion()- new Vector2(0.5f, 0.5f));// soulAngle - centreAngle;
-            float soulDifference = Mathf.Abs(Mathf.Sin(Mathf.PI * deltaAngle / 180f));
-            baseRepulsiveForce *= 1f + (soulDifference* soulDistance);
-            //baseRepulsiveForce += (1f - a_soul.GetEmotion().x) * m_fearRepulsionConstant;
-
-            //float fearEffect = 2f-Vector2.Distance(a_soul.GetEmotion(), new Vector2(0f,0f));
-            //baseRepulsiveForce *= 1f + fearEffect;
-            //baseAttractiveForce /= 1f + fearEffect;
+            baseAttractiveForce *= (GetPeace() * a_soul.GetPeace());
 
             //attractiveForce += loveEffect;
             Vector3 forceVector = directionVector * (baseRepulsiveForce - baseAttractiveForce);
@@ -133,11 +118,11 @@ public class Vessel : Soul
         }
     }
 
-    void EmitEmotion(Vector2 a_direction, Vector2 a_emotion)
+    void EmitEmotion(Vector2 a_direction, float a_emotion)
     {
         Vector3 spawnOffset = a_direction * m_loveVibeSpawnOffset;
         Vibe newLoveVibe = Instantiate(m_loveVibePrefab, transform.position + spawnOffset, Quaternion.identity).GetComponent<Vibe>();
-        newLoveVibe.Init(m_battleHandlerRef, this, a_direction, a_emotion);
+        newLoveVibe.Init(m_battleHandlerRef, this, a_direction, m_rigidBodyRef.velocity, a_emotion);
     }
 
     void ExpressEmotion()
@@ -157,12 +142,21 @@ public class Vessel : Soul
         }
     }
 
+    void MovementUpdate()
+    {
+        if (m_rigidBodyRef.velocity.magnitude <= m_driftSpeed)
+        {
+            m_rigidBodyRef.velocity = VLib.RotateVector3In2D(m_rigidBodyRef.velocity.normalized * m_driftSpeed, VLib.vRandom(-m_driftRotationSpeed, m_driftRotationSpeed) * Time.deltaTime);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
-        AbsorbedEmotionUpdate();
-        ExchangeForceWithPlayer();
-        ProcessEmotions();
+        MovementUpdate();
+        //AbsorbedEmotionUpdate();
+        //ExchangeForceWithPlayer();
+        //ProcessEmotions();
     }
 
     void ReEmitEmotion(AbsorbedLove a_absorbedLove)
@@ -177,10 +171,10 @@ public class Vessel : Soul
         }
     }
 
-
-    void AddEmotion(Vector2 a_emotion, float a_emotionStrength)
+    internal void AddEmotion(float a_emotion, float a_emotionStrength)
     {
-        AffectEmotion(a_emotion, a_emotionStrength);
+        float deltaEmotion = AffectEmotion(a_emotion, a_emotionStrength);
+        m_battleHandlerRef.ChangeScore(deltaEmotion > 0 ? deltaEmotion : 0);
         UpdateVisuals();
     }
 
@@ -189,15 +183,13 @@ public class Vessel : Soul
         AbsorbedLove absorbedLove = new AbsorbedLove();
         absorbedLove.timer = new vTimer(m_reEmitTime);
         absorbedLove.collisionNormal = a_collisionNormal;
-        Vector2 vibeEmotion = a_vibe.GetEmotionValue();
+        float vibeEmotion = a_vibe.GetEmotionValue();
         absorbedLove.emotion = vibeEmotion;
 
-
-        if (VLib.vRandom(0f,1f) > GetPeace())
+        if (VLib.vRandom(0f,1f) < GetPeace())
         {
             m_absorbedLoveList.Add(absorbedLove);
         }
-
 
         AddEmotion(vibeEmotion, a_vibe.GetEmotionalAffect());
     }

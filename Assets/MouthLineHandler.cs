@@ -21,6 +21,7 @@ public class MouthLineHandler : MonoBehaviour
 
     internal void Refresh(float a_loveScale)
     {
+        float scale = 2f*(a_loveScale-0.5f);
         Vector3[] linePositions = new Vector3[m_linePositionCount];
         for (int i = 0; i < m_linePositionCount; i++)
         {
@@ -33,7 +34,7 @@ public class MouthLineHandler : MonoBehaviour
             const float offset = 10f;
 
             linePos.y = Mathf.Pow((indexRatio - 0.5f), 2f) * eccentricity - (eccentricity / offset);
-            linePos.y *= a_loveScale;
+            linePos.y *= scale;
             linePositions[i] = linePos;
         }
         m_lineRenderer.SetPositions(linePositions);

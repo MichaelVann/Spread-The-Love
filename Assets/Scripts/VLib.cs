@@ -140,6 +140,13 @@ public static class VLib
         Vector2 returnVector = new Vector2(a_vector3.x, a_vector3.y);
         return returnVector;
     }
+
+    public static Vector3 ToVector3(this Vector2 a_vector3)
+    {
+        Vector3 returnVector = new Vector3(a_vector3.x, a_vector3.y,0f);
+        return returnVector;
+    }
+
     public static float AngleBetweenVector3s(Vector3 a_vectorA, Vector3 a_vectorB)
     {
         float angle = 0f;

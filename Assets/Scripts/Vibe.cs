@@ -20,12 +20,12 @@ public class Vibe : MonoBehaviour
 
     float m_startingSpeed = 5f;
 
-    Vector2 m_emotionValue;
+    float m_emotionValue;
     float m_emotionalAffect = 1f;
 
     internal bool IsOriginSoul(Vessel a_soul) { return m_originSoul == a_soul; }
 
-    internal Vector2 GetEmotionValue() { return m_emotionValue; }
+    internal float GetEmotionValue() { return m_emotionValue; }
     internal float GetEmotionalAffect() { return m_emotionalAffect; }
 
     // Start is called before the first frame update
@@ -35,18 +35,15 @@ public class Vibe : MonoBehaviour
         //m_rigidBodyRef.velocity = VLib.Euler2dAngleToVector3(transform.eulerAngles.z).normalized * m_startingSpeed;
     }
 
-    internal void Init(BattleHandler a_battleHandler, Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_emotionValue, float a_emotionalAffect = 1f)
+    internal void Init(BattleHandler a_battleHandler, Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_inheritedVelocity, float a_emotionValue, float a_emotionalAffect = 1f)
     {
-        float peaceDistance = Vector2.Distance(a_emotionValue, new Vector2(1f, 1f));
-        if (peaceDistance < 0.5f)
-        {
-            a_battleHandler.ChangeScore(1f-peaceDistance);
-        }
+
         m_originSoul = a_originSoul;
         m_rigidBodyRef.velocity = a_travelDirection * m_startingSpeed;
         m_emotionValue = a_emotionValue;
         m_emotionalAffect = a_emotionalAffect;
         UpdateColorFromEmotion();
+        m_rigidBodyRef.velocity += a_inheritedVelocity;
         //transform.rotation = VLib.Vector3ToQuaternion(a_travelDirection);
     }
 
@@ -60,7 +57,7 @@ public class Vibe : MonoBehaviour
     {
         if (!m_spriteRendererRef.isVisible)
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
         }
         else if (m_beingAbsorbed)
         {
@@ -92,7 +89,7 @@ public class Vibe : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D a_collision)
     {
         Vessel collidedSoul = a_collision.gameObject.GetComponent<Vessel>();
-        if (collidedSoul != null && collidedSoul != m_originSoul)
+        if (collidedSoul != null) //&& collidedSoul != m_originSoul)
         {
             StartAbsorption(collidedSoul);
             //Destroy(gameObject);
