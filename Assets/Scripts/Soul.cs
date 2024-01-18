@@ -9,8 +9,8 @@ namespace Assets.Scripts
         //static internal Color m_afraidColorRef = new Color(0.1982f, 0.7641f, 0.5605f, 1f);
 
         protected float m_emotion;
-        const float m_maxLove = 1f;
-        const float m_minLove = -10f;
+        protected const float m_maxLove = 1f;
+        protected const float m_minLove = -10f;
 
         internal float GetEmotion() { return m_emotion;}
 

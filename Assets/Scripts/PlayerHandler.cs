@@ -2,6 +2,7 @@ using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GridBrushBase;
 
 public class PlayerHandler : Soul
 {
@@ -18,7 +19,7 @@ public class PlayerHandler : Soul
     //Movement
     float m_maxSpeed = 10f;
     float m_acceleration = 1f;
-    float m_rotateSpeed = 100f;
+    float m_rotateSpeed = 10f;
     float m_rotateDrag = 0.12f;
     float m_velocityAlignmentRotForce = 200f;
     bool m_drifting = false;
@@ -47,7 +48,7 @@ public class PlayerHandler : Soul
     {
         m_emotion = 1f;
         m_battleHandlerRef = FindObjectOfType<BattleHandler>();
-        CalculateEmotionColor();
+        //CalculateEmotionColor();
     }
 
     void UpdateShootTimer()
@@ -73,6 +74,47 @@ public class PlayerHandler : Soul
         UpdateShootTimer();
     }
 
+    void HandleDrifting()
+    {
+        if (m_drifting)
+        {
+            if (Input.GetKey(KeyCode.A))
+            {
+                if (!m_driftParticlesLeftRef.isPlaying)
+                {
+                    m_driftParticlesLeftRef.Play();
+                }
+                m_rigidBodyRef.velocity *= 1f - m_driftDrag * Time.deltaTime;
+            }
+            else
+            {
+                m_driftParticlesLeftRef.Stop();
+            }
+
+            if (Input.GetKey(KeyCode.D))
+            {
+                if (!m_driftParticlesRightRef.isPlaying)
+                {
+                    m_driftParticlesRightRef.Play();
+                }
+                m_rigidBodyRef.velocity *= 1f - m_driftDrag * Time.deltaTime;
+            }
+            else
+            {
+                m_driftParticlesRightRef.Stop();
+            }
+            m_driftTrailLeftRef.emitting = Input.GetKey(KeyCode.A);
+            m_driftTrailRightRef.emitting = Input.GetKey(KeyCode.D);
+        }
+        else
+        {
+            m_driftTrailLeftRef.emitting = false;
+            m_driftTrailRightRef.emitting = false;
+            m_driftParticlesLeftRef.Stop();
+            m_driftParticlesRightRef.Stop();
+        }
+    }
+
     void HandleRotation()
     {
         if (m_rigidBodyRef.velocity.magnitude != 0f)
@@ -80,58 +122,32 @@ public class PlayerHandler : Soul
             float rotationDirection = 0f;
             if (Input.GetKey(KeyCode.A))
             {
-                rotationDirection = 1f;
+                rotationDirection += 1f;
             }
-            else if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.D))
             {
-                rotationDirection = -1f;
+                rotationDirection -= 1f;
             }
 
-            float rotation = rotationDirection * m_rotateSpeed * Time.deltaTime;
-            rotation *= m_drifting ? m_driftRotationMult : 1f;
+            if (rotationDirection != 0)
+            {
+                Vector2 turnVector = VLib.RotateVector3In2D(m_rigidBodyRef.velocity.normalized, rotationDirection * 90f).ToVector2();
+                turnVector *= m_rotateSpeed;
+                turnVector *= Time.deltaTime;
+                turnVector *= m_drifting ? m_driftRotationMult : 1f;
 
-            m_rigidBodyRef.velocity = VLib.RotateVector3In2D(m_rigidBodyRef.velocity, rotation);
-            m_rigidBodyRef.velocity *= rotation == 0 ? 1f : 1f - m_rotateDrag * Time.deltaTime;
+                m_rigidBodyRef.velocity += turnVector;
+                m_rigidBodyRef.velocity *= 1f - m_rotateDrag * Time.deltaTime;
+            }
+
 
             float desiredAngle = VLib.Vector3ToEulerAngle(m_rigidBodyRef.velocity);
 
             if (m_drifting)
             {
                 desiredAngle += 30f * rotationDirection;
-                m_driftTrailLeftRef.emitting = Input.GetKey(KeyCode.A);
-                if (Input.GetKey(KeyCode.A))
-                {
-                    if (!m_driftParticlesLeftRef.isPlaying)
-                    {
-                        m_driftParticlesLeftRef.Play();
-                    }
-                }
-                else
-                {
-                    m_driftParticlesLeftRef.Stop();
-                }
-
-                if (Input.GetKey(KeyCode.D))
-                {
-                    if (!m_driftParticlesRightRef.isPlaying)
-                    {
-                        m_driftParticlesRightRef.Play();
-                    }
-                }
-                else
-                {
-                    m_driftParticlesRightRef.Stop();
-                }
-                m_driftTrailRightRef.emitting = Input.GetKey(KeyCode.D);
             }
-            else
-            {
-                m_driftTrailLeftRef.emitting = false;
-                m_driftTrailRightRef.emitting = false;
-                m_driftParticlesLeftRef.Stop();
-                m_driftParticlesRightRef.Stop();
-
-            }
+            HandleDrifting();
 
             float deltaAngle = desiredAngle - m_rigidBodyRef.rotation;
             if (deltaAngle > 180f)
@@ -142,7 +158,7 @@ public class PlayerHandler : Soul
             {
                 deltaAngle += 360f;
             }
-            m_rigidBodyRef.MoveRotation(Mathf.Lerp(m_rigidBodyRef.rotation, m_rigidBodyRef.rotation + deltaAngle, Time.deltaTime * m_velocityAlignmentRotForce));
+            m_rigidBodyRef.MoveRotation(Mathf.Lerp(m_rigidBodyRef.rotation, m_rigidBodyRef.rotation + deltaAngle, Time.deltaTime * m_velocityAlignmentRotForce * m_rigidBodyRef.velocity.magnitude/10f));
             if (m_rigidBodyRef.rotation > 180f)
             {
                 m_rigidBodyRef.rotation -= 360f;
@@ -156,12 +172,7 @@ public class PlayerHandler : Soul
 
     void MovementUpdate()
     {
-        m_drifting = Input.GetKey(KeyCode.S);
-
-        if (m_drifting)
-        {
-            m_rigidBodyRef.velocity *= 1f - m_driftDrag * Time.deltaTime;
-        }
+        m_drifting = Input.GetKey(KeyCode.S) && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D));
 
         HandleRotation();
         Vector2 forwardDirection = Vector3.zero;

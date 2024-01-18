@@ -12,10 +12,9 @@ public class EyebrowHandler : MonoBehaviour
 
     internal void SetEybrowRotation(float a_loveScale)
     {
-        float scale = 2f * (a_loveScale - 0.5f);
 
         Vector3 newEuler = transform.localEulerAngles;
-        newEuler.z = 22f * scale;
+        newEuler.z = 22f * a_loveScale;
         transform.localEulerAngles = newEuler;
     }
 

@@ -44,6 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d10de9ac308a9146ac4ec55c4c108ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_loveColor: {r: 0.8584906, g: 0.11743506, b: 0.42513067, a: 1}
-  m_neutralColor: {r: 0.2509804, g: 0.21176472, b: 0.28235295, a: 1}
+  m_loveColor: {r: 0.7294118, g: 0.19999999, b: 0.35882363, a: 1}
+  m_neutralColor: {r: 0.3759345, g: 0.32698467, b: 0.41509432, a: 1}
   m_fearColor: {r: 0.2392157, g: 0.5411765, b: 0.8705883, a: 1}

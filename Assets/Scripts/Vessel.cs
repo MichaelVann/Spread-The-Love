@@ -14,9 +14,10 @@ public class Vessel : Soul
     PlayerHandler m_playerHandlerRef;
 
     //Soul Attraction
-
-    float m_driftSpeed = 1.0f;
-    float m_driftRotationSpeed = 5f;
+    const float m_defaultWanderSpeed = 1.0f;
+    float m_loveWanderSpeedMult = 2f;
+    float m_wanderSpeed = 1.0f;
+    float m_wanderRotationSpeed = 5f;
 
     const float m_soulAttractionConstant = 1.3f;
     const float m_attractionExponent = 1f;
@@ -47,6 +48,7 @@ public class Vessel : Soul
 
     List<AbsorbedLove> m_absorbedLoveList;
 
+    bool IsLoved() { return m_emotion >= m_maxLove; }
 
     void Awake()
     {
@@ -58,7 +60,7 @@ public class Vessel : Soul
     // Start is called before the first frame update
     void Start()
     {
-        m_rigidBodyRef.velocity = VLib.RotateVector3In2D(new Vector2(1f, 0f), VLib.vRandom(0f, 360f)) * m_driftSpeed;
+        m_rigidBodyRef.velocity = VLib.RotateVector3In2D(new Vector2(1f, 0f), VLib.vRandom(0f, 360f)) * m_wanderSpeed;
     }
 
     internal void Init(BattleHandler a_battleHandler, PlayerHandler a_playerHandler, float a_emotion)
@@ -66,6 +68,7 @@ public class Vessel : Soul
         m_battleHandlerRef = a_battleHandler;
         m_playerHandlerRef = a_playerHandler;
         m_emotion = a_emotion;
+        m_wanderSpeed = m_defaultWanderSpeed;
         UpdateVisuals();
     }
 
@@ -86,7 +89,7 @@ public class Vessel : Soul
     {
         CalculateEmotionColor();
         m_spriteRendererRef.color = CalculateEmotionColor(m_emotion);
-        m_mouthLineHandlerRef.Refresh(GetPeace());
+        m_mouthLineHandlerRef.Refresh(GetEmotionMappedFromMinToMax(m_emotion));
         for (int i = 0; i < m_eyebrowHandlers.Length; i++)
         {
             m_eyebrowHandlers[i].SetEybrowRotation(GetEmotionMappedFromMinToMax(m_emotion));
@@ -144,9 +147,9 @@ public class Vessel : Soul
 
     void MovementUpdate()
     {
-        if (m_rigidBodyRef.velocity.magnitude <= m_driftSpeed)
+        if (m_rigidBodyRef.velocity.magnitude <= m_wanderSpeed)
         {
-            m_rigidBodyRef.velocity = VLib.RotateVector3In2D(m_rigidBodyRef.velocity.normalized * m_driftSpeed, VLib.vRandom(-m_driftRotationSpeed, m_driftRotationSpeed) * Time.deltaTime);
+            m_rigidBodyRef.velocity = VLib.RotateVector3In2D(m_rigidBodyRef.velocity.normalized * m_wanderSpeed, VLib.vRandom(-m_wanderRotationSpeed, m_wanderRotationSpeed) * Time.deltaTime);
         }
     }
 
@@ -173,8 +176,21 @@ public class Vessel : Soul
 
     internal void AddEmotion(float a_emotion)
     {
+        bool wasMaxLove = m_emotion == m_maxLove;
         float deltaEmotion = AffectEmotion(a_emotion);
+        bool isMaxLove = m_emotion == m_maxLove;
         m_battleHandlerRef.ChangeScore(deltaEmotion > 0 ? deltaEmotion : 0);
+        if (!wasMaxLove && isMaxLove)
+        {
+            m_battleHandlerRef.IncrementConvertedVessels(1);
+        }
+        else if (wasMaxLove && !isMaxLove)
+        {
+            m_battleHandlerRef.IncrementConvertedVessels(-1);
+        }
+
+        m_wanderSpeed = isMaxLove ? m_defaultWanderSpeed * m_loveWanderSpeedMult : m_defaultWanderSpeed;
+
         UpdateVisuals();
     }
 
