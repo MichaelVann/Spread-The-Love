@@ -20,13 +20,11 @@ public class Vibe : MonoBehaviour
 
     float m_startingSpeed = 5f;
 
-    float m_emotionValue;
-    float m_emotionalAffect = 1f;
+    float m_emotion = 1f;
 
     internal bool IsOriginSoul(Vessel a_soul) { return m_originSoul == a_soul; }
 
-    internal float GetEmotionValue() { return m_emotionValue; }
-    internal float GetEmotionalAffect() { return m_emotionalAffect; }
+    internal float GetEmotionalAffect() { return m_emotion; }
 
     // Start is called before the first frame update
     void Awake()
@@ -35,13 +33,12 @@ public class Vibe : MonoBehaviour
         //m_rigidBodyRef.velocity = VLib.Euler2dAngleToVector3(transform.eulerAngles.z).normalized * m_startingSpeed;
     }
 
-    internal void Init(BattleHandler a_battleHandler, Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_inheritedVelocity, float a_emotionValue, float a_emotionalAffect = 1f)
+    internal void Init(BattleHandler a_battleHandler, Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_inheritedVelocity, float a_emotion = 1f)
     {
 
         m_originSoul = a_originSoul;
         m_rigidBodyRef.velocity = a_travelDirection * m_startingSpeed;
-        m_emotionValue = a_emotionValue;
-        m_emotionalAffect = a_emotionalAffect;
+        m_emotion = a_emotion;
         UpdateColorFromEmotion();
         m_rigidBodyRef.velocity += a_inheritedVelocity;
         //transform.rotation = VLib.Vector3ToQuaternion(a_travelDirection);
@@ -49,7 +46,7 @@ public class Vibe : MonoBehaviour
 
     void UpdateColorFromEmotion()
     {
-        m_spriteRendererRef.color = Soul.CalculateEmotionColor(m_emotionValue);
+        m_spriteRendererRef.color = Soul.CalculateEmotionColor(m_emotion);
     }
 
     // Update is called once per frame

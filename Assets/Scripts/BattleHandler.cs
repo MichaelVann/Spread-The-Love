@@ -61,7 +61,7 @@ public class BattleHandler : MonoBehaviour
 
     void SpawnVessel(Vector3 a_position)
     {
-        Instantiate(m_vesselPrefab, a_position, Quaternion.identity).GetComponent<Vessel>().Init(this, m_playerHandlerRef, 0.5f);
+        Instantiate(m_vesselPrefab, a_position, Quaternion.identity).GetComponent<Vessel>().Init(this, m_playerHandlerRef, 0f);
     }
 
     void SpawnVessels()

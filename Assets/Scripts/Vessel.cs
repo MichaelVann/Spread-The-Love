@@ -89,7 +89,7 @@ public class Vessel : Soul
         m_mouthLineHandlerRef.Refresh(GetPeace());
         for (int i = 0; i < m_eyebrowHandlers.Length; i++)
         {
-            m_eyebrowHandlers[i].SetEybrowRotation(GetPeace());
+            m_eyebrowHandlers[i].SetEybrowRotation(GetEmotionMappedFromMinToMax(m_emotion));
         }
     }
 
@@ -171,9 +171,9 @@ public class Vessel : Soul
         }
     }
 
-    internal void AddEmotion(float a_emotion, float a_emotionStrength)
+    internal void AddEmotion(float a_emotion)
     {
-        float deltaEmotion = AffectEmotion(a_emotion, a_emotionStrength);
+        float deltaEmotion = AffectEmotion(a_emotion);
         m_battleHandlerRef.ChangeScore(deltaEmotion > 0 ? deltaEmotion : 0);
         UpdateVisuals();
     }
@@ -183,7 +183,7 @@ public class Vessel : Soul
         AbsorbedLove absorbedLove = new AbsorbedLove();
         absorbedLove.timer = new vTimer(m_reEmitTime);
         absorbedLove.collisionNormal = a_collisionNormal;
-        float vibeEmotion = a_vibe.GetEmotionValue();
+        float vibeEmotion = a_vibe.GetEmotionalAffect();
         absorbedLove.emotion = vibeEmotion;
 
         if (VLib.vRandom(0f,1f) < GetPeace())
@@ -191,7 +191,7 @@ public class Vessel : Soul
             m_absorbedLoveList.Add(absorbedLove);
         }
 
-        AddEmotion(vibeEmotion, a_vibe.GetEmotionalAffect());
+        AddEmotion(a_vibe.GetEmotionalAffect());
     }
 
     private void OnCollisionEnter2D(Collision2D a_collision)

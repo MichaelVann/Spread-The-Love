@@ -7,7 +7,10 @@ public class PlayerHandler : Soul
 {
     [SerializeField] GameObject m_loveVibePrefab;
     [SerializeField] Camera m_cameraRef;
-    [SerializeField] GameHandler m_gameHandler;
+    [SerializeField] TrailRenderer m_driftTrailLeftRef;
+    [SerializeField] TrailRenderer m_driftTrailRightRef;
+    [SerializeField] ParticleSystem m_driftParticlesLeftRef;
+    [SerializeField] ParticleSystem m_driftParticlesRightRef;
 
     BattleHandler m_battleHandlerRef;
     Rigidbody2D m_rigidBodyRef;
@@ -16,8 +19,11 @@ public class PlayerHandler : Soul
     float m_maxSpeed = 10f;
     float m_acceleration = 1f;
     float m_rotateSpeed = 100f;
-    float m_rotateDrag = 0.2f;
+    float m_rotateDrag = 0.12f;
     float m_velocityAlignmentRotForce = 200f;
+    bool m_drifting = false;
+    float m_driftDrag = 0.2f;
+    float m_driftRotationMult = 2f;
 
     //Love Combat
     float m_meleeLoveStrength = 1f;
@@ -62,13 +68,7 @@ public class PlayerHandler : Soul
         {
             m_readyToShoot = false;
             Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
-            loveVibe.Init(m_battleHandlerRef, null, deltaMousePos.normalized, m_rigidBodyRef.velocity, m_emotion, 10f);
-        }
-        else if (Input.GetMouseButton(1) && m_readyToShoot)
-        {
-            m_readyToShoot = false;
-            Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
-            loveVibe.Init(m_battleHandlerRef, null, deltaMousePos.normalized, m_rigidBodyRef.velocity, 0f, 10f);
+            loveVibe.Init(m_battleHandlerRef, null, deltaMousePos.normalized, m_rigidBodyRef.velocity, m_emotion);
         }
         UpdateShootTimer();
     }
@@ -77,22 +77,63 @@ public class PlayerHandler : Soul
     {
         if (m_rigidBodyRef.velocity.magnitude != 0f)
         {
-            float rotation = 0f;
+            float rotationDirection = 0f;
             if (Input.GetKey(KeyCode.A))
             {
-                rotation = 1f;
+                rotationDirection = 1f;
             }
             else if (Input.GetKey(KeyCode.D))
             {
-                rotation = -1f;
+                rotationDirection = -1f;
             }
-            rotation *= m_rotateSpeed * Time.deltaTime;
+
+            float rotation = rotationDirection * m_rotateSpeed * Time.deltaTime;
+            rotation *= m_drifting ? m_driftRotationMult : 1f;
 
             m_rigidBodyRef.velocity = VLib.RotateVector3In2D(m_rigidBodyRef.velocity, rotation);
             m_rigidBodyRef.velocity *= rotation == 0 ? 1f : 1f - m_rotateDrag * Time.deltaTime;
-            //m_rigidBodyRef.rotation = VLib.Vector3ToEulerAngle(m_rigidBodyRef.velocity);
 
-            float deltaAngle = VLib.Vector3ToEulerAngle(m_rigidBodyRef.velocity) - m_rigidBodyRef.rotation;
+            float desiredAngle = VLib.Vector3ToEulerAngle(m_rigidBodyRef.velocity);
+
+            if (m_drifting)
+            {
+                desiredAngle += 30f * rotationDirection;
+                m_driftTrailLeftRef.emitting = Input.GetKey(KeyCode.A);
+                if (Input.GetKey(KeyCode.A))
+                {
+                    if (!m_driftParticlesLeftRef.isPlaying)
+                    {
+                        m_driftParticlesLeftRef.Play();
+                    }
+                }
+                else
+                {
+                    m_driftParticlesLeftRef.Stop();
+                }
+
+                if (Input.GetKey(KeyCode.D))
+                {
+                    if (!m_driftParticlesRightRef.isPlaying)
+                    {
+                        m_driftParticlesRightRef.Play();
+                    }
+                }
+                else
+                {
+                    m_driftParticlesRightRef.Stop();
+                }
+                m_driftTrailRightRef.emitting = Input.GetKey(KeyCode.D);
+            }
+            else
+            {
+                m_driftTrailLeftRef.emitting = false;
+                m_driftTrailRightRef.emitting = false;
+                m_driftParticlesLeftRef.Stop();
+                m_driftParticlesRightRef.Stop();
+
+            }
+
+            float deltaAngle = desiredAngle - m_rigidBodyRef.rotation;
             if (deltaAngle > 180f)
             {
                 deltaAngle -= 360f;
@@ -115,6 +156,13 @@ public class PlayerHandler : Soul
 
     void MovementUpdate()
     {
+        m_drifting = Input.GetKey(KeyCode.S);
+
+        if (m_drifting)
+        {
+            m_rigidBodyRef.velocity *= 1f - m_driftDrag * Time.deltaTime;
+        }
+
         HandleRotation();
         Vector2 forwardDirection = Vector3.zero;
         if (m_rigidBodyRef.velocity.magnitude == 0)
@@ -127,11 +175,6 @@ public class PlayerHandler : Soul
         }
         m_rigidBodyRef.velocity += forwardDirection * m_acceleration * Time.deltaTime;
         m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.normalized * Mathf.Clamp(m_rigidBodyRef.velocity.magnitude, 0f, m_maxSpeed);
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            m_rigidBodyRef.velocity = Vector3.zero;
-        }
     }
 
     // Update is called once per frame
@@ -150,7 +193,7 @@ public class PlayerHandler : Soul
             float contactStrength = Mathf.Sin(Mathf.PI * collisionAngle / 180f + Mathf.PI / 2f);
             float impulseStrength = Mathf.Pow(a_collision.relativeVelocity.magnitude,2f) * contactStrength;
             Debug.Log(impulseStrength);
-            a_collision.gameObject.GetComponent<Vessel>().AddEmotion(1f, m_meleeLoveStrength * impulseStrength);
+            a_collision.gameObject.GetComponent<Vessel>().AddEmotion(m_meleeLoveStrength);
         }
     }
 }
