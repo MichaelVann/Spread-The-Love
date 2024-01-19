@@ -27,7 +27,7 @@ public class PlayerHandler : Soul
     float m_driftRotationMult = 2f;
 
     //Love Combat
-    float m_meleeLoveStrength = 1f;
+    int m_meleeLoveStrength = 1;
 
     //Shoot
     bool m_readyToShoot = false;
@@ -41,12 +41,18 @@ public class PlayerHandler : Soul
         m_shootTimer = new vTimer(m_fireRate);
         m_rigidBodyRef = GetComponent<Rigidbody2D>();
         m_rigidBodyRef.velocity = new Vector2(0f, -1f);
+        InitialiseUpgrades();
+    }
+
+    void InitialiseUpgrades()
+    {
+        m_maxSpeed += GameHandler._upgradeTree.GetUpgradeLevel(UpgradeItem.UpgradeId.TopSpeed);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        m_emotion = 1f;
+        m_emotion = 1;
         m_battleHandlerRef = FindObjectOfType<BattleHandler>();
         //CalculateEmotionColor();
     }
@@ -203,7 +209,6 @@ public class PlayerHandler : Soul
             float collisionAngle = Vector2.SignedAngle(a_collision.relativeVelocity.normalized, a_collision.contacts[0].normal);
             float contactStrength = Mathf.Sin(Mathf.PI * collisionAngle / 180f + Mathf.PI / 2f);
             float impulseStrength = Mathf.Pow(a_collision.relativeVelocity.magnitude,2f) * contactStrength;
-            Debug.Log(impulseStrength);
             a_collision.gameObject.GetComponent<Vessel>().AddEmotion(m_meleeLoveStrength);
         }
     }

@@ -9,6 +9,7 @@ public class Vessel : Soul
     [SerializeField] Rigidbody2D m_rigidBodyRef;
     [SerializeField] MouthLineHandler m_mouthLineHandlerRef;
     [SerializeField] EyebrowHandler[] m_eyebrowHandlers; 
+    [SerializeField] TrailRenderer m_lovedTrailRef;
 
     BattleHandler m_battleHandlerRef;
     PlayerHandler m_playerHandlerRef;
@@ -43,7 +44,7 @@ public class Vessel : Soul
     {
         internal vTimer timer;
         internal Vector2 collisionNormal;
-        internal float emotion;
+        internal int emotion;
     } 
 
     List<AbsorbedLove> m_absorbedLoveList;
@@ -63,7 +64,7 @@ public class Vessel : Soul
         m_rigidBodyRef.velocity = VLib.RotateVector3In2D(new Vector2(1f, 0f), VLib.vRandom(0f, 360f)) * m_wanderSpeed;
     }
 
-    internal void Init(BattleHandler a_battleHandler, PlayerHandler a_playerHandler, float a_emotion)
+    internal void Init(BattleHandler a_battleHandler, PlayerHandler a_playerHandler, int a_emotion)
     {
         m_battleHandlerRef = a_battleHandler;
         m_playerHandlerRef = a_playerHandler;
@@ -94,6 +95,7 @@ public class Vessel : Soul
         {
             m_eyebrowHandlers[i].SetEybrowRotation(GetEmotionMappedFromMinToMax(m_emotion));
         }
+        m_lovedTrailRef.emitting = IsLoved();
     }
 
     void ExchangeForceWithPlayer()
@@ -112,7 +114,7 @@ public class Vessel : Soul
             float baseAttractiveForce = m_soulAttractionConstant / Mathf.Pow(distanceMagnitude, m_attractionExponent);
             float baseRepulsiveForce = m_soulRepulsionConstant / Mathf.Pow(distanceMagnitude, m_repulsionExponent);
 
-            baseAttractiveForce *= (GetPeace() * a_soul.GetPeace());
+            baseAttractiveForce *= (GetEmotion() * a_soul.GetEmotion());
 
             //attractiveForce += loveEffect;
             Vector3 forceVector = directionVector * (baseRepulsiveForce - baseAttractiveForce);
@@ -121,7 +123,7 @@ public class Vessel : Soul
         }
     }
 
-    void EmitEmotion(Vector2 a_direction, float a_emotion)
+    void EmitEmotion(Vector2 a_direction, int a_emotion)
     {
         Vector3 spawnOffset = a_direction * m_loveVibeSpawnOffset;
         Vibe newLoveVibe = Instantiate(m_loveVibePrefab, transform.position + spawnOffset, Quaternion.identity).GetComponent<Vibe>();
@@ -138,7 +140,7 @@ public class Vessel : Soul
 
     void ProcessEmotions()
     {
-        m_expressionTimer.SetTimerMax(m_expressInterval / (1f + GetFear()* m_fearfulToCalmExpressionIncrease));
+        m_expressionTimer.SetTimerMax(m_expressInterval / (1f + GetFear() * m_fearfulToCalmExpressionIncrease));
         if (m_expressionTimer.Update())
         {
             ExpressEmotion();
@@ -174,10 +176,10 @@ public class Vessel : Soul
         }
     }
 
-    internal void AddEmotion(float a_emotion)
+    internal void AddEmotion(int a_emotion)
     {
         bool wasMaxLove = m_emotion == m_maxLove;
-        float deltaEmotion = AffectEmotion(a_emotion);
+        int deltaEmotion = AffectEmotion(a_emotion);
         bool isMaxLove = m_emotion == m_maxLove;
         m_battleHandlerRef.ChangeScore(deltaEmotion > 0 ? deltaEmotion : 0);
         if (!wasMaxLove && isMaxLove)
@@ -199,10 +201,10 @@ public class Vessel : Soul
         AbsorbedLove absorbedLove = new AbsorbedLove();
         absorbedLove.timer = new vTimer(m_reEmitTime);
         absorbedLove.collisionNormal = a_collisionNormal;
-        float vibeEmotion = a_vibe.GetEmotionalAffect();
+        int vibeEmotion = a_vibe.GetEmotionalAffect();
         absorbedLove.emotion = vibeEmotion;
 
-        if (VLib.vRandom(0f,1f) < GetPeace())
+        if (VLib.vRandom(0f,1f) < GetEmotion())
         {
             m_absorbedLoveList.Add(absorbedLove);
         }
@@ -216,6 +218,13 @@ public class Vessel : Soul
         if (vibe != null && !vibe.IsOriginSoul(this)) 
         {
             AbsorbVibe(a_collision.contacts[0].normal, vibe);
+        }
+        else if (a_collision.gameObject.tag == "Vessel")
+        {
+            if (a_collision.gameObject.GetComponent<Vessel>().IsLoved())
+            {
+                AddEmotion(1);
+            }
         }
     }
 }

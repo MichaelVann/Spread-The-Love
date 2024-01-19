@@ -20,11 +20,11 @@ public class Vibe : MonoBehaviour
 
     float m_startingSpeed = 5f;
 
-    float m_emotion = 1f;
+    int m_emotion = 1;
 
     internal bool IsOriginSoul(Vessel a_soul) { return m_originSoul == a_soul; }
 
-    internal float GetEmotionalAffect() { return m_emotion; }
+    internal int GetEmotionalAffect() { return m_emotion; }
 
     // Start is called before the first frame update
     void Awake()
@@ -33,7 +33,7 @@ public class Vibe : MonoBehaviour
         //m_rigidBodyRef.velocity = VLib.Euler2dAngleToVector3(transform.eulerAngles.z).normalized * m_startingSpeed;
     }
 
-    internal void Init(BattleHandler a_battleHandler, Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_inheritedVelocity, float a_emotion = 1f)
+    internal void Init(BattleHandler a_battleHandler, Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_inheritedVelocity, int a_emotion = 1)
     {
 
         m_originSoul = a_originSoul;

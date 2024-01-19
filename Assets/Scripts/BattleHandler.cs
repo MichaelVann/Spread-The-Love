@@ -19,15 +19,17 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_scoreText;
     [SerializeField] TextMeshProUGUI m_speedText;
     [SerializeField] TextMeshProUGUI m_vesselsConvertedText;
+    [SerializeField] TextMeshProUGUI m_vesselsConvertedDeltaText;
     [SerializeField] Image m_whiteOutImageRef;
 
-    float m_score = 0f;
+    int m_score = 0;
 
     //Vessels
     int starterSouls = 20;
     float m_spawnDistance = 2f;
     internal List<Vessel> m_vesselList;
     int m_vesselsConverted = 0;
+    int m_vesselsConvertedDelta = 0;
     const float m_starterDeviance = 0.25f;
     static float m_scaredSoul = 0.5f - m_starterDeviance;
     static float m_normalSoul = 0.5f;
@@ -40,15 +42,15 @@ public class BattleHandler : MonoBehaviour
     float m_streetSize = 5f;
 
     //Timer
-    const float m_gameTime = 60f;
+    const float m_gameTime = 30f;
     vTimer m_battleTimer;
     vTimer m_battleExplosionTimer;
+    vTimer m_secondPassedTimer;
     bool m_gameEnding = false;
 
+    internal void IncrementConvertedVessels(int a_change) { m_vesselsConverted += a_change; m_vesselsConvertedDelta += a_change; }
 
-    internal void IncrementConvertedVessels(int a_change) { m_vesselsConverted += a_change; }
-
-    internal void ChangeScore(float a_score) { m_score += a_score; RefreshScoreText(); }
+    internal void ChangeScore(int a_score) { m_score += a_score; RefreshScoreText(); }
 
     // Start is called before the first frame update
     void Start()
@@ -59,6 +61,7 @@ public class BattleHandler : MonoBehaviour
         SpawnVessels();
         m_battleTimer = new vTimer(m_gameTime, true, true, false);
         RefreshScoreText();
+        m_secondPassedTimer = new vTimer(1f);
     }
 
     void RefreshScoreText()
@@ -66,13 +69,29 @@ public class BattleHandler : MonoBehaviour
         m_scoreText.text = VLib.RoundToDecimalPlaces(m_score, 1).ToString();
     }
 
+    void SecondPassedTimerUpdate()
+    {
+        if (m_secondPassedTimer.Update())
+        {
+            m_vesselsConvertedDeltaText.text = "+" + m_vesselsConvertedDelta.ToString() + "/s";
+            m_vesselsConvertedDelta = 0;
+        }
+    }
+
+    void MoveToSamsara()
+    {
+        GameHandler.ChangeScore(m_score);
+        SceneManager.LoadScene("Samsara");
+    }
+
     // Update is called once per frame
     void Update()
     {
+        SecondPassedTimerUpdate();
         m_speedText.text = m_playerHandlerRef.GetSpeed().ToString("f2") + " m/s";
         m_vesselsConvertedText.text = m_vesselsConverted + "/" + m_vesselList.Count;
         m_timeText.text = (m_gameTime - m_battleTimer.GetTimer()).ToString("f1");
-        if (m_battleTimer.Update())
+        if (!m_gameEnding && m_battleTimer.Update())
         {
             m_gameEnding = true;
             m_battleExplosionTimer = new vTimer(2);
@@ -83,7 +102,7 @@ public class BattleHandler : MonoBehaviour
         {
             if (m_battleExplosionTimer.Update())
             {
-                SceneManager.LoadScene("Samsara");
+                MoveToSamsara();
             }
             else
             {
@@ -102,7 +121,7 @@ public class BattleHandler : MonoBehaviour
     void SpawnVessel(Vector3 a_position)
     {
         Vessel vessel = Instantiate(m_vesselPrefab, a_position, Quaternion.identity).GetComponent<Vessel>();
-        vessel.Init(this, m_playerHandlerRef, 0f);
+        vessel.Init(this, m_playerHandlerRef, 0);
         m_vesselList.Add(vessel);
     }
 

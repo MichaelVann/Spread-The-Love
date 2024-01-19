@@ -1,20 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class GameHandler : MonoBehaviour
 {
-    internal static GameHandler m_autoRef;
+    internal static GameHandler _autoRef;
+    internal static int _score;
+    internal static int _lastSeenScore;
+    internal static UpgradeTree _upgradeTree;
+
     [SerializeField] internal Color m_loveColor;
     [SerializeField] internal Color m_neutralColor;
     [SerializeField] internal Color m_fearColor;
     // Start is called before the first frame update
 
+    internal static void ChangeScore(int a_change) { _score += a_change; }
+    internal static void UpdateLastSeenScore() { _lastSeenScore = _score; }
+
     void Awake()
     {
-        if (m_autoRef == null)
+        if (_autoRef == null)
         {
-            m_autoRef = this;
+            Init();
         }
         else
         {
@@ -22,9 +30,23 @@ public class GameHandler : MonoBehaviour
         }
     }
 
+    void Init()
+    {
+        _autoRef = this;
+        DontDestroyOnLoad(gameObject);
+
+        _score = 0;
+        _upgradeTree = new UpgradeTree();
+    }
+
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    static internal void AutoSaveCheck()
+    {
+
     }
 }
