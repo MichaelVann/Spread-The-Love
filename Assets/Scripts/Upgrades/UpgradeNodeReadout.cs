@@ -105,7 +105,7 @@ public class UpgradeNodeReadout : MonoBehaviour
         }
         UpdatePurchaseButton();
 
-        m_toggleButtonRef.SetActive(m_upgradeItemRef.m_owned);
+        m_toggleButtonRef.SetActive(m_upgradeItemRef.m_owned && m_upgradeItemRef.m_toggleable);
         m_checkBoxRef.SetToggled(m_upgradeItemRef.m_toggled);
     }
 

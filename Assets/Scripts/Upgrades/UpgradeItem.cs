@@ -12,7 +12,7 @@ public class UpgradeItem
     public string m_description;
 
     public int m_cost;
-    public float m_costScaling = 1.5f;
+    public float m_costScaling = 1.2f;
     public bool m_owned = false;
     public bool m_hasLevels = false;
     public int m_level = 0;
@@ -61,6 +61,8 @@ public class UpgradeItem
     internal bool IsEnabled() { return m_toggled && m_owned; }
 
     internal float GetLeveledStrength() { return m_effectStrength * m_level; }
+
+    internal bool IsReadyToUpgrade(float a_cash) { return m_unlocked && a_cash >= m_cost && (m_hasLevels ? (m_level < m_maxLevel) : true); }
 
     internal void AddChildUpgrade(UpgradeItem a_child)
     {

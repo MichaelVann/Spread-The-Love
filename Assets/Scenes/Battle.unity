@@ -838,6 +838,7 @@ MonoBehaviour:
   m_driftTrailRightRef: {fileID: 2127629174}
   m_driftParticlesLeftRef: {fileID: 1994628378}
   m_driftParticlesRightRef: {fileID: 911184722}
+  m_speedChimeAudioClip: {fileID: 8300000, guid: d6f1d6481ac2aa444823c2a39ec3691b, type: 3}
 --- !u!4 &411850951
 Transform:
   m_ObjectHideFlags: 0
@@ -1326,7 +1327,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -50.04, y: -13.52002}
+  m_AnchoredPosition: {x: -50.039978, y: -13.52002}
   m_SizeDelta: {x: 401.21, y: 86.48}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &525938675
@@ -2707,7 +2708,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -58.53, y: -92}
+  m_AnchoredPosition: {x: -58.52997, y: -92}
   m_SizeDelta: {x: 272.72, y: 55.37}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1971086986

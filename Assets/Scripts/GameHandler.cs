@@ -9,6 +9,7 @@ public class GameHandler : MonoBehaviour
     internal static int _score;
     internal static int _lastSeenScore;
     internal static UpgradeTree _upgradeTree;
+    internal static AudioManager _audioManager;
 
     [SerializeField] internal Color m_loveColor;
     [SerializeField] internal Color m_neutralColor;
@@ -34,7 +35,7 @@ public class GameHandler : MonoBehaviour
     {
         _autoRef = this;
         DontDestroyOnLoad(gameObject);
-
+        _audioManager = GetComponent<AudioManager>();
         _score = 0;
         _upgradeTree = new UpgradeTree();
     }

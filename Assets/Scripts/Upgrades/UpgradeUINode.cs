@@ -24,6 +24,8 @@ public class UpgradeUINode : MonoBehaviour
     [SerializeField] GameObject m_levelIndicator;
     [SerializeField] TextMeshProUGUI m_levelText;
 
+    [SerializeField] GameObject m_availableUpgradeIndicatorRef;
+
     internal void SetNameText(string a_name) { m_nameText.text = a_name;}
     internal void SetAvailableSpace(float a_space) { m_availableSpace = a_space;}
 
@@ -38,6 +40,24 @@ public class UpgradeUINode : MonoBehaviour
         m_upgradeItemRef = a_upgradeItem;
         m_upgradeTreeUIHandler = a_upgradeTreeUIHandler;
         Refresh();
+    }
+
+    void RefreshLevelIndicator()
+    {
+        if (m_upgradeItemRef.m_hasLevels)
+        {
+            m_levelIndicator.SetActive(true);
+            m_levelText.text = m_upgradeItemRef.m_level + "/" + m_upgradeItemRef.m_maxLevel;
+        }
+        else
+        {
+            m_levelIndicator.SetActive(false);
+        }
+    }
+
+    void RefreshAvailableUpgradeIndicator()
+    {
+        m_availableUpgradeIndicatorRef.SetActive(m_upgradeItemRef.IsReadyToUpgrade(GameHandler._score));
     }
 
     internal void Refresh()
@@ -76,18 +96,11 @@ public class UpgradeUINode : MonoBehaviour
                 nodeColor = Color.white;
             }
             m_tickCrossRef.gameObject.SetActive(false);
-
         }
 
-        if (m_upgradeItemRef.m_hasLevels)
-        {
-            m_levelIndicator.SetActive(true);
-            m_levelText.text = m_upgradeItemRef.m_level + "/" + m_upgradeItemRef.m_maxLevel;
-        }
-        else
-        {
-            m_levelIndicator.SetActive(false);
-        }
+        RefreshLevelIndicator();
+
+        RefreshAvailableUpgradeIndicator();
 
         m_backdropRef.color = nodeColor;
         m_buttonRef.interactable = interactable;

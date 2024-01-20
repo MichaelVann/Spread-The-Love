@@ -13,14 +13,19 @@ public class PlayerHandler : Soul
     [SerializeField] ParticleSystem m_driftParticlesLeftRef;
     [SerializeField] ParticleSystem m_driftParticlesRightRef;
 
+
     BattleHandler m_battleHandlerRef;
     Rigidbody2D m_rigidBodyRef;
 
     //Movement
-    float m_maxSpeed = 10f;
-    float m_acceleration = 1f;
-    float m_rotateSpeed = 10f;
-    float m_rotateDrag = 0.12f;
+    internal const float m_startingMass = 25f;
+    internal const float m_startingMaxSpeed = 10f;
+    float m_maxSpeed;
+    internal const float m_startingAcceleration = 1f;
+    float m_acceleration;
+    internal const float m_startingRotateSpeed = 10f;
+    float m_rotateSpeed;
+    const float m_rotateDrag = 0.12f;
     float m_velocityAlignmentRotForce = 200f;
     bool m_drifting = false;
     float m_driftDrag = 0.2f;
@@ -31,10 +36,27 @@ public class PlayerHandler : Soul
 
     //Shoot
     bool m_readyToShoot = true;
-    float m_fireRate = 1f;
+    internal const float m_startingFireRate = 1f;
+    float m_fireRate;
     vTimer m_shootTimer;
 
+    //Speed Chime
+    [SerializeField] AudioClip m_speedChimeAudioClip;
+    float m_speedChimeTimerRepeatTime = 1.2f;
+    const float m_speedChimeCutoffSpeed = 10f;
+    vTimer m_speedChimeTimer;
+
     internal float GetSpeed() { return m_rigidBodyRef.velocity.magnitude; }
+
+    static internal float GetMass() { return m_startingMass * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Mass)); }
+
+    static internal float GetAcceleration() { return m_startingAcceleration * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Acceleration)); }
+
+    static internal float GetMaxSpeed() { return m_startingMaxSpeed + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TopSpeed); }
+
+    static internal float GetRotateSpeed() { return m_startingRotateSpeed * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TurnSpeed)); }
+
+    static internal float GetFireRate() { return m_startingFireRate * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.FireRate)); }
 
     void Awake()
     {
@@ -42,15 +64,16 @@ public class PlayerHandler : Soul
         m_rigidBodyRef.velocity = new Vector2(0f, -1f);
         InitialiseUpgrades();
         m_shootTimer = new vTimer(1f/m_fireRate);
+        m_speedChimeTimer = new vTimer(m_speedChimeTimerRepeatTime);
     }
 
     void InitialiseUpgrades()
     {
-        m_rigidBodyRef.mass *= 1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Mass);
-        m_acceleration *= 1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Acceleration);
-        m_maxSpeed += GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TopSpeed);
-        m_rotateSpeed *= 1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TurnSpeed);
-        m_fireRate *= 1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.FireRate);
+        m_rigidBodyRef.mass = GetMass();
+        m_acceleration = GetAcceleration();
+        m_maxSpeed = GetMaxSpeed();
+        m_rotateSpeed = GetRotateSpeed();
+        m_fireRate = GetFireRate();
     }
 
     // Start is called before the first frame update
@@ -194,6 +217,18 @@ public class PlayerHandler : Soul
         }
         m_rigidBodyRef.velocity += forwardDirection * m_acceleration * Time.deltaTime;
         m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.normalized * Mathf.Clamp(m_rigidBodyRef.velocity.magnitude, 0f, m_maxSpeed);
+
+        if (m_rigidBodyRef.velocity.magnitude > 7f)
+        {
+            if (m_speedChimeTimer.Update())
+            {
+                float speed = m_rigidBodyRef.velocity.magnitude;
+                float volume = (speed - m_speedChimeCutoffSpeed)/ (20f-m_speedChimeCutoffSpeed);
+                volume = Mathf.Clamp(volume, 0f, 1f);
+                //volume = Mathf.Pow(volume, 3f);
+                GameHandler._audioManager.PlayOneShot(m_speedChimeAudioClip, volume);
+            }
+        }
     }
 
     // Update is called once per frame

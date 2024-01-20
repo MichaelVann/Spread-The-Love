@@ -33,8 +33,8 @@ public class UpgradeTree
     void SetupUpgrades()
     {
         UpgradeItem mass = NewUpgrade(UpgradeItem.UpgradeId.Mass, "Mass", 30, 10, 0.25f, null, "Increases mass by 25% of base for each level.");
-        UpgradeItem acceleration = NewUpgrade(UpgradeItem.UpgradeId.Acceleration, "Acceleration", 30, 5, 0.25f, null, "Increases acceleration by 25% each level.");
-        UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 30, 5, 1f, null, "Increases top speed by 1 m/s each level.");
+        UpgradeItem acceleration = NewUpgrade(UpgradeItem.UpgradeId.Acceleration, "Acceleration", 30, 10, 0.25f, null, "Increases acceleration by 25% each level.");
+        UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 30, 10, 1f, null, "Increases top speed by 1 m/s each level.");
         UpgradeItem turnSpeed = NewUpgrade(UpgradeItem.UpgradeId.TurnSpeed, "Turn Speed", 30, 10, 0.25f, topSpeed, "Increases turn speed by 25% each level.");
         UpgradeItem fireRate = NewUpgrade(UpgradeItem.UpgradeId.FireRate, "Fire Rate", 30, 10, 0.25f, null, "Increases fire rate by 25% each level.");
     }
