@@ -12,6 +12,7 @@ public class SamsaraHandler : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_accelerationText;
     [SerializeField] TextMeshProUGUI m_massText;
     [SerializeField] TextMeshProUGUI m_fireRateText;
+    [SerializeField] LoveReadout m_loveReadoutRef;
 
     // Start is called before the first frame update
     void Start()
@@ -39,9 +40,10 @@ public class SamsaraHandler : MonoBehaviour
         m_fireRateText.text = "Fire Rate: " + PlayerHandler.GetFireRate() + "/s";
     }
 
-    void RefreshUI()
+    public void RefreshUI()
     {
         RefreshStats();
+        m_loveReadoutRef.RefreshRollingText();
     }
 
     public void Reincarnate()

@@ -1638,18 +1638,18 @@ PrefabInstance:
     - target: {fileID: 6756097266526874324, guid: fd9590be6ae2a0745ab70448b5eff10b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1566588005}
+      objectReference: {fileID: 804993979}
     - target: {fileID: 6756097266526874324, guid: fd9590be6ae2a0745ab70448b5eff10b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6756097266526874324, guid: fd9590be6ae2a0745ab70448b5eff10b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: RefreshRollingText
+      value: RefreshUI
       objectReference: {fileID: 0}
     - target: {fileID: 6756097266526874324, guid: fd9590be6ae2a0745ab70448b5eff10b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: LoveReadout, Assembly-CSharp
+      value: SamsaraHandler, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 6756097266526874324, guid: fd9590be6ae2a0745ab70448b5eff10b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -1810,6 +1810,7 @@ MonoBehaviour:
   m_accelerationText: {fileID: 150043971}
   m_massText: {fileID: 1681304947}
   m_fireRateText: {fileID: 30126845}
+  m_loveReadoutRef: {fileID: 1566588005}
 --- !u!1 &862565418
 GameObject:
   m_ObjectHideFlags: 0

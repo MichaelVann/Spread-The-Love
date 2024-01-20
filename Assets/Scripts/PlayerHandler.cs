@@ -218,12 +218,13 @@ public class PlayerHandler : Soul
         m_rigidBodyRef.velocity += forwardDirection * m_acceleration * Time.deltaTime;
         m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.normalized * Mathf.Clamp(m_rigidBodyRef.velocity.magnitude, 0f, m_maxSpeed);
 
-        if (m_rigidBodyRef.velocity.magnitude > 7f)
+        if (m_rigidBodyRef.velocity.magnitude > m_speedChimeCutoffSpeed)
         {
             if (m_speedChimeTimer.Update())
             {
                 float speed = m_rigidBodyRef.velocity.magnitude;
                 float volume = (speed - m_speedChimeCutoffSpeed)/ (20f-m_speedChimeCutoffSpeed);
+                Debug.Log(volume);
                 volume = Mathf.Clamp(volume, 0f, 1f);
                 //volume = Mathf.Pow(volume, 3f);
                 GameHandler._audioManager.PlayOneShot(m_speedChimeAudioClip, volume);

@@ -10,6 +10,7 @@ public class Vessel : Soul
     [SerializeField] MouthLineHandler m_mouthLineHandlerRef;
     [SerializeField] EyebrowHandler[] m_eyebrowHandlers; 
     [SerializeField] TrailRenderer m_lovedTrailRef;
+    [SerializeField] SpriteRenderer m_minimapIconRef;
 
     BattleHandler m_battleHandlerRef;
     PlayerHandler m_playerHandlerRef;
@@ -89,13 +90,14 @@ public class Vessel : Soul
     void UpdateVisuals()
     {
         CalculateEmotionColor();
-        m_spriteRendererRef.color = CalculateEmotionColor(m_emotion);
+        m_spriteRendererRef.color = m_minimapIconRef.color = CalculateEmotionColor(m_emotion);
         m_mouthLineHandlerRef.Refresh(GetEmotionMappedFromMinToMax(m_emotion));
         for (int i = 0; i < m_eyebrowHandlers.Length; i++)
         {
             m_eyebrowHandlers[i].SetEybrowRotation(GetEmotionMappedFromMinToMax(m_emotion));
         }
         m_lovedTrailRef.emitting = IsLoved();
+        
     }
 
     void ExchangeForceWithPlayer()
