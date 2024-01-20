@@ -336,7 +336,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Battle Scouting
+  m_text: Mass
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a3496876239ceca4bb817730d8a49445, type: 2}
   m_sharedMaterial: {fileID: 8062898781783506685, guid: a3496876239ceca4bb817730d8a49445, type: 2}
@@ -670,6 +670,8 @@ MonoBehaviour:
   m_iconRef: {fileID: 5361057874614134611}
   m_possibleIconRefs:
   - {fileID: 21300000, guid: 3900b5658228e314aaa243d171985641, type: 3}
+  - {fileID: 21300000, guid: 3900b5658228e314aaa243d171985641, type: 3}
+  - {fileID: 21300000, guid: 84858b494b210bc41aae8aa716612c6d, type: 3}
   - {fileID: 21300000, guid: 3900b5658228e314aaa243d171985641, type: 3}
   - {fileID: 21300000, guid: 3900b5658228e314aaa243d171985641, type: 3}
   m_lockIconRef: {fileID: 21300000, guid: c6f6cab209383d948aa6ae4a7fd1ceee, type: 3}

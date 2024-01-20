@@ -180,8 +180,6 @@ public static class VLib
         return Quaternion.Euler(Vector3ToEulerAngles(a_vector3));
     }
 
-
-
     public static int SafeMod(int a_value, int a_mod)
     {
         return (a_value % a_mod + a_mod) % a_mod;

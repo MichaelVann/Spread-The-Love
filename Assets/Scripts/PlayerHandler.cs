@@ -30,23 +30,27 @@ public class PlayerHandler : Soul
     int m_meleeLoveStrength = 1;
 
     //Shoot
-    bool m_readyToShoot = false;
-    float m_fireRate = 0.25f;
+    bool m_readyToShoot = true;
+    float m_fireRate = 1f;
     vTimer m_shootTimer;
 
     internal float GetSpeed() { return m_rigidBodyRef.velocity.magnitude; }
 
     void Awake()
     {
-        m_shootTimer = new vTimer(m_fireRate);
         m_rigidBodyRef = GetComponent<Rigidbody2D>();
         m_rigidBodyRef.velocity = new Vector2(0f, -1f);
         InitialiseUpgrades();
+        m_shootTimer = new vTimer(1f/m_fireRate);
     }
 
     void InitialiseUpgrades()
     {
-        m_maxSpeed += GameHandler._upgradeTree.GetUpgradeLevel(UpgradeItem.UpgradeId.TopSpeed);
+        m_rigidBodyRef.mass *= 1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Mass);
+        m_acceleration *= 1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Acceleration);
+        m_maxSpeed += GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TopSpeed);
+        m_rotateSpeed *= 1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TurnSpeed);
+        m_fireRate *= 1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.FireRate);
     }
 
     // Start is called before the first frame update
@@ -54,7 +58,6 @@ public class PlayerHandler : Soul
     {
         m_emotion = 1;
         m_battleHandlerRef = FindObjectOfType<BattleHandler>();
-        //CalculateEmotionColor();
     }
 
     void UpdateShootTimer()
@@ -145,7 +148,6 @@ public class PlayerHandler : Soul
                 m_rigidBodyRef.velocity += turnVector;
                 m_rigidBodyRef.velocity *= 1f - m_rotateDrag * Time.deltaTime;
             }
-
 
             float desiredAngle = VLib.Vector3ToEulerAngle(m_rigidBodyRef.velocity);
 

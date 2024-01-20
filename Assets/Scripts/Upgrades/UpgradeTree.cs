@@ -9,11 +9,13 @@ public class UpgradeTree
 
     // Start is called before the first frame update
 
-    internal UpgradeItem GetUpgrade(UpgradeItem.UpgradeId a_upgradeId) { return m_upgradeItemList[(int)a_upgradeId]; }
+    internal UpgradeItem GetUpgrade(UpgradeId a_upgradeId) { return m_upgradeItemList[(int)a_upgradeId]; }
 
-    internal bool HasUpgrade(UpgradeItem.UpgradeId a_upgradeId) { return GetUpgrade(a_upgradeId).IsEnabled(); }
+    internal bool HasUpgrade(UpgradeId a_upgradeId) { return GetUpgrade(a_upgradeId).IsEnabled(); }
 
-    internal int GetUpgradeLevel(UpgradeItem.UpgradeId a_upgradeId) { return GetUpgrade(a_upgradeId).m_level; }
+    internal int GetUpgradeLevel(UpgradeId a_upgradeId) { return GetUpgrade(a_upgradeId).m_level; }
+
+    internal float GetUpgradeLeveledStrength(UpgradeId a_upgradeId) { return GetUpgrade(a_upgradeId).GetLeveledStrength(); }
 
     internal UpgradeTree()
     {
@@ -21,24 +23,20 @@ public class UpgradeTree
         SetupUpgrades();
     }
 
-    UpgradeItem NewUpgrade(UpgradeItem.UpgradeId a_ID, string a_name, int a_cost, int a_maxLevel, UpgradeItem a_precursorUpgrade, string a_description)
+    UpgradeItem NewUpgrade(UpgradeItem.UpgradeId a_ID, string a_name, int a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description)
     {
-        UpgradeItem upgrade = new UpgradeItem(a_ID,a_name, a_cost, a_maxLevel, a_precursorUpgrade, a_description);
+        UpgradeItem upgrade = new UpgradeItem(a_ID,a_name, a_cost, a_maxLevel, a_effectStrength, a_precursorUpgrade, a_description);
         m_upgradeItemList.Add(upgrade);
         return upgrade;
     }
 
     void SetupUpgrades()
     {
-        UpgradeItem mass = NewUpgrade(UpgradeItem.UpgradeId.Mass, "Mass", 20, 5, null, "Increases mass by 10% of base for each level.");
-        UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 50, 5, null, "Increases top speed by 1 m/s each level.");
-        UpgradeItem turnSpeed = NewUpgrade(UpgradeItem.UpgradeId.TurnSpeed, "Turn Speed", 30, 5, topSpeed, "Increases turn speed by 5% each level.");
-        //UpgradeItem flingPrediction = NewUpgrade(UpgradeItem.UpgradeId.flingPredictor, "Fling Prediction", 50, 0, enemyVector, "Gives an indication of the fling direction.");
-        //UpgradeItem comboHits = NewUpgrade(UpgradeItem.UpgradeId.comboHits, "Combo Hits", 100, 0, flingPrediction, "Adds 10% extra damage on each hit per turn.");
-        //
-        //
-        //UpgradeItem nucleusHealthUpgrade = NewUpgrade(UpgradeId.nucleusHealthUpgrade, "Nucleus Health", 100, 5, null, "Increases the Nucleus health by 10% per level.");
-
+        UpgradeItem mass = NewUpgrade(UpgradeItem.UpgradeId.Mass, "Mass", 30, 10, 0.25f, null, "Increases mass by 25% of base for each level.");
+        UpgradeItem acceleration = NewUpgrade(UpgradeItem.UpgradeId.Acceleration, "Acceleration", 30, 5, 0.25f, null, "Increases acceleration by 25% each level.");
+        UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 30, 5, 1f, null, "Increases top speed by 1 m/s each level.");
+        UpgradeItem turnSpeed = NewUpgrade(UpgradeItem.UpgradeId.TurnSpeed, "Turn Speed", 30, 10, 0.25f, topSpeed, "Increases turn speed by 25% each level.");
+        UpgradeItem fireRate = NewUpgrade(UpgradeItem.UpgradeId.FireRate, "Fire Rate", 30, 10, 0.25f, null, "Increases fire rate by 25% each level.");
     }
 
     internal List<UpgradeItem> GetInitialUpgradeItems()
@@ -67,6 +65,7 @@ public class UpgradeTree
         float cash = GameHandler._score;
         if (a_upgrade.m_cost <= cash)
         {
+            GameHandler.UpdateLastSeenScore(); 
             GameHandler.ChangeScore(-a_upgrade.m_cost);
             a_upgrade.m_level++;
             a_upgrade.m_cost = (int)(a_upgrade.m_cost * a_upgrade.m_costScaling);

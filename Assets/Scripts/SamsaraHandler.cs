@@ -7,16 +7,10 @@ using UnityEngine.SceneManagement;
 
 public class SamsaraHandler : MonoBehaviour
 {
-
-    [SerializeField] TextMeshProUGUI m_loveText;
-
-    void UpdateLoveText() { m_loveText.text = GameHandler._score.ToString(); }
-
     // Start is called before the first frame update
     void Start()
     {
         Time.timeScale = 1.0f;
-        UpdateLoveText();
     }
 
     // Update is called once per frame

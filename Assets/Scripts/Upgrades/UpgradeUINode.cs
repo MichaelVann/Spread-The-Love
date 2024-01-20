@@ -50,9 +50,14 @@ public class UpgradeUINode : MonoBehaviour
         if (m_upgradeItemRef.m_owned)
         {
             nodeColor = m_gameHandlerRef.m_loveColor;
-            m_tickCrossRef.sprite = m_upgradeItemRef.m_toggled ? m_tickSpriteRef : m_crossSpriteRef;
+
+            if (m_upgradeItemRef.m_toggleable)
+            {
+                m_tickCrossRef.sprite = m_upgradeItemRef.m_toggled ? m_tickSpriteRef : m_crossSpriteRef;
+            }
+            m_tickCrossRef.gameObject.SetActive(m_upgradeItemRef.m_toggleable);
+
             m_tickCrossRef.color = m_upgradeItemRef.m_toggled ? Color.green : Color.red;
-            m_tickCrossRef.gameObject.SetActive(true);
         }
         else
         {

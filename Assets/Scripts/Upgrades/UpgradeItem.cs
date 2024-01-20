@@ -12,14 +12,19 @@ public class UpgradeItem
     public string m_description;
 
     public int m_cost;
-    public float m_costScaling = 3f;
+    public float m_costScaling = 1.5f;
     public bool m_owned = false;
     public bool m_hasLevels = false;
     public int m_level = 0;
     public int m_maxLevel = 0;
 
     public bool m_unlocked;
+
+    //Toggle
     internal bool m_toggled = true;
+    internal bool m_toggleable = false;
+
+    public float m_effectStrength;
 
     internal UpgradeItem m_precursorUpgrade;
     internal List<UpgradeItem> m_upgradeChildren;
@@ -27,8 +32,10 @@ public class UpgradeItem
     public enum UpgradeId
     {
         Mass,
+        Acceleration,
         TopSpeed,
-        TurnSpeed
+        TurnSpeed,
+        FireRate
     }
     public UpgradeId m_ID;
 
@@ -49,7 +56,11 @@ public class UpgradeItem
 
     internal void SetToggled(bool a_value) { m_toggled = a_value; }
 
+    internal void SetToggleable(bool a_value) { m_toggleable = a_value; }
+
     internal bool IsEnabled() { return m_toggled && m_owned; }
+
+    internal float GetLeveledStrength() { return m_effectStrength * m_level; }
 
     internal void AddChildUpgrade(UpgradeItem a_child)
     {
@@ -61,7 +72,7 @@ public class UpgradeItem
         m_upgradeChildren = new List<UpgradeItem>();
     }
 
-    public UpgradeItem(UpgradeId a_ID, string a_name, int a_cost, int a_maxLevel, UpgradeItem a_precursorUpgrade, string a_description)
+    public UpgradeItem(UpgradeId a_ID, string a_name, int a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description)
     {
         m_upgradeChildren = new List<UpgradeItem>();
         SetID(a_ID);
@@ -78,6 +89,7 @@ public class UpgradeItem
             SetMaxLevel(a_maxLevel);
             m_hasLevels = true;
         }
+        m_effectStrength = a_effectStrength;
         Refresh();
     }
 
