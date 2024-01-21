@@ -10,14 +10,14 @@ namespace Assets.Scripts
 
         protected int m_emotion;
         protected const int m_maxLove = 1;
-        protected const int m_minLove = -10;
+        protected const int m_minLove = -1;
 
         internal int GetEmotion() { return m_emotion;}
         internal int GetFear() { return m_maxLove - GetEmotion(); }
 
         static internal int GetMaxLove() {  return m_maxLove; }
 
-        static internal float GetEmotionMappedFromMinToMax(float a_emotion) { return a_emotion < 0 ? (a_emotion - m_minLove) / (-m_minLove) : a_emotion / m_maxLove; }
+        static internal float GetEmotionMappedFromMinToMax(float a_emotion) { return a_emotion < 0 ? a_emotion / (-m_minLove) : a_emotion / m_maxLove; }
 
         // Use this for initialization
         void Start()
@@ -37,7 +37,7 @@ namespace Assets.Scripts
             float lerp = GetEmotionMappedFromMinToMax(a_emotion);
             if (a_emotion < 0f)
             {
-                color = Color.Lerp(GameHandler._autoRef.m_fearColor, GameHandler._autoRef.m_neutralColor, lerp);
+                color = Color.Lerp(GameHandler._autoRef.m_neutralColor, GameHandler._autoRef.m_fearColor, -lerp);
             }
             else
             {
@@ -54,7 +54,7 @@ namespace Assets.Scripts
         protected int AffectEmotion(int a_change)
         {
             int priorEmotion = m_emotion;
-            m_emotion = Mathf.Clamp(m_emotion+ a_change, 0, m_maxLove);
+            m_emotion = Mathf.Clamp(m_emotion+ a_change, m_minLove, m_maxLove);
             int deltaEmotion = m_emotion - priorEmotion;
             return deltaEmotion;
         }

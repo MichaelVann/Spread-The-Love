@@ -2,6 +2,7 @@ using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -48,7 +49,7 @@ public class BattleHandler : MonoBehaviour
     float m_streetSize = 5f;
 
     //Timer
-    float m_gameTime = 30f;
+    float m_gameTime = 60f;
     vTimer m_battleTimer;
     vTimer m_battleExplosionTimer;
     vTimer m_secondPassedTimer;
@@ -133,11 +134,12 @@ public class BattleHandler : MonoBehaviour
         Instantiate<GameObject>(m_buildingPrefab, a_position, Quaternion.identity);
     }
 
-    void SpawnVessel(Vector3 a_position)
+    Vessel SpawnVessel(Vector3 a_position, int a_emotion = 0)
     {
         Vessel vessel = Instantiate(m_vesselPrefab, a_position, Quaternion.identity).GetComponent<Vessel>();
-        vessel.Init(this, m_playerHandlerRef, 0);
+        vessel.Init(this, m_playerHandlerRef, a_emotion);
         m_vesselList.Add(vessel);
+        return vessel;
     }
 
     void SpawnVessels()
@@ -157,9 +159,18 @@ public class BattleHandler : MonoBehaviour
                 float posY = j * buildingGap;
                 posY -= buildingGap * m_buildingRows / 2f;
 
-                SpawnVessel(new Vector3(posX, posY));
-                SpawnVessel(new Vector3(posX, posY));
-                SpawnVessel(new Vector3(posX, posY));
+                if (i == 0 || i == m_buildingColumns-1)
+                {
+                    SpawnVessel(new Vector3(posX, posY), -1);
+                    SpawnVessel(new Vector3(posX, posY), -1);
+                    SpawnVessel(new Vector3(posX, posY), -1);
+                }
+                else
+                {
+                    SpawnVessel(new Vector3(posX, posY));
+                    SpawnVessel(new Vector3(posX, posY));
+                    SpawnVessel(new Vector3(posX, posY));
+                }
             }
         }
     }

@@ -25,9 +25,9 @@ public class PlayerHandler : Soul
     float m_maxSpeed;
     internal const float m_startingAcceleration = 1f;
     float m_acceleration;
-    internal const float m_startingRotateSpeed = 10f;
+    internal const float m_startingRotateSpeed = 4f;
     float m_rotateSpeed;
-    const float m_rotateDrag = 0.12f;
+    const float m_rotateDrag = 0.09f;
     float m_velocityAlignmentRotForce = 200f;
     bool m_drifting = false;
     float m_driftDrag = 0.2f;
@@ -172,25 +172,6 @@ public class PlayerHandler : Soul
     {
         if (m_rigidBodyRef.velocity.magnitude != 0f)
         {
-            //Vector3 inputDirection = new Vector3();
-
-            //if (Input.GetKey(KeyCode.A))
-            //{
-            //    inputDirection += new Vector3(-1f,0f,0f);
-            //}
-            //if (Input.GetKey(KeyCode.D))
-            //{
-            //    inputDirection += new Vector3(1f, 0f, 0f);
-            //}
-            //if (Input.GetKey(KeyCode.W))
-            //{
-            //    inputDirection += new Vector3(1f, 0f, 0f);
-            //}
-            //if (Input.GetKey(KeyCode.S))
-            //{
-            //    inputDirection += new Vector3(1f, 0f, 0f);
-            //}
-
             float rotationDirection = 0f;
             if (Input.GetKey(KeyCode.A))
             {

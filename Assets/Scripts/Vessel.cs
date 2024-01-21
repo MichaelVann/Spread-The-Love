@@ -51,7 +51,7 @@ public class Vessel : Soul
 
     List<AbsorbedLove> m_absorbedLoveList;
 
-    bool IsLoved() { return m_emotion >= m_maxLove; }
+    bool IsMaxLoved() { return m_emotion >= m_maxLove; }
 
     void Awake()
     {
@@ -98,7 +98,7 @@ public class Vessel : Soul
         {
             m_eyebrowHandlers[i].SetEybrowRotation(GetEmotionMappedFromMinToMax(m_emotion));
         }
-        m_lovedTrailRef.emitting = IsLoved();
+        m_lovedTrailRef.emitting = IsMaxLoved();
         m_lovedTrailRef.startColor = m_gameHandlerRef.m_loveColor;
         m_lovedTrailRef.endColor = new Color(m_gameHandlerRef.m_loveColor.r, m_gameHandlerRef.m_loveColor.g, m_gameHandlerRef.m_loveColor.b, 0f);
     }
@@ -196,7 +196,7 @@ public class Vessel : Soul
             m_battleHandlerRef.IncrementConvertedVessels(-1);
         }
 
-        m_wanderSpeed = isMaxLove ? m_defaultWanderSpeed * m_loveWanderSpeedMult : m_defaultWanderSpeed;
+        m_wanderSpeed = GetEmotion() == 0 ? m_defaultWanderSpeed : m_defaultWanderSpeed * m_loveWanderSpeedMult ;
 
         UpdateVisuals();
     }
@@ -226,9 +226,14 @@ public class Vessel : Soul
         }
         else if (a_collision.gameObject.tag == "Vessel")
         {
-            if (a_collision.gameObject.GetComponent<Vessel>().IsLoved())
+            Vessel opposingVessel = a_collision.gameObject.GetComponent<Vessel>();
+            if (opposingVessel.IsMaxLoved())
             {
                 AddEmotion(1);
+            }
+            else if (opposingVessel.m_emotion < 0)
+            {
+                AddEmotion(-1);
             }
         }
     }
