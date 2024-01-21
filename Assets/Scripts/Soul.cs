@@ -15,6 +15,8 @@ namespace Assets.Scripts
         internal int GetEmotion() { return m_emotion;}
         internal int GetFear() { return m_maxLove - GetEmotion(); }
 
+        static internal int GetMaxLove() {  return m_maxLove; }
+
         static internal float GetEmotionMappedFromMinToMax(float a_emotion) { return a_emotion < 0 ? (a_emotion - m_minLove) / (-m_minLove) : a_emotion / m_maxLove; }
 
         // Use this for initialization

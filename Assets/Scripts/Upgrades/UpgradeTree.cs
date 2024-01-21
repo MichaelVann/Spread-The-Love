@@ -37,6 +37,9 @@ public class UpgradeTree
         UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 30, 10, 1f, null, "Increases top speed by 1 m/s each level.");
         UpgradeItem turnSpeed = NewUpgrade(UpgradeItem.UpgradeId.TurnSpeed, "Turn Speed", 30, 10, 0.25f, topSpeed, "Increases turn speed by 25% each level.");
         UpgradeItem fireRate = NewUpgrade(UpgradeItem.UpgradeId.FireRate, "Fire Rate", 30, 10, 0.25f, null, "Increases fire rate by 25% each level.");
+        UpgradeItem vesselRadar = NewUpgrade(UpgradeItem.UpgradeId.Radar, "Radar", 30, 1, 1f, null, "Points towards the nearest lost soul.");
+        UpgradeItem minimap = NewUpgrade(UpgradeItem.UpgradeId.Minimap, "Minimap", 60, 1, 1f, vesselRadar, "Gives you an overview of the world.");
+        UpgradeItem additionalTime = NewUpgrade(UpgradeItem.UpgradeId.AdditionalTime, "Time Extension", 100, 10, 5f, null, "Gives you an additional 5 seconds of time before rebirth per Level.");
     }
 
     internal List<UpgradeItem> GetInitialUpgradeItems()

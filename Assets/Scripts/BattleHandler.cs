@@ -9,6 +9,8 @@ using UnityEngine.VFX;
 
 public class BattleHandler : MonoBehaviour
 {
+    internal GameHandler m_gameHandlerRef;
+
     [SerializeField] GameObject m_vesselPrefab;
     [SerializeField] PlayerHandler m_playerHandlerRef;
     [SerializeField] GameObject m_buildingPrefab;
@@ -21,6 +23,10 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_vesselsConvertedText;
     [SerializeField] TextMeshProUGUI m_vesselsConvertedDeltaText;
     [SerializeField] Image m_whiteOutImageRef;
+
+    //Minimap
+    [SerializeField] GameObject m_miniMapRef;
+    [SerializeField] GameObject m_miniMapCameraRef;
 
     int m_score = 0;
 
@@ -42,7 +48,7 @@ public class BattleHandler : MonoBehaviour
     float m_streetSize = 5f;
 
     //Timer
-    const float m_gameTime = 30f;
+    float m_gameTime = 30f;
     vTimer m_battleTimer;
     vTimer m_battleExplosionTimer;
     vTimer m_secondPassedTimer;
@@ -52,6 +58,11 @@ public class BattleHandler : MonoBehaviour
 
     internal void ChangeScore(int a_score) { m_score += a_score; RefreshScoreText(); }
 
+    private void Awake()
+    {
+        m_gameHandlerRef = FindObjectOfType<GameHandler>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -59,9 +70,13 @@ public class BattleHandler : MonoBehaviour
         m_vesselList = new List<Vessel>();
         SpawnBuildings();
         SpawnVessels();
+        m_gameTime += GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.AdditionalTime);
         m_battleTimer = new vTimer(m_gameTime, true, true, false);
         RefreshScoreText();
         m_secondPassedTimer = new vTimer(1f);
+        bool minimapActive = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Minimap);
+        m_miniMapRef.SetActive(minimapActive);
+        m_miniMapCameraRef.SetActive(minimapActive);
     }
 
     void RefreshScoreText()

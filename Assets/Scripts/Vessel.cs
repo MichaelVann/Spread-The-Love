@@ -11,6 +11,7 @@ public class Vessel : Soul
     [SerializeField] EyebrowHandler[] m_eyebrowHandlers; 
     [SerializeField] TrailRenderer m_lovedTrailRef;
     [SerializeField] SpriteRenderer m_minimapIconRef;
+    GameHandler m_gameHandlerRef;
 
     BattleHandler m_battleHandlerRef;
     PlayerHandler m_playerHandlerRef;
@@ -71,6 +72,7 @@ public class Vessel : Soul
         m_playerHandlerRef = a_playerHandler;
         m_emotion = a_emotion;
         m_wanderSpeed = m_defaultWanderSpeed;
+        m_gameHandlerRef = m_battleHandlerRef.m_gameHandlerRef;
         UpdateVisuals();
     }
 
@@ -97,7 +99,8 @@ public class Vessel : Soul
             m_eyebrowHandlers[i].SetEybrowRotation(GetEmotionMappedFromMinToMax(m_emotion));
         }
         m_lovedTrailRef.emitting = IsLoved();
-        
+        m_lovedTrailRef.startColor = m_gameHandlerRef.m_loveColor;
+        m_lovedTrailRef.endColor = new Color(m_gameHandlerRef.m_loveColor.r, m_gameHandlerRef.m_loveColor.g, m_gameHandlerRef.m_loveColor.b, 0f);
     }
 
     void ExchangeForceWithPlayer()

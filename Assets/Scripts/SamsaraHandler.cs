@@ -50,4 +50,9 @@ public class SamsaraHandler : MonoBehaviour
         SceneManager.LoadScene("Battle");
         GameHandler.UpdateLastSeenScore();
     }
+
+    public void ReturnToMainMenu()
+    {
+        SceneManager.LoadScene("Main Menu");
+    }
 }

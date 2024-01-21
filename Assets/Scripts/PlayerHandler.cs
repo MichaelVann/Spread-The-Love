@@ -1,4 +1,5 @@
 using Assets.Scripts;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,8 @@ public class PlayerHandler : Soul
     [SerializeField] TrailRenderer m_driftTrailRightRef;
     [SerializeField] ParticleSystem m_driftParticlesLeftRef;
     [SerializeField] ParticleSystem m_driftParticlesRightRef;
-
+    [SerializeField] TrailRenderer m_loveTrailRef;
+    [SerializeField] SpriteRenderer m_miniMapIconRef;
 
     BattleHandler m_battleHandlerRef;
     Rigidbody2D m_rigidBodyRef;
@@ -46,6 +48,12 @@ public class PlayerHandler : Soul
     const float m_speedChimeCutoffSpeed = 10f;
     vTimer m_speedChimeTimer;
 
+    //Vessel Radar
+    [SerializeField] GameObject m_vesselRadarRef;
+    [SerializeField] SpriteRenderer m_vesselRadarCaretRef;
+    Vector3 m_vesselRadarEulers;
+    float m_vesselRadarPingDecay = 3f;
+
     internal float GetSpeed() { return m_rigidBodyRef.velocity.magnitude; }
 
     static internal float GetMass() { return m_startingMass * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Mass)); }
@@ -65,6 +73,17 @@ public class PlayerHandler : Soul
         InitialiseUpgrades();
         m_shootTimer = new vTimer(1f/m_fireRate);
         m_speedChimeTimer = new vTimer(m_speedChimeTimerRepeatTime);
+        InitialiseColors();
+    }
+
+    void InitialiseColors()
+    {
+        GameHandler gameHandler = FindObjectOfType<GameHandler>();
+        m_spriteRendererRef.color = gameHandler.m_loveColor;
+        m_loveTrailRef.startColor = m_spriteRendererRef.color;
+        m_loveTrailRef.endColor = new Color(gameHandler.m_loveColor.r, gameHandler.m_loveColor.g, gameHandler.m_loveColor.b, 0f);
+        m_miniMapIconRef.color = m_spriteRendererRef.color;
+        m_vesselRadarCaretRef.color = gameHandler.m_fearColor;
     }
 
     void InitialiseUpgrades()
@@ -74,6 +93,8 @@ public class PlayerHandler : Soul
         m_maxSpeed = GetMaxSpeed();
         m_rotateSpeed = GetRotateSpeed();
         m_fireRate = GetFireRate();
+        m_vesselRadarRef.SetActive(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Radar));
+        m_vesselRadarEulers = Vector3.zero;
     }
 
     // Start is called before the first frame update
@@ -151,6 +172,25 @@ public class PlayerHandler : Soul
     {
         if (m_rigidBodyRef.velocity.magnitude != 0f)
         {
+            //Vector3 inputDirection = new Vector3();
+
+            //if (Input.GetKey(KeyCode.A))
+            //{
+            //    inputDirection += new Vector3(-1f,0f,0f);
+            //}
+            //if (Input.GetKey(KeyCode.D))
+            //{
+            //    inputDirection += new Vector3(1f, 0f, 0f);
+            //}
+            //if (Input.GetKey(KeyCode.W))
+            //{
+            //    inputDirection += new Vector3(1f, 0f, 0f);
+            //}
+            //if (Input.GetKey(KeyCode.S))
+            //{
+            //    inputDirection += new Vector3(1f, 0f, 0f);
+            //}
+
             float rotationDirection = 0f;
             if (Input.GetKey(KeyCode.A))
             {
@@ -232,11 +272,25 @@ public class PlayerHandler : Soul
         }
     }
 
+    void VesselRadarUpdate()
+    {
+        m_vesselRadarRef.transform.eulerAngles = m_vesselRadarEulers;
+        m_vesselRadarCaretRef.color = new Color(m_vesselRadarCaretRef.color.r, m_vesselRadarCaretRef.color.g, m_vesselRadarCaretRef.color.b, m_vesselRadarCaretRef.color.a * 1f - Time.deltaTime * m_vesselRadarPingDecay);
+    }
+
+    internal void ReceiveVesselRadarPing(Vector3 a_position)
+    {
+        m_vesselRadarEulers = VLib.Vector3ToEulerAngles(a_position - transform.position);
+        m_vesselRadarCaretRef.color = new Color(m_vesselRadarCaretRef.color.r, m_vesselRadarCaretRef.color.g, m_vesselRadarCaretRef.color.b, 1f);
+    }
+
     // Update is called once per frame
     void Update()
     {
         ShootUpdate();
         MovementUpdate();
+
+        VesselRadarUpdate();
     }
 
     private void OnCollisionEnter2D(Collision2D a_collision)

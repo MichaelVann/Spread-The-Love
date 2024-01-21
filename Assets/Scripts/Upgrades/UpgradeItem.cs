@@ -35,7 +35,10 @@ public class UpgradeItem
         Acceleration,
         TopSpeed,
         TurnSpeed,
-        FireRate
+        FireRate,
+        Radar,
+        Minimap,
+        AdditionalTime
     }
     public UpgradeId m_ID;
 
