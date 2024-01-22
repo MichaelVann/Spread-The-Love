@@ -51,6 +51,9 @@ public class Vessel : Soul
 
     List<AbsorbedLove> m_absorbedLoveList;
 
+    //Audio
+    [SerializeField] AudioClip m_vibeHitSound;
+
     bool IsMaxLoved() { return m_emotion >= m_maxLove; }
 
     void Awake()
@@ -223,6 +226,7 @@ public class Vessel : Soul
         if (vibe != null && !vibe.IsOriginSoul(this)) 
         {
             AbsorbVibe(a_collision.contacts[0].normal, vibe);
+            GameHandler._audioManager.PlayOneShot(m_vibeHitSound, 0.2f);
         }
         else if (a_collision.gameObject.tag == "Vessel")
         {

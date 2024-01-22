@@ -23,9 +23,9 @@ public class UpgradeTree
         SetupUpgrades();
     }
 
-    UpgradeItem NewUpgrade(UpgradeItem.UpgradeId a_ID, string a_name, int a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description)
+    UpgradeItem NewUpgrade(UpgradeItem.UpgradeId a_ID, string a_name, int a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description, bool a_toggleable = false)
     {
-        UpgradeItem upgrade = new UpgradeItem(a_ID,a_name, a_cost, a_maxLevel, a_effectStrength, a_precursorUpgrade, a_description);
+        UpgradeItem upgrade = new UpgradeItem(a_ID,a_name, a_cost, a_maxLevel, a_effectStrength, a_precursorUpgrade, a_description, a_toggleable);
         m_upgradeItemList.Add(upgrade);
         return upgrade;
     }
@@ -36,6 +36,7 @@ public class UpgradeTree
         UpgradeItem acceleration = NewUpgrade(UpgradeItem.UpgradeId.Acceleration, "Acceleration", 30, 10, 0.25f, null, "Increases acceleration by 25% each level.");
         UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 30, 10, 1f, null, "Increases top speed by 1 m/s each level.");
         UpgradeItem turnSpeed = NewUpgrade(UpgradeItem.UpgradeId.TurnSpeed, "Turn Speed", 30, 10, 0.25f, topSpeed, "Increases turn speed by 25% each level.");
+        UpgradeItem driftSpread = NewUpgrade(UpgradeItem.UpgradeId.DriftSpread, "Drift Spread", 100, 1, 0.25f, turnSpeed, "Spreads you out when drifting.", true);
         UpgradeItem fireRate = NewUpgrade(UpgradeItem.UpgradeId.FireRate, "Fire Rate", 30, 10, 0.25f, null, "Increases fire rate by 25% each level.");
         UpgradeItem vesselRadar = NewUpgrade(UpgradeItem.UpgradeId.Radar, "Radar", 30, 1, 1f, null, "Points towards the nearest lost soul.");
         UpgradeItem minimap = NewUpgrade(UpgradeItem.UpgradeId.Minimap, "Minimap", 60, 1, 1f, vesselRadar, "Gives you an overview of the world.");

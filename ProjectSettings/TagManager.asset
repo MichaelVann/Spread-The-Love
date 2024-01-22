@@ -6,6 +6,7 @@ TagManager:
   tags:
   - LoveVibe
   - Vessel
+  - Environment
   layers:
   - Default
   - TransparentFX

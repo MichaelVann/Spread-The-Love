@@ -16,11 +16,10 @@ public class UpgradeTreeUIHandler : MonoBehaviour
     UpgradeTree m_upgradeTreeRef;
     List<UpgradeUINode> m_upgradeNodes;
 
-
     //Nodes
     UpgradeUINode m_selectedUpgradeNode = null;
-    const float m_firstNodeRowPadding = 250f;
-    const float m_nodeVerticalPadding = 245f;
+    const float m_firstNodeRowPadding = -145f;
+    const float m_nodeVerticalPadding = 145f;
 
     //Zoom
     float m_zoom = 1f;
@@ -40,6 +39,7 @@ public class UpgradeTreeUIHandler : MonoBehaviour
         PositionUpgrades();
         SetUpgradeNodePanelStatus(false);
         m_inited = true;
+        Refresh();
     }
 
     private void OnEnable()
@@ -151,7 +151,7 @@ public class UpgradeTreeUIHandler : MonoBehaviour
 
         for (int i = 0; i < initialUpgrades.Count; i++)
         {
-            float yPos = m_firstNodeRowPadding - m_nodeVerticalPadding;
+            float yPos = m_firstNodeRowPadding + m_nodeVerticalPadding;
             SpawnNode(initialUpgrades[i], new Vector3(0f, yPos, 0f), i, totalWidth, itemWidth, true);
         }
     }
@@ -162,6 +162,7 @@ public class UpgradeTreeUIHandler : MonoBehaviour
         {
             m_upgradeNodes[i].Refresh();
         }
+        RefreshNodesSelectedStatus();
     }
 
     // Update is called once per frame
@@ -196,9 +197,18 @@ public class UpgradeTreeUIHandler : MonoBehaviour
         //HandlePinchZoom();
     }
 
+    void RefreshNodesSelectedStatus()
+    {
+        for (int i = 0; i < m_upgradeNodes.Count; i++)
+        {
+            m_upgradeNodes[i].SetSelectedStatus(m_selectedUpgradeNode == m_upgradeNodes[i]);
+        }
+    }
+
     internal void SelectUpgrade(UpgradeUINode a_node)
     {
         m_selectedUpgradeNode = a_node;
         OpenUpgradeNodePanel(a_node);
+        RefreshNodesSelectedStatus();
     }
 }

@@ -54,6 +54,17 @@ public class PlayerHandler : Soul
     Vector3 m_vesselRadarEulers;
     float m_vesselRadarPingDecay = 3f;
 
+    //DriftSpread
+    bool m_driftSpreadEnabled = false;
+    float m_driftSpread = 1f;
+
+    //Audio
+    AudioSource m_driftSoundAudioSource;
+    [SerializeField] AudioClip m_driftSound;
+    [SerializeField] AudioClip m_vesselHitSound;
+    [SerializeField] AudioClip m_wallHitSound;
+    [SerializeField] AudioClip m_fireSound;
+
     internal float GetSpeed() { return m_rigidBodyRef.velocity.magnitude; }
 
     static internal float GetMass() { return m_startingMass * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Mass)); }
@@ -73,7 +84,17 @@ public class PlayerHandler : Soul
         InitialiseUpgrades();
         m_shootTimer = new vTimer(1f/m_fireRate);
         m_speedChimeTimer = new vTimer(m_speedChimeTimerRepeatTime);
+        InitialiseAudio();
         InitialiseColors();
+    }
+
+    void InitialiseAudio()
+    {
+        m_driftSoundAudioSource = gameObject.AddComponent<AudioSource>();
+        m_driftSoundAudioSource.clip = m_driftSound;
+        m_driftSoundAudioSource.pitch = 0.1f;
+        m_driftSoundAudioSource.loop = true;
+        m_driftSoundAudioSource.Play();
     }
 
     void InitialiseColors()
@@ -95,6 +116,7 @@ public class PlayerHandler : Soul
         m_fireRate = GetFireRate();
         m_vesselRadarRef.SetActive(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Radar));
         m_vesselRadarEulers = Vector3.zero;
+        m_driftSpreadEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.DriftSpread);
     }
 
     // Start is called before the first frame update
@@ -123,6 +145,7 @@ public class PlayerHandler : Soul
             m_readyToShoot = false;
             Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
             loveVibe.Init(m_battleHandlerRef, null, deltaMousePos.normalized, m_rigidBodyRef.velocity, m_emotion);
+            GameHandler._audioManager.PlayOneShot(m_fireSound);
         }
         UpdateShootTimer();
     }
@@ -158,6 +181,7 @@ public class PlayerHandler : Soul
             }
             m_driftTrailLeftRef.emitting = Input.GetKey(KeyCode.A);
             m_driftTrailRightRef.emitting = Input.GetKey(KeyCode.D);
+            m_driftSoundAudioSource.volume = 1f;
         }
         else
         {
@@ -165,6 +189,7 @@ public class PlayerHandler : Soul
             m_driftTrailRightRef.emitting = false;
             m_driftParticlesLeftRef.Stop();
             m_driftParticlesRightRef.Stop();
+            m_driftSoundAudioSource.volume = 0f;
         }
     }
 
@@ -265,12 +290,28 @@ public class PlayerHandler : Soul
         m_vesselRadarCaretRef.color = new Color(m_vesselRadarCaretRef.color.r, m_vesselRadarCaretRef.color.g, m_vesselRadarCaretRef.color.b, 1f);
     }
 
+    void SpreadUpdate()
+    {
+        if (m_driftSpreadEnabled)
+        {
+            if (m_drifting)
+            {
+                m_driftSpread += Time.deltaTime;
+            }
+            else
+            {
+                m_driftSpread = Mathf.Pow(m_driftSpread, Time.deltaTime);
+            }
+            transform.localScale = new Vector3(m_driftSpread, transform.localScale.y, transform.localScale.z);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
         ShootUpdate();
         MovementUpdate();
-
+        SpreadUpdate();
         VesselRadarUpdate();
     }
 
@@ -282,7 +323,16 @@ public class PlayerHandler : Soul
             float collisionAngle = Vector2.SignedAngle(a_collision.relativeVelocity.normalized, a_collision.contacts[0].normal);
             float contactStrength = Mathf.Sin(Mathf.PI * collisionAngle / 180f + Mathf.PI / 2f);
             float impulseStrength = Mathf.Pow(a_collision.relativeVelocity.magnitude,2f) * contactStrength;
-            a_collision.gameObject.GetComponent<Vessel>().AddEmotion(m_meleeLoveStrength);
+            Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
+
+            vessel.AddEmotion(m_meleeLoveStrength);
+            vessel.GetComponent<Rigidbody2D>().velocity -= a_collision.contacts[0].normal * 1f;
+            GameHandler._audioManager.PlayOneShot(m_vesselHitSound);
+        }
+        else if (a_collision.gameObject.tag == "Environment")
+        {
+            m_driftSpread = 1f;
+            GameHandler._audioManager.PlayOneShot(m_wallHitSound);
         }
     }
 }

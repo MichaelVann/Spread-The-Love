@@ -516,6 +516,7 @@ MonoBehaviour:
   - {fileID: 1460208321626614557}
   m_lovedTrailRef: {fileID: 2151251703944370843}
   m_minimapIconRef: {fileID: 8396369501751920676}
+  m_vibeHitSound: {fileID: 8300000, guid: 6096c7ee730f8e64e82069e8b9c2025a, type: 3}
 --- !u!58 &7709478569602345254
 CircleCollider2D:
   m_ObjectHideFlags: 0

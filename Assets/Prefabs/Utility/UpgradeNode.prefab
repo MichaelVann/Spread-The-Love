@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.25490198, g: 0.27450982, b: 0.4784314, a: 1}
+  m_Color: {r: 0.7294118, g: 0.19999999, b: 0.35882363, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -524,7 +524,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.25490198, g: 0.27450982, b: 0.4784314, a: 1}
+  m_Color: {r: 0.2264151, g: 0.14631541, b: 0.17064199, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -937,6 +937,81 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &7263803425729029589
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5708945015927476108}
+  - component: {fileID: 3600212576803089189}
+  - component: {fileID: 1360357927942123500}
+  m_Layer: 5
+  m_Name: Selection Ring
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5708945015927476108
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7263803425729029589}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2291347182577727516}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 90, y: 90}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &3600212576803089189
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7263803425729029589}
+  m_CullTransparentMesh: 1
+--- !u!114 &1360357927942123500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7263803425729029589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.77647066, g: 0.87843144, b: 0.9686275, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: f70630e209c2e1f4d917077459c72e4d, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &7330618032823969101
 GameObject:
   m_ObjectHideFlags: 0
@@ -968,6 +1043,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 5708945015927476108}
   - {fileID: 8579977174707832422}
   - {fileID: 2135265223030684760}
   - {fileID: 685539088135961172}
@@ -1014,6 +1090,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b65f1e99e551f1e46af27a023ecc1cc6, type: 3}
   - {fileID: 21300000, guid: b65f1e99e551f1e46af27a023ecc1cc6, type: 3}
   - {fileID: 21300000, guid: b65f1e99e551f1e46af27a023ecc1cc6, type: 3}
+  - {fileID: 21300000, guid: b65f1e99e551f1e46af27a023ecc1cc6, type: 3}
   m_lockIconRef: {fileID: 21300000, guid: c6f6cab209383d948aa6ae4a7fd1ceee, type: 3}
   m_buttonRef: {fileID: 4462926078987042811}
   m_tickCrossRef: {fileID: 1465084443439284666}
@@ -1022,6 +1099,7 @@ MonoBehaviour:
   m_levelIndicator: {fileID: 3763419634769151413}
   m_levelText: {fileID: 6703878809977459203}
   m_availableUpgradeIndicatorRef: {fileID: 6708128867958266732}
+  m_selectionRing: {fileID: 7263803425729029589}
 --- !u!114 &4462926078987042811
 MonoBehaviour:
   m_ObjectHideFlags: 0

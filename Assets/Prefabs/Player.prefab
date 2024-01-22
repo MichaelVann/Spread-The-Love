@@ -316,6 +316,10 @@ MonoBehaviour:
   m_speedChimeAudioClip: {fileID: 8300000, guid: d6f1d6481ac2aa444823c2a39ec3691b, type: 3}
   m_vesselRadarRef: {fileID: 2765800746068634447}
   m_vesselRadarCaretRef: {fileID: 7220286735662901305}
+  m_driftSound: {fileID: 8300000, guid: 9a3cbfe08dc01794bb2bd8d687c7871d, type: 3}
+  m_vesselHitSound: {fileID: 8300000, guid: 73004edd7cefbe64fb83d6cb74bc3323, type: 3}
+  m_wallHitSound: {fileID: 8300000, guid: 5ae98bd6d1acdd042b7409b8bd3d0736, type: 3}
+  m_fireSound: {fileID: 8300000, guid: 162e453f44e773e42894bb892bde57fc, type: 3}
 --- !u!50 &6814101247270546474
 Rigidbody2D:
   serializedVersion: 4

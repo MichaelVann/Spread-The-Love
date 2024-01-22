@@ -684,7 +684,7 @@ GameObject:
   - component: {fileID: 380014953}
   m_Layer: 10
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -735,7 +735,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 1, y: 160}
+  m_Size: {x: 1, y: 165}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -750,7 +750,7 @@ Transform:
   m_GameObject: {fileID: 380014950}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -80, y: 0, z: 0}
+  m_LocalPosition: {x: -82.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -793,13 +793,13 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 160}
+    newSize: {x: 1, y: 165}
     adaptiveTilingThreshold: 0.5
     drawMode: 2
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 160}
+  m_Size: {x: 1, y: 165}
   m_EdgeRadius: 0
 --- !u!114 &411850950 stripped
 MonoBehaviour:
@@ -1391,7 +1391,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 80
+  orthographic size: 82.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1806,7 +1806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.89411765}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1990,7 +1990,7 @@ GameObject:
   - component: {fileID: 1708018939}
   - component: {fileID: 1708018938}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2257,7 +2257,7 @@ GameObject:
   - component: {fileID: 1793370063}
   m_Layer: 10
   m_Name: Wall (3)
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2299,13 +2299,13 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 160}
+    newSize: {x: 1, y: 165}
     adaptiveTilingThreshold: 0.5
     drawMode: 2
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 160}
+  m_Size: {x: 1, y: 165}
   m_EdgeRadius: 0
 --- !u!212 &1793370064
 SpriteRenderer:
@@ -2353,7 +2353,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 1, y: 160}
+  m_Size: {x: 1, y: 165}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2368,7 +2368,7 @@ Transform:
   m_GameObject: {fileID: 1793370062}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -80, z: 0}
+  m_LocalPosition: {x: 0, y: -82.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2489,7 +2489,7 @@ GameObject:
   - component: {fileID: 1931109490}
   m_Layer: 10
   m_Name: Wall (2)
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2531,13 +2531,13 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 160}
+    newSize: {x: 1, y: 165}
     adaptiveTilingThreshold: 0.5
     drawMode: 2
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 160}
+  m_Size: {x: 1, y: 165}
   m_EdgeRadius: 0
 --- !u!212 &1931109491
 SpriteRenderer:
@@ -2585,7 +2585,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 1, y: 160}
+  m_Size: {x: 1, y: 165}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2600,7 +2600,7 @@ Transform:
   m_GameObject: {fileID: 1931109489}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 80, z: 0}
+  m_LocalPosition: {x: 0, y: 82.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2669,7 +2669,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 40, y: 40}
+  m_Size: {x: 41.2, y: 41.2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2685,7 +2685,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.98, y: 3.98, z: 1}
+  m_LocalScale: {x: 4, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2837,7 +2837,7 @@ GameObject:
   - component: {fileID: 2014392769}
   m_Layer: 10
   m_Name: Wall (1)
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2879,13 +2879,13 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 160}
+    newSize: {x: 1, y: 165}
     adaptiveTilingThreshold: 0.5
     drawMode: 2
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 160}
+  m_Size: {x: 1, y: 165}
   m_EdgeRadius: 0
 --- !u!212 &2014392770
 SpriteRenderer:
@@ -2933,7 +2933,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 1, y: 160}
+  m_Size: {x: 1, y: 165}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2948,7 +2948,7 @@ Transform:
   m_GameObject: {fileID: 2014392768}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 80, y: 0, z: 0}
+  m_LocalPosition: {x: 82.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3078,10 +3078,30 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 0.003921569
       objectReference: {fileID: 0}
+    - target: {fileID: 7368358839261099160, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7384323082261636868, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
       propertyPath: m_cameraRef
       value: 
       objectReference: {fileID: 1749459936}
+    - target: {fileID: 7384323082261636868, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
+      propertyPath: m_driftSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 9a3cbfe08dc01794bb2bd8d687c7871d, type: 3}
+    - target: {fileID: 7384323082261636868, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
+      propertyPath: m_driftAudioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 9a3cbfe08dc01794bb2bd8d687c7871d, type: 3}
+    - target: {fileID: 7384323082261636868, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
+      propertyPath: m_hitMarkerSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 73004edd7cefbe64fb83d6cb74bc3323, type: 3}
+    - target: {fileID: 7884063313529379444, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

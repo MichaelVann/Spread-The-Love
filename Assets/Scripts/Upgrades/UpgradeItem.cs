@@ -35,6 +35,7 @@ public class UpgradeItem
         Acceleration,
         TopSpeed,
         TurnSpeed,
+        DriftSpread,
         FireRate,
         Radar,
         Minimap,
@@ -77,7 +78,7 @@ public class UpgradeItem
         m_upgradeChildren = new List<UpgradeItem>();
     }
 
-    public UpgradeItem(UpgradeId a_ID, string a_name, int a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description)
+    public UpgradeItem(UpgradeId a_ID, string a_name, int a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description, bool a_toggleable)
     {
         m_upgradeChildren = new List<UpgradeItem>();
         SetID(a_ID);
@@ -95,6 +96,7 @@ public class UpgradeItem
             m_hasLevels = true;
         }
         m_effectStrength = a_effectStrength;
+        m_toggleable = a_toggleable;
         Refresh();
     }
 

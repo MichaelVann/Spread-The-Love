@@ -78,6 +78,7 @@ public class BattleHandler : MonoBehaviour
         bool minimapActive = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Minimap);
         m_miniMapRef.SetActive(minimapActive);
         m_miniMapCameraRef.SetActive(minimapActive);
+        //GameHandler._audioManager.PlayOneShot(m_thunderStormClip);
     }
 
     void RefreshScoreText()

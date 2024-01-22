@@ -26,6 +26,11 @@ public class UpgradeUINode : MonoBehaviour
 
     [SerializeField] GameObject m_availableUpgradeIndicatorRef;
 
+    //Selection
+    [SerializeField] GameObject m_selectionRing;
+    bool m_selected = false;
+    float m_selectionRotationSpeed = 60f;
+
     internal void SetNameText(string a_name) { m_nameText.text = a_name;}
     internal void SetAvailableSpace(float a_space) { m_availableSpace = a_space;}
 
@@ -106,10 +111,19 @@ public class UpgradeUINode : MonoBehaviour
         m_buttonRef.interactable = interactable;
     }
 
+    internal void SetSelectedStatus(bool a_selected)
+    {
+        m_selected = a_selected;
+        m_selectionRing.SetActive(m_selected);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
+        if (m_selected)
+        {
+            m_selectionRing.transform.eulerAngles += new Vector3(0f, 0f, -Time.deltaTime * m_selectionRotationSpeed);
+        }
     }
 
     public void ButtonPressed()
