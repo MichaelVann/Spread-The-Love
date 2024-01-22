@@ -34,12 +34,13 @@ public class UpgradeTree
     {
         UpgradeItem mass = NewUpgrade(UpgradeItem.UpgradeId.Mass, "Mass", 30, 10, 0.25f, null, "Increases mass by 25% of base for each level.");
         UpgradeItem acceleration = NewUpgrade(UpgradeItem.UpgradeId.Acceleration, "Acceleration", 30, 10, 0.25f, null, "Increases acceleration by 25% each level.");
-        UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 30, 10, 1f, null, "Increases top speed by 1 m/s each level.");
-        UpgradeItem turnSpeed = NewUpgrade(UpgradeItem.UpgradeId.TurnSpeed, "Turn Speed", 30, 10, 0.25f, topSpeed, "Increases turn speed by 25% each level.");
+        UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 30, 10, 1f, acceleration, "Increases top speed by 1 m/s each level.");
+        UpgradeItem turnSpeed = NewUpgrade(UpgradeItem.UpgradeId.TurnSpeed, "Turn Speed", 20, 10, 0.1f, null, "Increases turn speed by 10% each level.");
         UpgradeItem driftSpread = NewUpgrade(UpgradeItem.UpgradeId.DriftSpread, "Drift Spread", 100, 1, 0.25f, turnSpeed, "Spreads you out when drifting.", true);
         UpgradeItem fireRate = NewUpgrade(UpgradeItem.UpgradeId.FireRate, "Fire Rate", 30, 10, 0.25f, null, "Increases fire rate by 25% each level.");
-        UpgradeItem vesselRadar = NewUpgrade(UpgradeItem.UpgradeId.Radar, "Radar", 30, 1, 1f, null, "Points towards the nearest lost soul.");
-        UpgradeItem minimap = NewUpgrade(UpgradeItem.UpgradeId.Minimap, "Minimap", 60, 1, 1f, vesselRadar, "Gives you an overview of the world.");
+        UpgradeItem shootSpread = NewUpgrade(UpgradeItem.UpgradeId.ShootSpread, "Blast Spread", 100, 10, 1f, fireRate, "Increases amount of love sent each love blast by 1.");
+        //UpgradeItem vesselRadar = NewUpgrade(UpgradeItem.UpgradeId.Radar, "Radar", 30, 1, 1f, null, "Points towards the nearest lost soul.");
+        //UpgradeItem minimap = NewUpgrade(UpgradeItem.UpgradeId.Minimap, "Minimap", 60, 1, 1f, vesselRadar, "Gives you an overview of the world.");
         UpgradeItem additionalTime = NewUpgrade(UpgradeItem.UpgradeId.AdditionalTime, "Time Extension", 100, 10, 10f, null, "Gives you an additional 10 seconds of time before rebirth per Level.");
     }
 

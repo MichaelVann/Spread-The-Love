@@ -319,7 +319,7 @@ MonoBehaviour:
   m_driftSound: {fileID: 8300000, guid: 9a3cbfe08dc01794bb2bd8d687c7871d, type: 3}
   m_vesselHitSound: {fileID: 8300000, guid: 73004edd7cefbe64fb83d6cb74bc3323, type: 3}
   m_wallHitSound: {fileID: 8300000, guid: 5ae98bd6d1acdd042b7409b8bd3d0736, type: 3}
-  m_fireSound: {fileID: 8300000, guid: 162e453f44e773e42894bb892bde57fc, type: 3}
+  m_fireSound: {fileID: 8300000, guid: 5b95087d1ec7c5b49b06fd97864c9746, type: 3}
 --- !u!50 &6814101247270546474
 Rigidbody2D:
   serializedVersion: 4
@@ -334,7 +334,7 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 25
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 10
   m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: 2dca257c226b4e747839eb13a9ff9c06, type: 2}
   m_IncludeLayers:

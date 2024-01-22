@@ -109,6 +109,28 @@ public static class VLib
         return retVal;
     }
 
+    public static float ClampRotation(float a_rotation)
+    {
+        float result = a_rotation;
+        bool modified = true;
+        while (modified)
+        {
+            modified = false;
+            if (result > 180f)
+            {
+                result -= 360f;
+                modified = true;
+            }
+            else if (result < -180f)
+            {
+                result += 360f;
+                modified = true;
+            }
+        }
+        return result;
+
+    }
+
     public static Vector2 EulerAngleToVector2(float a_angle)
     {
         float x = Mathf.Sin(a_angle * Mathf.PI / 180f);
@@ -127,6 +149,11 @@ public static class VLib
     public static Quaternion Vector2DirectionToQuaternion(Vector2 a_vector2)
     {
         return Quaternion.Euler(0f,0f,Vector2ToEulerAngle(a_vector2));
+    }
+
+    public static Vector2 RotateVector2(this Vector2 a_vector2, float a_angle)
+    {
+        return RotateVector3In2D(a_vector2, a_angle);
     }
 
     public static Vector3 RotateVector3In2D(this Vector3 a_vector3, float a_angle)

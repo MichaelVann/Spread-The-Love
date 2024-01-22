@@ -2,6 +2,8 @@ using Assets.Scripts;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using static UnityEngine.GridBrushBase;
 
@@ -25,13 +27,15 @@ public class PlayerHandler : Soul
     float m_maxSpeed;
     internal const float m_startingAcceleration = 1f;
     float m_acceleration;
-    internal const float m_startingRotateSpeed = 4f;
+    internal const float m_startingRotateSpeed = 70f;
     float m_rotateSpeed;
-    const float m_rotateDrag = 0.09f;
+    const float m_rotateDrag = 0.6f;
     float m_velocityAlignmentRotForce = 200f;
+    //Drifting
     bool m_drifting = false;
     float m_driftDrag = 0.2f;
-    float m_driftRotationMult = 2f;
+    float m_driftAngleNeededForEffects = 25f;
+    const float m_driftSoundVolume = 1f;
 
     //Love Combat
     int m_meleeLoveStrength = 1;
@@ -41,6 +45,8 @@ public class PlayerHandler : Soul
     internal const float m_startingFireRate = 1f;
     float m_fireRate;
     vTimer m_shootTimer;
+    int m_shootSpread = 1;
+    float m_shootSpreadAngle = 5f;
 
     //Speed Chime
     [SerializeField] AudioClip m_speedChimeAudioClip;
@@ -66,6 +72,7 @@ public class PlayerHandler : Soul
     [SerializeField] AudioClip m_fireSound;
 
     internal float GetSpeed() { return m_rigidBodyRef.velocity.magnitude; }
+    float GetSpeedPercentage() { return GetSpeed() / GetMaxSpeed(); }
 
     static internal float GetMass() { return m_startingMass * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Mass)); }
 
@@ -76,6 +83,7 @@ public class PlayerHandler : Soul
     static internal float GetRotateSpeed() { return m_startingRotateSpeed * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TurnSpeed)); }
 
     static internal float GetFireRate() { return m_startingFireRate * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.FireRate)); }
+
 
     void Awake()
     {
@@ -114,9 +122,10 @@ public class PlayerHandler : Soul
         m_maxSpeed = GetMaxSpeed();
         m_rotateSpeed = GetRotateSpeed();
         m_fireRate = GetFireRate();
-        m_vesselRadarRef.SetActive(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Radar));
+        m_vesselRadarRef.SetActive(false);// GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Radar));
         m_vesselRadarEulers = Vector3.zero;
         m_driftSpreadEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.DriftSpread);
+        m_shootSpread = 1 + (int)GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.ShootSpread);
     }
 
     // Start is called before the first frame update
@@ -143,53 +152,78 @@ public class PlayerHandler : Soul
         if (Input.GetMouseButton(0) && m_readyToShoot)
         {
             m_readyToShoot = false;
-            Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
-            loveVibe.Init(m_battleHandlerRef, null, deltaMousePos.normalized, m_rigidBodyRef.velocity, m_emotion);
-            GameHandler._audioManager.PlayOneShot(m_fireSound);
+            for (int i = 0; i < m_shootSpread; i++)
+            {
+                float angle = i * (2* m_shootSpreadAngle) - ((m_shootSpread - 1) * m_shootSpreadAngle);
+                Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
+                loveVibe.Init(m_battleHandlerRef, null, deltaMousePos.normalized.RotateVector2(angle), m_rigidBodyRef.velocity, m_emotion);
+            }
+
+            GameHandler._audioManager.PlayOneShot(m_fireSound, 0.5f);
         }
         UpdateShootTimer();
     }
 
+    float GetDriftAngle()
+    {
+        float currentRotation = m_rigidBodyRef.rotation;
+        currentRotation = VLib.ClampRotation(currentRotation);
+        float velocityAngle = VLib.Vector2ToEulerAngle(m_rigidBodyRef.velocity);
+
+        float driftAngle = currentRotation - velocityAngle;
+        driftAngle = VLib.ClampRotation(driftAngle);
+
+        return driftAngle;
+    }
+
     void HandleDrifting()
     {
-        if (m_drifting)
+        float driftAngle = GetDriftAngle();
+        m_drifting = Mathf.Abs(driftAngle) >= m_driftAngleNeededForEffects;
+        if (m_drifting) 
         {
-            if (Input.GetKey(KeyCode.A))
+            if (driftAngle > 0)
             {
                 if (!m_driftParticlesLeftRef.isPlaying)
                 {
                     m_driftParticlesLeftRef.Play();
                 }
-                m_rigidBodyRef.velocity *= 1f - m_driftDrag * Time.deltaTime;
+                if (m_driftParticlesRightRef.isPlaying)
+                {
+                    m_driftParticlesRightRef.Stop();
+                }
+                m_driftTrailLeftRef.emitting = true;
+                m_driftTrailRightRef.emitting = false;
             }
-            else
-            {
-                m_driftParticlesLeftRef.Stop();
-            }
-
-            if (Input.GetKey(KeyCode.D))
+            else if (driftAngle < 0)
             {
                 if (!m_driftParticlesRightRef.isPlaying)
                 {
                     m_driftParticlesRightRef.Play();
                 }
-                m_rigidBodyRef.velocity *= 1f - m_driftDrag * Time.deltaTime;
+                if (m_driftParticlesLeftRef.isPlaying)
+                {
+                    m_driftParticlesLeftRef.Stop();
+                }
+                m_driftTrailRightRef.emitting = true;
+                m_driftTrailLeftRef.emitting = false;
             }
-            else
-            {
-                m_driftParticlesRightRef.Stop();
-            }
-            m_driftTrailLeftRef.emitting = Input.GetKey(KeyCode.A);
-            m_driftTrailRightRef.emitting = Input.GetKey(KeyCode.D);
-            m_driftSoundAudioSource.volume = 1f;
+            m_driftSoundAudioSource.volume = m_driftSoundVolume;
         }
         else
         {
+            if (m_driftParticlesLeftRef.isPlaying)
+            {
+                m_driftParticlesLeftRef.Stop();
+            }
+            if (m_driftParticlesRightRef.isPlaying)
+            {
+                m_driftParticlesRightRef.Stop();
+            }
             m_driftTrailLeftRef.emitting = false;
             m_driftTrailRightRef.emitting = false;
-            m_driftParticlesLeftRef.Stop();
-            m_driftParticlesRightRef.Stop();
             m_driftSoundAudioSource.volume = 0f;
+
         }
     }
 
@@ -197,60 +231,33 @@ public class PlayerHandler : Soul
     {
         if (m_rigidBodyRef.velocity.magnitude != 0f)
         {
-            float rotationDirection = 0f;
             if (Input.GetKey(KeyCode.A))
             {
-                rotationDirection += 1f;
+                m_rigidBodyRef.AddTorque(m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);
             }
             if (Input.GetKey(KeyCode.D))
             {
-                rotationDirection -= 1f;
+                m_rigidBodyRef.AddTorque(-m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);
             }
 
-            if (rotationDirection != 0)
-            {
-                Vector2 turnVector = VLib.RotateVector3In2D(m_rigidBodyRef.velocity.normalized, rotationDirection * 90f).ToVector2();
-                turnVector *= m_rotateSpeed;
-                turnVector *= Time.deltaTime;
-                turnVector *= m_drifting ? m_driftRotationMult : 1f;
+            float driftAngle = GetDriftAngle(); 
 
-                m_rigidBodyRef.velocity += turnVector;
-                m_rigidBodyRef.velocity *= 1f - m_rotateDrag * Time.deltaTime;
-            }
-
-            float desiredAngle = VLib.Vector3ToEulerAngle(m_rigidBodyRef.velocity);
-
-            if (m_drifting)
-            {
-                desiredAngle += 30f * rotationDirection;
-            }
-            HandleDrifting();
-
-            float deltaAngle = desiredAngle - m_rigidBodyRef.rotation;
-            if (deltaAngle > 180f)
-            {
-                deltaAngle -= 360f;
-            }
-            else if (deltaAngle < -180f)
-            {
-                deltaAngle += 360f;
-            }
-            m_rigidBodyRef.MoveRotation(Mathf.Lerp(m_rigidBodyRef.rotation, m_rigidBodyRef.rotation + deltaAngle, Time.deltaTime * m_velocityAlignmentRotForce * m_rigidBodyRef.velocity.magnitude/10f));
-            if (m_rigidBodyRef.rotation > 180f)
-            {
-                m_rigidBodyRef.rotation -= 360f;
-            }
-            if (m_rigidBodyRef.rotation < -180f)
-            {
-                m_rigidBodyRef.rotation += 360f;
-            }
+            float windCorrectionForce = driftAngle;
+            windCorrectionForce += driftAngle * 10f * Mathf.Clamp(Mathf.Abs(driftAngle) - 90f, 0f, 90f) / 90f;
+            m_rigidBodyRef.AddTorque(-windCorrectionForce * Time.deltaTime * m_rigidBodyRef.mass * GetSpeedPercentage()) ;
+            float alignSpeed = 2f;
+            m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.RotateVector2(driftAngle * alignSpeed * Time.deltaTime);
+            float angleDrag = Mathf.Abs(Mathf.Sin(Mathf.PI * driftAngle / 180f));
+            angleDrag *= m_rotateDrag;
+            angleDrag *= Time.deltaTime;
+            angleDrag *= Mathf.Pow(m_rigidBodyRef.velocity.magnitude / 20f, 0.3f);
+            float rotationSlowdownEffect = 1f - angleDrag;
+            m_rigidBodyRef.velocity *= rotationSlowdownEffect;
         }
     }
 
     void MovementUpdate()
     {
-        m_drifting = Input.GetKey(KeyCode.S) && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D));
-
         HandleRotation();
         Vector2 forwardDirection = Vector3.zero;
         if (m_rigidBodyRef.velocity.magnitude == 0)
@@ -276,6 +283,7 @@ public class PlayerHandler : Soul
                 GameHandler._audioManager.PlayOneShot(m_speedChimeAudioClip, volume);
             }
         }
+        HandleDrifting();
     }
 
     void VesselRadarUpdate()
@@ -333,6 +341,10 @@ public class PlayerHandler : Soul
         {
             m_driftSpread = 1f;
             GameHandler._audioManager.PlayOneShot(m_wallHitSound);
+            //m_rotation = VLib.Vector2ToEulerAngle(m_rigidBodyRef.velocity);
+            //m_rigidBodyRef.rotation = m_rotation;
+            m_rigidBodyRef.velocity += a_collision.contacts[0].normal * 1f;
+
         }
     }
 }

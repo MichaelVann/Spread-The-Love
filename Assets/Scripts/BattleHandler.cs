@@ -75,9 +75,9 @@ public class BattleHandler : MonoBehaviour
         m_battleTimer = new vTimer(m_gameTime, true, true, false);
         RefreshScoreText();
         m_secondPassedTimer = new vTimer(1f);
-        bool minimapActive = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Minimap);
-        m_miniMapRef.SetActive(minimapActive);
-        m_miniMapCameraRef.SetActive(minimapActive);
+        //bool minimapActive = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Minimap);
+        //m_miniMapRef.SetActive(minimapActive);
+        //m_miniMapCameraRef.SetActive(minimapActive);
         //GameHandler._audioManager.PlayOneShot(m_thunderStormClip);
     }
 
@@ -127,6 +127,11 @@ public class BattleHandler : MonoBehaviour
                 Time.timeScale = 1f - percentageFinished;
                 m_whiteOutImageRef.color = new Color(1f, 1f, 1f, percentageFinished);
             }
+        }
+
+        if(Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            m_battleTimer.SetTimer(m_battleTimer.GetTimerMax());
         }
     }
 

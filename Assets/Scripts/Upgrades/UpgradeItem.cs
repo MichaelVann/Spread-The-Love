@@ -37,8 +37,9 @@ public class UpgradeItem
         TurnSpeed,
         DriftSpread,
         FireRate,
-        Radar,
-        Minimap,
+        ShootSpread,
+        //Radar,
+        //Minimap,
         AdditionalTime
     }
     public UpgradeId m_ID;
