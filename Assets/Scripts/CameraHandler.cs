@@ -46,7 +46,6 @@ public class CameraHandler : MonoBehaviour
             float desiredZoom = Mathf.Lerp( m_defaultZoom, m_maxSpeedZoom , m_playerRef.GetSpeed() / 20f);
             m_cameraRef.orthographicSize = Mathf.Lerp(m_cameraRef.orthographicSize, desiredZoom, Time.deltaTime); ;
         }
-
     }
 
     // Update is called once per frame

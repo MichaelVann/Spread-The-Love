@@ -11,6 +11,8 @@ public class Vessel : Soul
     [SerializeField] EyebrowHandler[] m_eyebrowHandlers; 
     [SerializeField] TrailRenderer m_lovedTrailRef;
     [SerializeField] SpriteRenderer m_minimapIconRef;
+    [SerializeField] GameObject m_risingTextPrefab;
+    [SerializeField] ParticleSystem m_loveExplosionRef;
     GameHandler m_gameHandlerRef;
 
     BattleHandler m_battleHandlerRef;
@@ -188,8 +190,35 @@ public class Vessel : Soul
     {
         bool wasMaxLove = m_emotion == m_maxLove;
         int deltaEmotion = AffectEmotion(a_emotion);
+
+        //Rising Fading Text
+        Color textColor = Color.white;
+        bool spawningText = false;
+        if(deltaEmotion > 0)
+        {
+            spawningText = true;
+            textColor = m_gameHandlerRef.m_loveColor;
+            var main = m_loveExplosionRef.main;
+            main.startColor = textColor;
+            m_loveExplosionRef.Play();
+        }
+        else if (deltaEmotion < 0)
+        {
+            spawningText = true;
+            textColor = m_gameHandlerRef.m_fearColor;
+            var main = m_loveExplosionRef.main;
+            main.startColor = textColor;
+            m_loveExplosionRef.Play();
+        }
+        if (spawningText) 
+        {
+            RisingFadingText rft = Instantiate(m_risingTextPrefab, transform.position, Quaternion.identity, m_battleHandlerRef.m_worldTextCanvasRef.transform).GetComponent<RisingFadingText>();
+            rft.SetUp(deltaEmotion > 0 ? "+" + deltaEmotion : deltaEmotion.ToString(), textColor, textColor);
+            rft.SetOriginalScale(0.7f);
+        }
+
+        //Change score
         bool isMaxLove = m_emotion == m_maxLove;
-        m_battleHandlerRef.ChangeScore(deltaEmotion > 0 ? deltaEmotion : 0);
         if (!wasMaxLove && isMaxLove)
         {
             m_battleHandlerRef.IncrementConvertedVessels(1);

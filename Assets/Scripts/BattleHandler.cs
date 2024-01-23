@@ -19,17 +19,16 @@ public class BattleHandler : MonoBehaviour
 
     //UI
     [SerializeField] TextMeshProUGUI m_timeText;
-    [SerializeField] TextMeshProUGUI m_scoreText;
     [SerializeField] TextMeshProUGUI m_speedText;
     [SerializeField] TextMeshProUGUI m_vesselsConvertedText;
+    [SerializeField] TextMeshProUGUI m_vesselCountText;
     [SerializeField] TextMeshProUGUI m_vesselsConvertedDeltaText;
     [SerializeField] Image m_whiteOutImageRef;
+    [SerializeField] internal GameObject m_worldTextCanvasRef;
 
     //Minimap
     [SerializeField] GameObject m_miniMapRef;
     [SerializeField] GameObject m_miniMapCameraRef;
-
-    int m_score = 0;
 
     //Vessels
     int starterSouls = 20;
@@ -43,6 +42,7 @@ public class BattleHandler : MonoBehaviour
     static float m_peacefulSoul = 0.5f + m_starterDeviance;
 
     //Building Grid
+    [SerializeField] GameObject m_buildingWallPrefab;
     int m_buildingColumns = 16;
     int m_buildingRows = 16;
     float m_buildingSize = 5f;
@@ -57,7 +57,6 @@ public class BattleHandler : MonoBehaviour
 
     internal void IncrementConvertedVessels(int a_change) { m_vesselsConverted += a_change; m_vesselsConvertedDelta += a_change; }
 
-    internal void ChangeScore(int a_score) { m_score += a_score; RefreshScoreText(); }
 
     private void Awake()
     {
@@ -73,17 +72,8 @@ public class BattleHandler : MonoBehaviour
         SpawnVessels();
         m_gameTime += GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.AdditionalTime);
         m_battleTimer = new vTimer(m_gameTime, true, true, false);
-        RefreshScoreText();
         m_secondPassedTimer = new vTimer(1f);
-        //bool minimapActive = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Minimap);
-        //m_miniMapRef.SetActive(minimapActive);
-        //m_miniMapCameraRef.SetActive(minimapActive);
-        //GameHandler._audioManager.PlayOneShot(m_thunderStormClip);
-    }
-
-    void RefreshScoreText()
-    {
-        m_scoreText.text = VLib.RoundToDecimalPlaces(m_score, 1).ToString();
+        m_vesselCountText.text = "/" + m_vesselList.Count;
     }
 
     void SecondPassedTimerUpdate()
@@ -97,7 +87,7 @@ public class BattleHandler : MonoBehaviour
 
     void MoveToSamsara()
     {
-        GameHandler.ChangeScore(m_score);
+        GameHandler.ChangeScore(m_vesselsConverted);
         SceneManager.LoadScene("Samsara");
     }
 
@@ -105,8 +95,8 @@ public class BattleHandler : MonoBehaviour
     void Update()
     {
         SecondPassedTimerUpdate();
-        m_speedText.text = m_playerHandlerRef.GetSpeed().ToString("f2") + " m/s";
-        m_vesselsConvertedText.text = m_vesselsConverted + "/" + m_vesselList.Count;
+        m_speedText.text = m_playerHandlerRef.GetSpeed().ToString("f1") + " m/s";
+        m_vesselsConvertedText.text = m_vesselsConverted.ToString();
         m_timeText.text = (m_gameTime - m_battleTimer.GetTimer()).ToString("f1");
         if (!m_gameEnding && m_battleTimer.Update())
         {
@@ -179,6 +169,13 @@ public class BattleHandler : MonoBehaviour
                 }
             }
         }
+    }
+
+    void SpawnOuterWalls()
+    {
+        float buildingGap = m_buildingSize + m_streetSize;
+        float posX = buildingGap* m_buildingColumns / 2f;
+        float posY = buildingGap* m_buildingRows / 2f;
     }
 
     void SpawnBuildings()

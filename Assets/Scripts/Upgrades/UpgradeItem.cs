@@ -66,6 +66,7 @@ public class UpgradeItem
     internal bool IsEnabled() { return m_toggled && m_owned; }
 
     internal float GetLeveledStrength() { return m_effectStrength * m_level; }
+    internal float GetMaxLeveledStrength() { return m_effectStrength * m_maxLevel; }
 
     internal bool IsReadyToUpgrade(float a_cash) { return m_unlocked && a_cash >= m_cost && (m_hasLevels ? (m_level < m_maxLevel) : true); }
 

@@ -18,10 +18,12 @@ public class PlayerHandler : Soul
     [SerializeField] TrailRenderer m_loveTrailRef;
     [SerializeField] SpriteRenderer m_miniMapIconRef;
 
+    GameHandler m_gameHandlerRef;
     BattleHandler m_battleHandlerRef;
     Rigidbody2D m_rigidBodyRef;
 
     //Movement
+    [SerializeField] UIRamp m_speedRampRef;
     internal const float m_startingMass = 25f;
     internal const float m_startingMaxSpeed = 10f;
     float m_maxSpeed;
@@ -35,7 +37,7 @@ public class PlayerHandler : Soul
     bool m_drifting = false;
     float m_driftDrag = 0.2f;
     float m_driftAngleNeededForEffects = 25f;
-    const float m_driftSoundVolume = 1f;
+    const float m_driftSoundVolume = 0.4f;
 
     //Love Combat
     int m_meleeLoveStrength = 1;
@@ -79,6 +81,7 @@ public class PlayerHandler : Soul
     static internal float GetAcceleration() { return m_startingAcceleration * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Acceleration)); }
 
     static internal float GetMaxSpeed() { return m_startingMaxSpeed + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TopSpeed); }
+    static internal float GetMaxTheorheticalSpeed() { return m_startingMaxSpeed + GameHandler._upgradeTree.GetUpgradeMaxLeveledStrength(UpgradeItem.UpgradeId.TopSpeed); }
 
     static internal float GetRotateSpeed() { return m_startingRotateSpeed * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TurnSpeed)); }
 
@@ -133,6 +136,7 @@ public class PlayerHandler : Soul
     {
         m_emotion = 1;
         m_battleHandlerRef = FindObjectOfType<BattleHandler>();
+        m_gameHandlerRef =  FindObjectOfType<GameHandler>();
     }
 
     void UpdateShootTimer()
@@ -223,7 +227,6 @@ public class PlayerHandler : Soul
             m_driftTrailLeftRef.emitting = false;
             m_driftTrailRightRef.emitting = false;
             m_driftSoundAudioSource.volume = 0f;
-
         }
     }
 
@@ -271,12 +274,13 @@ public class PlayerHandler : Soul
         m_rigidBodyRef.velocity += forwardDirection * m_acceleration * Time.deltaTime;
         m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.normalized * Mathf.Clamp(m_rigidBodyRef.velocity.magnitude, 0f, m_maxSpeed);
 
-        if (m_rigidBodyRef.velocity.magnitude > m_speedChimeCutoffSpeed)
+        float velocity = m_rigidBodyRef.velocity.magnitude;
+
+        if (velocity > m_speedChimeCutoffSpeed)
         {
             if (m_speedChimeTimer.Update())
             {
-                float speed = m_rigidBodyRef.velocity.magnitude;
-                float volume = (speed - m_speedChimeCutoffSpeed)/ (20f-m_speedChimeCutoffSpeed);
+                float volume = (velocity - m_speedChimeCutoffSpeed)/ (20f-m_speedChimeCutoffSpeed);
                 Debug.Log(volume);
                 volume = Mathf.Clamp(volume, 0f, 1f);
                 //volume = Mathf.Pow(volume, 3f);
@@ -284,6 +288,9 @@ public class PlayerHandler : Soul
             }
         }
         HandleDrifting();
+        float speedPercentage = velocity/ GetMaxTheorheticalSpeed();
+        m_speedRampRef.SetRampPercent(speedPercentage);
+        m_speedRampRef.SetColor(Color.Lerp(m_gameHandlerRef.m_fearColor, m_gameHandlerRef.m_loveColor, speedPercentage));
     }
 
     void VesselRadarUpdate()

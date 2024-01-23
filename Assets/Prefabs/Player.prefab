@@ -313,6 +313,7 @@ MonoBehaviour:
   m_driftParticlesRightRef: {fileID: 2700598668006037294}
   m_loveTrailRef: {fileID: 5751752553125926269}
   m_miniMapIconRef: {fileID: 4214626578408195873}
+  m_speedRampRef: {fileID: 0}
   m_speedChimeAudioClip: {fileID: 8300000, guid: d6f1d6481ac2aa444823c2a39ec3691b, type: 3}
   m_vesselRadarRef: {fileID: 2765800746068634447}
   m_vesselRadarCaretRef: {fileID: 7220286735662901305}
@@ -489,7 +490,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 6.5303235, y: 6.5303235, z: 6.5303235}
+  m_LocalScale: {x: 9.416074, y: 9.416074, z: 9.416074}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 589082998778433022}

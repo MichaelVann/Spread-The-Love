@@ -16,6 +16,7 @@ public class UpgradeTree
     internal int GetUpgradeLevel(UpgradeId a_upgradeId) { return GetUpgrade(a_upgradeId).m_level; }
 
     internal float GetUpgradeLeveledStrength(UpgradeId a_upgradeId) { return GetUpgrade(a_upgradeId).GetLeveledStrength(); }
+    internal float GetUpgradeMaxLeveledStrength(UpgradeId a_upgradeId) { return GetUpgrade(a_upgradeId).GetMaxLeveledStrength(); }
 
     internal UpgradeTree()
     {
