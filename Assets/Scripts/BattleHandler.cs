@@ -16,6 +16,8 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] PlayerHandler m_playerHandlerRef;
     [SerializeField] GameObject m_buildingPrefab;
     [SerializeField] GameObject m_loveVibePrefab;
+    [SerializeField] GameObject m_buildingContainer;
+    [SerializeField] GameObject m_vesselContainer;
 
     //UI
     [SerializeField] TextMeshProUGUI m_timeText;
@@ -43,8 +45,8 @@ public class BattleHandler : MonoBehaviour
 
     //Building Grid
     [SerializeField] GameObject m_buildingWallPrefab;
-    int m_buildingColumns = 16;
-    int m_buildingRows = 16;
+    int m_buildingColumns = 8;
+    int m_buildingRows = 8;
     float m_buildingSize = 5f;
     float m_streetSize = 5f;
 
@@ -57,6 +59,7 @@ public class BattleHandler : MonoBehaviour
 
     internal void IncrementConvertedVessels(int a_change) { m_vesselsConverted += a_change; m_vesselsConvertedDelta += a_change; }
 
+    Vector2 GetMapSize() { return new Vector2(m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingColumns / 2f, m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingRows / 2f); }
 
     private void Awake()
     {
@@ -69,7 +72,9 @@ public class BattleHandler : MonoBehaviour
         Time.timeScale = 1f;
         m_vesselList = new List<Vessel>();
         SpawnBuildings();
+        SpawnOuterWalls();
         SpawnVessels();
+        m_miniMapCameraRef.GetComponent<Camera>().orthographicSize = GetMapSize().x;
         m_gameTime += GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.AdditionalTime);
         m_battleTimer = new vTimer(m_gameTime, true, true, false);
         m_secondPassedTimer = new vTimer(1f);
@@ -127,12 +132,12 @@ public class BattleHandler : MonoBehaviour
 
     void SpawnBuilding(Vector3 a_position)
     {
-        Instantiate<GameObject>(m_buildingPrefab, a_position, Quaternion.identity);
+        Instantiate<GameObject>(m_buildingPrefab, a_position, Quaternion.identity, m_buildingContainer.transform);
     }
 
     Vessel SpawnVessel(Vector3 a_position, int a_emotion = 0)
     {
-        Vessel vessel = Instantiate(m_vesselPrefab, a_position, Quaternion.identity).GetComponent<Vessel>();
+        Vessel vessel = Instantiate(m_vesselPrefab, a_position, Quaternion.identity, m_vesselContainer.transform).GetComponent<Vessel>();
         vessel.Init(this, m_playerHandlerRef, a_emotion);
         m_vesselList.Add(vessel);
         return vessel;
@@ -174,8 +179,24 @@ public class BattleHandler : MonoBehaviour
     void SpawnOuterWalls()
     {
         float buildingGap = m_buildingSize + m_streetSize;
-        float posX = buildingGap* m_buildingColumns / 2f;
-        float posY = buildingGap* m_buildingRows / 2f;
+        float xOffset = m_streetSize/2f + buildingGap * m_buildingColumns / 2f;
+        float yOffset = m_streetSize/2f + buildingGap * m_buildingRows / 2f;
+        for (int i = 0; i < 4; i++)
+        {
+            float posX = i < 2 ? (i % 2 == 0 ? -xOffset : xOffset): 0f;
+            float posY = i >= 2 ? (i % 2 == 0 ? -yOffset : yOffset): 0f;
+            float angle = i < 2 ? 0f : 90f;
+            SpriteRenderer spriteRenderer = Instantiate(m_buildingWallPrefab, new Vector3(posX, posY, 0f), Quaternion.identity).GetComponent<SpriteRenderer>();
+            if (i < 2)
+            {
+                spriteRenderer.size = spriteRenderer.GetComponent<BoxCollider2D>().size = new Vector2(1f, Mathf.Abs(posX) * 2f);
+            }
+            else
+            {
+                spriteRenderer.size = spriteRenderer.GetComponent<BoxCollider2D>().size = new Vector2(Mathf.Abs(posY) * 2f, 1f);
+            }
+            //spriteRenderer.gameObject.transform.eulerAngles = new Vector3 (0f, 0f, angle);
+        }
     }
 
     void SpawnBuildings()
