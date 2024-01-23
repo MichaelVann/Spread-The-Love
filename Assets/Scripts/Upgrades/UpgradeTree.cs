@@ -37,7 +37,8 @@ public class UpgradeTree
         UpgradeItem acceleration = NewUpgrade(UpgradeItem.UpgradeId.Acceleration, "Acceleration", 30, 10, 0.25f, null, "Increases acceleration by 25% each level.");
         UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 30, 10, 1f, acceleration, "Increases top speed by 1 m/s each level.");
         UpgradeItem turnSpeed = NewUpgrade(UpgradeItem.UpgradeId.TurnSpeed, "Turn Speed", 20, 10, 0.1f, null, "Increases turn speed by 10% each level.");
-        UpgradeItem driftSpread = NewUpgrade(UpgradeItem.UpgradeId.DriftSpread, "Drift Spread", 100, 1, 0.25f, turnSpeed, "Spreads you out when drifting.", true);
+        UpgradeItem aquaplane = NewUpgrade(UpgradeItem.UpgradeId.Aquaplane, "Aquaplane", 60, 1, 1f, turnSpeed, "Allows you to aquaplane by pressing <color=#ff004c>space</color>, removing all friction against the ground.");
+        UpgradeItem driftSpread = NewUpgrade(UpgradeItem.UpgradeId.DriftSpread, "Drift Spread", 100, 1, 0.25f, aquaplane, "Spreads you out when drifting.", true);
         UpgradeItem fireRate = NewUpgrade(UpgradeItem.UpgradeId.FireRate, "Fire Rate", 30, 10, 0.25f, null, "Increases fire rate by 25% each level.");
         UpgradeItem shootSpread = NewUpgrade(UpgradeItem.UpgradeId.ShootSpread, "Blast Spread", 100, 10, 1f, fireRate, "Increases amount of love sent each love blast by 1.");
         //UpgradeItem vesselRadar = NewUpgrade(UpgradeItem.UpgradeId.Radar, "Radar", 30, 1, 1f, null, "Points towards the nearest lost soul.");

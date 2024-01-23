@@ -38,6 +38,8 @@ public class PlayerHandler : Soul
     float m_driftDrag = 0.2f;
     float m_driftAngleNeededForEffects = 25f;
     const float m_driftSoundVolume = 0.4f;
+    bool m_aquaplaningEnabled = false;
+    bool m_aquaplaning = false;
 
     //Love Combat
     int m_meleeLoveStrength = 1;
@@ -129,6 +131,7 @@ public class PlayerHandler : Soul
         m_vesselRadarEulers = Vector3.zero;
         m_driftSpreadEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.DriftSpread);
         m_shootSpread = 1 + (int)GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.ShootSpread);
+        m_aquaplaningEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Aquaplane);
     }
 
     // Start is called before the first frame update
@@ -180,10 +183,11 @@ public class PlayerHandler : Soul
         return driftAngle;
     }
 
-    void HandleDrifting()
+    void UpdateDriftingEffects()
     {
         float driftAngle = GetDriftAngle();
         m_drifting = Mathf.Abs(driftAngle) >= m_driftAngleNeededForEffects;
+        m_drifting &= !m_aquaplaning; 
         if (m_drifting) 
         {
             if (driftAngle > 0)
@@ -230,8 +234,30 @@ public class PlayerHandler : Soul
         }
     }
 
+    void ApplyDrift()
+    {
+        float driftAngle = GetDriftAngle();
+
+        float windCorrectionForce = driftAngle;
+        windCorrectionForce += driftAngle * 10f * Mathf.Clamp(Mathf.Abs(driftAngle) - 90f, 0f, 90f) / 90f;
+        m_rigidBodyRef.AddTorque(-windCorrectionForce * Time.deltaTime * m_rigidBodyRef.mass * GetSpeedPercentage());
+        float alignSpeed = 2f;
+        m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.RotateVector2(driftAngle * alignSpeed * Time.deltaTime);
+        float angleDrag = Mathf.Abs(Mathf.Sin(Mathf.PI * driftAngle / 180f));
+        angleDrag *= m_rotateDrag;
+        angleDrag *= Time.deltaTime;
+        angleDrag *= Mathf.Pow(m_rigidBodyRef.velocity.magnitude / 20f, 0.3f);
+        float rotationSlowdownEffect = 1f - angleDrag;
+        m_rigidBodyRef.velocity *= rotationSlowdownEffect;
+    }
+
     void HandleRotation()
     {
+        if (m_aquaplaningEnabled)
+        {
+            m_aquaplaning = Input.GetKey(KeyCode.Space);
+        }
+
         if (m_rigidBodyRef.velocity.magnitude != 0f)
         {
             if (Input.GetKey(KeyCode.A))
@@ -242,26 +268,15 @@ public class PlayerHandler : Soul
             {
                 m_rigidBodyRef.AddTorque(-m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);
             }
-
-            float driftAngle = GetDriftAngle(); 
-
-            float windCorrectionForce = driftAngle;
-            windCorrectionForce += driftAngle * 10f * Mathf.Clamp(Mathf.Abs(driftAngle) - 90f, 0f, 90f) / 90f;
-            m_rigidBodyRef.AddTorque(-windCorrectionForce * Time.deltaTime * m_rigidBodyRef.mass * GetSpeedPercentage()) ;
-            float alignSpeed = 2f;
-            m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.RotateVector2(driftAngle * alignSpeed * Time.deltaTime);
-            float angleDrag = Mathf.Abs(Mathf.Sin(Mathf.PI * driftAngle / 180f));
-            angleDrag *= m_rotateDrag;
-            angleDrag *= Time.deltaTime;
-            angleDrag *= Mathf.Pow(m_rigidBodyRef.velocity.magnitude / 20f, 0.3f);
-            float rotationSlowdownEffect = 1f - angleDrag;
-            m_rigidBodyRef.velocity *= rotationSlowdownEffect;
+            if (!m_aquaplaning)
+            {
+                ApplyDrift();
+            }
         }
     }
 
-    void MovementUpdate()
+    void AccelerateForwards()
     {
-        HandleRotation();
         Vector2 forwardDirection = Vector3.zero;
         if (m_rigidBodyRef.velocity.magnitude == 0)
         {
@@ -273,21 +288,34 @@ public class PlayerHandler : Soul
         }
         m_rigidBodyRef.velocity += forwardDirection * m_acceleration * Time.deltaTime;
         m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.normalized * Mathf.Clamp(m_rigidBodyRef.velocity.magnitude, 0f, m_maxSpeed);
+    }
 
+    void HandleSpeedChimeSoundEffect()
+    {
         float velocity = m_rigidBodyRef.velocity.magnitude;
 
         if (velocity > m_speedChimeCutoffSpeed)
         {
             if (m_speedChimeTimer.Update())
             {
-                float volume = (velocity - m_speedChimeCutoffSpeed)/ (20f-m_speedChimeCutoffSpeed);
+                float volume = (velocity - m_speedChimeCutoffSpeed) / (20f - m_speedChimeCutoffSpeed);
                 Debug.Log(volume);
                 volume = Mathf.Clamp(volume, 0f, 1f);
                 //volume = Mathf.Pow(volume, 3f);
                 GameHandler._audioManager.PlayOneShot(m_speedChimeAudioClip, volume);
             }
         }
-        HandleDrifting();
+    }
+
+    void MovementUpdate()
+    {
+        HandleRotation();
+
+        AccelerateForwards();
+        HandleSpeedChimeSoundEffect();
+        UpdateDriftingEffects();
+
+        float velocity = m_rigidBodyRef.velocity.magnitude;
         float speedPercentage = velocity/ GetMaxTheorheticalSpeed();
         m_speedRampRef.SetRampPercent(speedPercentage);
         m_speedRampRef.SetColor(Color.Lerp(m_gameHandlerRef.m_fearColor, m_gameHandlerRef.m_loveColor, speedPercentage));

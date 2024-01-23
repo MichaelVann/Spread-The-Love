@@ -558,7 +558,15 @@ MonoBehaviour:
   m_worldTextCanvasRef: {fileID: 596031870}
   m_miniMapRef: {fileID: 869044382}
   m_miniMapCameraRef: {fileID: 905535224}
-  m_buildingWallPrefab: {fileID: 7301994271561646457, guid: ab8e5ea7397592d48b2080dfd68c0e35, type: 3}
+  m_outerWallPrefab: {fileID: 7301994271561646457, guid: ab8e5ea7397592d48b2080dfd68c0e35, type: 3}
+  m_buildingPrefabs:
+  - {fileID: 2753874526810083808, guid: 05f084dc93b56204bbd3bb9fcc8e7145, type: 3}
+  - {fileID: 4479421558199640764, guid: 7e5a0fbe44f5e494c9db5668b883dd9e, type: 3}
+  - {fileID: 8338116804742193217, guid: 0da61c4d454753c428c1148c4051ad0e, type: 3}
+  - {fileID: 5931721690930517545, guid: 2a3cb224a4ece094da0d86cb577d88e2, type: 3}
+  - {fileID: 8609283742134472166, guid: fe49277d7d62fc24b814311695665d18, type: 3}
+  - {fileID: 4374340777152962153, guid: 649ae1fa67e26de418ec5d8da60c504e, type: 3}
+  - {fileID: 4121673968160350184, guid: b3606c4cb7347ad4eb59410254b7b682, type: 3}
 --- !u!1 &384012407
 GameObject:
   m_ObjectHideFlags: 0

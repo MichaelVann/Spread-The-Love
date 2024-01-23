@@ -255,7 +255,10 @@ public class Vessel : Soul
         if (vibe != null && !vibe.IsOriginSoul(this)) 
         {
             AbsorbVibe(a_collision.contacts[0].normal, vibe);
-            GameHandler._audioManager.PlayOneShot(m_vibeHitSound, 0.2f);
+            if (m_spriteRendererRef.isVisible)
+            {
+                GameHandler._audioManager.PlayOneShot(m_vibeHitSound, 0.2f);
+            }
         }
         else if (a_collision.gameObject.tag == "Vessel")
         {

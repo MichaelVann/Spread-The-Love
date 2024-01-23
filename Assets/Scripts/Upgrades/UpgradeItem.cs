@@ -35,6 +35,7 @@ public class UpgradeItem
         Acceleration,
         TopSpeed,
         TurnSpeed,
+        Aquaplane,
         DriftSpread,
         FireRate,
         ShootSpread,

@@ -32,6 +32,7 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] GameObject m_miniMapRef;
     [SerializeField] GameObject m_miniMapCameraRef;
 
+
     //Vessels
     int starterSouls = 20;
     float m_spawnDistance = 2f;
@@ -44,7 +45,8 @@ public class BattleHandler : MonoBehaviour
     static float m_peacefulSoul = 0.5f + m_starterDeviance;
 
     //Building Grid
-    [SerializeField] GameObject m_buildingWallPrefab;
+    [SerializeField] GameObject m_outerWallPrefab;
+    [SerializeField] GameObject[] m_buildingPrefabs;
     int m_buildingColumns = 8;
     int m_buildingRows = 8;
     float m_buildingSize = 5f;
@@ -130,10 +132,7 @@ public class BattleHandler : MonoBehaviour
         }
     }
 
-    void SpawnBuilding(Vector3 a_position)
-    {
-        Instantiate<GameObject>(m_buildingPrefab, a_position, Quaternion.identity, m_buildingContainer.transform);
-    }
+
 
     Vessel SpawnVessel(Vector3 a_position, int a_emotion = 0)
     {
@@ -186,7 +185,7 @@ public class BattleHandler : MonoBehaviour
             float posX = i < 2 ? (i % 2 == 0 ? -xOffset : xOffset): 0f;
             float posY = i >= 2 ? (i % 2 == 0 ? -yOffset : yOffset): 0f;
             float angle = i < 2 ? 0f : 90f;
-            SpriteRenderer spriteRenderer = Instantiate(m_buildingWallPrefab, new Vector3(posX, posY, 0f), Quaternion.identity).GetComponent<SpriteRenderer>();
+            SpriteRenderer spriteRenderer = Instantiate(m_outerWallPrefab, new Vector3(posX, posY, 0f), Quaternion.identity).GetComponent<SpriteRenderer>();
             if (i < 2)
             {
                 spriteRenderer.size = spriteRenderer.GetComponent<BoxCollider2D>().size = new Vector2(1f, Mathf.Abs(posX) * 2f);
@@ -197,6 +196,12 @@ public class BattleHandler : MonoBehaviour
             }
             //spriteRenderer.gameObject.transform.eulerAngles = new Vector3 (0f, 0f, angle);
         }
+    }
+
+    void SpawnBuilding(Vector3 a_position)
+    {
+        GameObject prefab = m_buildingPrefabs[VLib.vRandom(0,m_buildingPrefabs.Length-1)];
+        Instantiate(prefab, a_position, Quaternion.identity, m_buildingContainer.transform);
     }
 
     void SpawnBuildings()
