@@ -5,17 +5,25 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuHandler : MonoBehaviour
 {
-    
+    [SerializeField] GameObject m_optionsMenuPrefab;
     // Start is called before the first frame update
     void Start()
     {
         
     }
 
+    public void OpenOptionsMenu()
+    {
+        Instantiate(m_optionsMenuPrefab);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            OpenOptionsMenu();
+        }
     }
 
     public void MoveToSamsara()
@@ -25,6 +33,6 @@ public class MainMenuHandler : MonoBehaviour
 
     public void Exit()
     {
-        Application.Quit();
+        GameHandler.Quit();
     }
 }

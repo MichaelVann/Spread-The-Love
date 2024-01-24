@@ -6,6 +6,7 @@ public class CameraHandler : MonoBehaviour
 {
     [SerializeField] Camera m_cameraRef;
     [SerializeField] PlayerHandler m_playerRef;
+    [SerializeField] BattleHandler m_battleHandlerRef;
     [SerializeField] float m_defaultZoom;
     [SerializeField] float m_startingZoom;
     [SerializeField] float m_maxSpeedZoom;
@@ -22,6 +23,20 @@ public class CameraHandler : MonoBehaviour
         m_zoomTimer = new vTimer(m_zoomTime, true, true, false, false, true);
     }
 
+    void ClampToBounds()
+    {
+        Vector2 mapSize = m_battleHandlerRef.GetMapSize();
+        Vector3 cameraPos = transform.position;
+
+        Vector2 cameraSize = new Vector2(m_cameraRef.orthographicSize * m_cameraRef.aspect, m_cameraRef.orthographicSize);
+        Vector2 minPoint = -mapSize + cameraSize;
+        Vector2 maxPoint = mapSize - cameraSize;
+
+        cameraPos.x = Mathf.Clamp(cameraPos.x, minPoint.x, maxPoint.x);
+        cameraPos.y = Mathf.Clamp(cameraPos.y, minPoint.y, maxPoint.y);
+        transform.position = cameraPos;
+    }
+
     void UpdateOffset()
     {
         Vector3 desiredPosition = Vector3.zero;
@@ -29,6 +44,7 @@ public class CameraHandler : MonoBehaviour
         m_offset = Vector3.Lerp(m_offset, desiredPosition, Time.deltaTime);
         transform.position = m_playerRef.transform.position + new Vector3(0f, 0f, -10f);
         transform.position += m_offset;
+        //ClampToBounds();
     }
 
     void UpdateZoom()

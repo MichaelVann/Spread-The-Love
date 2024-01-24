@@ -352,10 +352,13 @@ public class PlayerHandler : Soul
     // Update is called once per frame
     void Update()
     {
-        ShootUpdate();
-        MovementUpdate();
-        SpreadUpdate();
-        VesselRadarUpdate();
+        if (!m_battleHandlerRef.m_paused)
+        {
+            ShootUpdate();
+            MovementUpdate();
+            SpreadUpdate();
+            VesselRadarUpdate();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D a_collision)

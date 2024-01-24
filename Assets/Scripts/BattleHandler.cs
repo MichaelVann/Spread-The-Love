@@ -20,6 +20,8 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] GameObject m_vesselContainer;
 
     //UI
+    [SerializeField] GameObject m_uiContainerRef;
+    [SerializeField] GameObject m_optionsMenuPrefab;
     [SerializeField] TextMeshProUGUI m_timeText;
     [SerializeField] TextMeshProUGUI m_speedText;
     [SerializeField] TextMeshProUGUI m_vesselsConvertedText;
@@ -47,10 +49,14 @@ public class BattleHandler : MonoBehaviour
     //Building Grid
     [SerializeField] GameObject m_outerWallPrefab;
     [SerializeField] GameObject[] m_buildingPrefabs;
-    int m_buildingColumns = 8;
-    int m_buildingRows = 8;
+    int m_buildingColumns = 2;
+    int m_buildingRows = 2;
     float m_buildingSize = 5f;
     float m_streetSize = 5f;
+
+    //Background
+    [SerializeField] SpriteRenderer m_backgroundRef;
+    [SerializeField] SpriteRenderer m_outerBackgroundRef;
 
     //Timer
     float m_gameTime = 60f;
@@ -59,9 +65,13 @@ public class BattleHandler : MonoBehaviour
     vTimer m_secondPassedTimer;
     bool m_gameEnding = false;
 
+    internal bool m_paused = false;
+
     internal void IncrementConvertedVessels(int a_change) { m_vesselsConverted += a_change; m_vesselsConvertedDelta += a_change; }
 
-    Vector2 GetMapSize() { return new Vector2(m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingColumns / 2f, m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingRows / 2f); }
+    internal Vector2 GetMapSize() { return new Vector2(m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingColumns / 2f, m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingRows / 2f); }
+
+    internal void SetPaused(bool a_paused) { m_paused = a_paused; Time.timeScale = m_paused ? 0f : 1f; }
 
     private void Awake()
     {
@@ -81,6 +91,7 @@ public class BattleHandler : MonoBehaviour
         m_battleTimer = new vTimer(m_gameTime, true, true, false);
         m_secondPassedTimer = new vTimer(1f);
         m_vesselCountText.text = "/" + m_vesselList.Count;
+        m_backgroundRef.size = GetMapSize() * new Vector2(2f/m_backgroundRef.transform.localScale.x,2f/ m_backgroundRef.transform.localScale.y);
     }
 
     void SecondPassedTimerUpdate()
@@ -98,41 +109,66 @@ public class BattleHandler : MonoBehaviour
         SceneManager.LoadScene("Samsara");
     }
 
-    // Update is called once per frame
-    void Update()
+    void UpdateUI()
     {
         SecondPassedTimerUpdate();
         m_speedText.text = m_playerHandlerRef.GetSpeed().ToString("f1") + " m/s";
         m_vesselsConvertedText.text = m_vesselsConverted.ToString();
         m_timeText.text = (m_gameTime - m_battleTimer.GetTimer()).ToString("f1");
-        if (!m_gameEnding && m_battleTimer.Update())
-        {
-            m_gameEnding = true;
-            m_battleExplosionTimer = new vTimer(2);
-            m_battleExplosionTimer.SetUsingUnscaledDeltaTime(true);
-        }
+    }
 
-        if (m_gameEnding)
-        {
-            if (m_battleExplosionTimer.Update())
-            {
-                MoveToSamsara();
-            }
-            else
-            {
-                float percentageFinished = m_battleExplosionTimer.GetCompletionPercentage();
-                Time.timeScale = 1f - percentageFinished;
-                m_whiteOutImageRef.color = new Color(1f, 1f, 1f, percentageFinished);
-            }
-        }
+    internal void Perish()
+    {
+        m_battleTimer.SetTimer(m_battleTimer.GetTimerMax());
+    }
 
-        if(Input.GetKeyDown(KeyCode.Alpha8))
+    // Update is called once per frame
+    void Update()
+    {
+        if (!m_paused)
         {
-            m_battleTimer.SetTimer(m_battleTimer.GetTimerMax());
+            UpdateUI();
+
+            //Battle Timer
+            if (!m_gameEnding && m_battleTimer.Update())
+            {
+                m_gameEnding = true;
+                m_battleExplosionTimer = new vTimer(2);
+                m_battleExplosionTimer.SetUsingUnscaledDeltaTime(true);
+            }
+
+            //Game ending
+            if (m_gameEnding)
+            {
+                if (m_battleExplosionTimer.Update())
+                {
+                    MoveToSamsara();
+                }
+                else
+                {
+                    float percentageFinished = m_battleExplosionTimer.GetCompletionPercentage();
+                    Time.timeScale = 1f - percentageFinished;
+                    m_whiteOutImageRef.color = new Color(1f, 1f, 1f, percentageFinished);
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha8))
+            {
+                Perish();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                OpenPauseMenu();
+            }
         }
     }
 
-
+    void OpenPauseMenu()
+    {
+        Instantiate(m_optionsMenuPrefab, m_uiContainerRef.transform).GetComponent<OptionsMenu>().Init(this);
+        SetPaused(true);
+    }
 
     Vessel SpawnVessel(Vector3 a_position, int a_emotion = 0)
     {
@@ -146,9 +182,9 @@ public class BattleHandler : MonoBehaviour
     {
         float buildingGap = m_buildingSize + m_streetSize;
 
-        for (int i = 0; i < m_buildingColumns; i++)
+        for (int i = 0; i < m_buildingColumns+1; i++)
         {
-            for (int j = 0; j < m_buildingRows; j++)
+            for (int j = 0; j < m_buildingRows+1; j++)
             {
                 if (i == m_buildingColumns/2 && j == m_buildingRows/2)
                 {

@@ -29,7 +29,7 @@ public class MouthLineHandler : MonoBehaviour
 
             linePos.x += indexRatio * m_smileWidth;
 
-            const float eccentricity = 0.5f;
+            const float eccentricity = 0.2f;
             const float offset = 10f;
 
             linePos.y = Mathf.Pow((indexRatio - 0.5f), 2f) * eccentricity - (eccentricity / offset);

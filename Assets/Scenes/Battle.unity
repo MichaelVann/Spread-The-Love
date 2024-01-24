@@ -549,6 +549,8 @@ MonoBehaviour:
   m_loveVibePrefab: {fileID: 5519909977801287951, guid: b56912027e6427f44b43be0e61695d52, type: 3}
   m_buildingContainer: {fileID: 1847004266}
   m_vesselContainer: {fileID: 996152181}
+  m_uiContainerRef: {fileID: 1747537588}
+  m_optionsMenuPrefab: {fileID: 5166093033557187717, guid: dacf965231b9c3d4dbbece99ce3f9cd8, type: 3}
   m_timeText: {fileID: 110467792}
   m_speedText: {fileID: 491418427}
   m_vesselsConvertedText: {fileID: 525938675}
@@ -567,6 +569,8 @@ MonoBehaviour:
   - {fileID: 8609283742134472166, guid: fe49277d7d62fc24b814311695665d18, type: 3}
   - {fileID: 4374340777152962153, guid: 649ae1fa67e26de418ec5d8da60c504e, type: 3}
   - {fileID: 4121673968160350184, guid: b3606c4cb7347ad4eb59410254b7b682, type: 3}
+  m_backgroundRef: {fileID: 1942700574}
+  m_outerBackgroundRef: {fileID: 0}
 --- !u!1 &384012407
 GameObject:
   m_ObjectHideFlags: 0
@@ -2467,7 +2471,7 @@ MonoBehaviour:
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
-  m_Antialiasing: 1
+  m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 1
   m_Dithering: 0
@@ -2501,6 +2505,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_cameraRef: {fileID: 1749459936}
   m_playerRef: {fileID: 411850950}
+  m_battleHandlerRef: {fileID: 365937760}
   m_defaultZoom: 5
   m_startingZoom: 7
   m_maxSpeedZoom: 8
@@ -2701,7 +2706,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 41.2, y: 41.2}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

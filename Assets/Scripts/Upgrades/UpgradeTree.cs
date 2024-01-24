@@ -33,7 +33,7 @@ public class UpgradeTree
 
     void SetupUpgrades()
     {
-        UpgradeItem mass = NewUpgrade(UpgradeItem.UpgradeId.Mass, "Mass", 30, 10, 0.25f, null, "Increases mass by 25% of base for each level.");
+        UpgradeItem mass = NewUpgrade(UpgradeItem.UpgradeId.Mass, "Density", 30, 10, 0.25f, null, "Increases desnity by 25% of base for each level. This helps maintain speed when colliding with the souls in the world.");
         UpgradeItem acceleration = NewUpgrade(UpgradeItem.UpgradeId.Acceleration, "Acceleration", 30, 10, 0.25f, null, "Increases acceleration by 25% each level.");
         UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 30, 10, 1f, acceleration, "Increases top speed by 1 m/s each level.");
         UpgradeItem turnSpeed = NewUpgrade(UpgradeItem.UpgradeId.TurnSpeed, "Turn Speed", 20, 10, 0.1f, null, "Increases turn speed by 10% each level.");

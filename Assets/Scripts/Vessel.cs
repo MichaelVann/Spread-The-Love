@@ -18,6 +18,10 @@ public class Vessel : Soul
     BattleHandler m_battleHandlerRef;
     PlayerHandler m_playerHandlerRef;
 
+    //Eyes
+    [SerializeField] SpriteRenderer m_eyesRef;
+    [SerializeField] Sprite[] m_eyeSprites;
+
     //Soul Attraction
     const float m_defaultWanderSpeed = 1.0f;
     float m_loveWanderSpeedMult = 2f;
@@ -106,6 +110,8 @@ public class Vessel : Soul
         m_lovedTrailRef.emitting = IsMaxLoved();
         m_lovedTrailRef.startColor = m_gameHandlerRef.m_loveColor;
         m_lovedTrailRef.endColor = new Color(m_gameHandlerRef.m_loveColor.r, m_gameHandlerRef.m_loveColor.g, m_gameHandlerRef.m_loveColor.b, 0f);
+
+        m_eyesRef.sprite = IsMaxLoved() ? m_eyeSprites[2] : (m_emotion < 0 ? m_eyeSprites[0] : m_eyeSprites[1]);
     }
 
     void ExchangeForceWithPlayer()

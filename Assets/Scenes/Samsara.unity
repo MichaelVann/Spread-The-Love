@@ -1955,6 +1955,7 @@ MonoBehaviour:
   m_massText: {fileID: 1681304947}
   m_fireRateText: {fileID: 30126845}
   m_loveReadoutRef: {fileID: 1566588005}
+  m_optionsMenuPrefab: {fileID: 5166093033557187717, guid: dacf965231b9c3d4dbbece99ce3f9cd8, type: 3}
 --- !u!1001 &818100176
 PrefabInstance:
   m_ObjectHideFlags: 0

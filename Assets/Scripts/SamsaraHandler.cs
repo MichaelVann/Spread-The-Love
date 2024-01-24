@@ -12,6 +12,7 @@ public class SamsaraHandler : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_massText;
     [SerializeField] TextMeshProUGUI m_fireRateText;
     [SerializeField] LoveReadout m_loveReadoutRef;
+    [SerializeField] GameObject m_optionsMenuPrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -27,6 +28,10 @@ public class SamsaraHandler : MonoBehaviour
         {
             GameHandler.ChangeScore(1);
             RefreshUI();
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Instantiate(m_optionsMenuPrefab);
         }
     }
 

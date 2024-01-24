@@ -50,4 +50,9 @@ public class GameHandler : MonoBehaviour
     {
 
     }
+
+    static internal void Quit()
+    {
+        Application.Quit();
+    }
 }
