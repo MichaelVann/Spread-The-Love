@@ -6,10 +6,11 @@ using UnityEngine.SocialPlatforms.Impl;
 public class GameHandler : MonoBehaviour
 {
     internal static GameHandler _autoRef;
-    internal static int _score;
-    internal static int _lastSeenScore;
     internal static UpgradeTree _upgradeTree;
     internal static AudioManager _audioManager;
+    internal static int _score;
+    internal static int _lastSeenScore;
+    internal static int _mapSize;
 
     [SerializeField] internal Color m_loveColor;
     [SerializeField] internal Color m_neutralColor;
@@ -18,6 +19,7 @@ public class GameHandler : MonoBehaviour
 
     internal static void ChangeScore(int a_change) { _score += a_change; }
     internal static void UpdateLastSeenScore() { _lastSeenScore = _score; }
+    internal static void IncrementMapSize() { _mapSize++; }
 
     void Awake()
     {
@@ -36,8 +38,10 @@ public class GameHandler : MonoBehaviour
         _autoRef = this;
         DontDestroyOnLoad(gameObject);
         _audioManager = GetComponent<AudioManager>();
-        _score = 0;
         _upgradeTree = new UpgradeTree();
+        _score = 0;
+        _lastSeenScore = -1;
+        _mapSize = 1;
     }
 
     // Update is called once per frame

@@ -6,7 +6,7 @@ using static UpgradeItem;
 public class UpgradeTree
 {
     internal List<UpgradeItem> m_upgradeItemList;
-
+    const int m_baseUpgradePrice = 10;
     // Start is called before the first frame update
 
     internal UpgradeItem GetUpgrade(UpgradeId a_upgradeId) { return m_upgradeItemList[(int)a_upgradeId]; }
@@ -24,26 +24,26 @@ public class UpgradeTree
         SetupUpgrades();
     }
 
-    UpgradeItem NewUpgrade(UpgradeItem.UpgradeId a_ID, string a_name, int a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description, bool a_toggleable = false)
+    UpgradeItem NewUpgrade(UpgradeItem.UpgradeId a_ID, string a_name, float a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description, bool a_toggleable = false)
     {
-        UpgradeItem upgrade = new UpgradeItem(a_ID,a_name, a_cost, a_maxLevel, a_effectStrength, a_precursorUpgrade, a_description, a_toggleable);
+        UpgradeItem upgrade = new UpgradeItem(a_ID,a_name, (int)(a_cost * m_baseUpgradePrice), a_maxLevel, a_effectStrength, a_precursorUpgrade, a_description, a_toggleable);
         m_upgradeItemList.Add(upgrade);
         return upgrade;
     }
 
     void SetupUpgrades()
     {
-        UpgradeItem mass = NewUpgrade(UpgradeItem.UpgradeId.Mass, "Density", 30, 10, 0.25f, null, "Increases desnity by 25% of base for each level. This helps maintain speed when colliding with the souls in the world.");
-        UpgradeItem acceleration = NewUpgrade(UpgradeItem.UpgradeId.Acceleration, "Acceleration", 30, 10, 0.25f, null, "Increases acceleration by 25% each level.");
-        UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 30, 10, 1f, acceleration, "Increases top speed by 1 m/s each level.");
-        UpgradeItem turnSpeed = NewUpgrade(UpgradeItem.UpgradeId.TurnSpeed, "Turn Speed", 20, 10, 0.1f, null, "Increases turn speed by 10% each level.");
-        UpgradeItem aquaplane = NewUpgrade(UpgradeItem.UpgradeId.Aquaplane, "Aquaplane", 60, 1, 1f, turnSpeed, "Allows you to aquaplane by pressing <color=#ff004c>space</color>, removing all friction against the ground.");
-        UpgradeItem driftSpread = NewUpgrade(UpgradeItem.UpgradeId.DriftSpread, "Drift Spread", 100, 1, 0.25f, aquaplane, "Spreads you out when drifting.", true);
-        UpgradeItem fireRate = NewUpgrade(UpgradeItem.UpgradeId.FireRate, "Fire Rate", 30, 10, 0.25f, null, "Increases fire rate by 25% each level.");
-        UpgradeItem shootSpread = NewUpgrade(UpgradeItem.UpgradeId.ShootSpread, "Blast Spread", 100, 10, 1f, fireRate, "Increases amount of love sent each love blast by 1.");
+        UpgradeItem mass = NewUpgrade(UpgradeItem.UpgradeId.Mass, "Density", 1.5f, 10, 0.25f, null, "Increases desnity by 25% of base for each level. This helps maintain speed when colliding with the souls in the world.");
+        UpgradeItem acceleration = NewUpgrade(UpgradeItem.UpgradeId.Acceleration, "Acceleration", 1.5f, 10, 0.25f, null, "Increases acceleration by 25% each level.");
+        UpgradeItem topSpeed = NewUpgrade(UpgradeItem.UpgradeId.TopSpeed, "Top Speed", 1.5f, 10, 1f, acceleration, "Increases top speed by 1 m/s each level.");
+        UpgradeItem turnSpeed = NewUpgrade(UpgradeItem.UpgradeId.TurnSpeed, "Turn Speed", 1f, 10, 0.1f, null, "Increases turn speed by 10% each level.");
+        UpgradeItem aquaplane = NewUpgrade(UpgradeItem.UpgradeId.Aquaplane, "Aquaplane", 3f, 1, 1f, turnSpeed, "Allows you to aquaplane by pressing <color=#ff004c>space</color>, removing all friction against the ground.");
+        UpgradeItem driftSpread = NewUpgrade(UpgradeItem.UpgradeId.DriftSpread, "Drift Spread", 10f, 1, 0.25f, aquaplane, "Spreads you out when drifting.", true);
+        UpgradeItem fireRate = NewUpgrade(UpgradeItem.UpgradeId.FireRate, "Fire Rate", 1.5f, 10, 0.25f, null, "Increases fire rate by 25% each level.");
+        UpgradeItem shootSpread = NewUpgrade(UpgradeItem.UpgradeId.ShootSpread, "Blast Spread", 5f, 10, 1f, fireRate, "Increases amount of love sent each love blast by 1.");
         //UpgradeItem vesselRadar = NewUpgrade(UpgradeItem.UpgradeId.Radar, "Radar", 30, 1, 1f, null, "Points towards the nearest lost soul.");
         //UpgradeItem minimap = NewUpgrade(UpgradeItem.UpgradeId.Minimap, "Minimap", 60, 1, 1f, vesselRadar, "Gives you an overview of the world.");
-        UpgradeItem additionalTime = NewUpgrade(UpgradeItem.UpgradeId.AdditionalTime, "Time Extension", 100, 10, 10f, null, "Gives you an additional 10 seconds of time before rebirth per Level.");
+        UpgradeItem additionalTime = NewUpgrade(UpgradeItem.UpgradeId.AdditionalTime, "Time Extension", 5f, 10, 10f, null, "Gives you an additional 10 seconds of time before rebirth per Level.");
     }
 
     internal List<UpgradeItem> GetInitialUpgradeItems()

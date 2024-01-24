@@ -12,6 +12,7 @@ public class BattleHandler : MonoBehaviour
 {
     internal GameHandler m_gameHandlerRef;
 
+    [SerializeField] Camera m_mainCameraRef;
     [SerializeField] GameObject m_vesselPrefab;
     [SerializeField] PlayerHandler m_playerHandlerRef;
     [SerializeField] GameObject m_buildingPrefab;
@@ -33,7 +34,6 @@ public class BattleHandler : MonoBehaviour
     //Minimap
     [SerializeField] GameObject m_miniMapRef;
     [SerializeField] GameObject m_miniMapCameraRef;
-
 
     //Vessels
     int starterSouls = 20;
@@ -67,7 +67,6 @@ public class BattleHandler : MonoBehaviour
 
     internal bool m_paused = false;
 
-    internal void IncrementConvertedVessels(int a_change) { m_vesselsConverted += a_change; m_vesselsConvertedDelta += a_change; }
 
     internal Vector2 GetMapSize() { return new Vector2(m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingColumns / 2f, m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingRows / 2f); }
 
@@ -83,6 +82,7 @@ public class BattleHandler : MonoBehaviour
     {
         Time.timeScale = 1f;
         m_vesselList = new List<Vessel>();
+        m_buildingColumns = m_buildingRows = GameHandler._mapSize * 2;
         SpawnBuildings();
         SpawnOuterWalls();
         SpawnVessels();
@@ -92,6 +92,17 @@ public class BattleHandler : MonoBehaviour
         m_secondPassedTimer = new vTimer(1f);
         m_vesselCountText.text = "/" + m_vesselList.Count;
         m_backgroundRef.size = GetMapSize() * new Vector2(2f/m_backgroundRef.transform.localScale.x,2f/ m_backgroundRef.transform.localScale.y);
+        m_outerBackgroundRef.size = m_backgroundRef.size + new Vector2(2f * m_mainCameraRef.orthographicSize * m_mainCameraRef.aspect, 2f * m_mainCameraRef.orthographicSize);
+    }
+
+    internal void CrementConvertedVessels(int a_change)
+    { 
+        m_vesselsConverted += a_change; 
+        m_vesselsConvertedDelta += a_change;
+        if (m_vesselsConverted >= m_vesselList.Count)
+        {
+            Enlighten();
+        }
     }
 
     void SecondPassedTimerUpdate()
@@ -117,9 +128,21 @@ public class BattleHandler : MonoBehaviour
         m_timeText.text = (m_gameTime - m_battleTimer.GetTimer()).ToString("f1");
     }
 
-    internal void Perish()
+    internal void FinishEarly()
     {
         m_battleTimer.SetTimer(m_battleTimer.GetTimerMax());
+    }
+
+    void Enlighten()
+    {
+        m_whiteOutImageRef.color = m_gameHandlerRef.m_loveColor;
+        GameHandler.IncrementMapSize();
+        FinishEarly();
+    }
+
+    internal void Perish()
+    {
+        FinishEarly();
     }
 
     // Update is called once per frame
@@ -148,7 +171,8 @@ public class BattleHandler : MonoBehaviour
                 {
                     float percentageFinished = m_battleExplosionTimer.GetCompletionPercentage();
                     Time.timeScale = 1f - percentageFinished;
-                    m_whiteOutImageRef.color = new Color(1f, 1f, 1f, percentageFinished);
+                    Color whiteoutColor = m_whiteOutImageRef.color;
+                    m_whiteOutImageRef.color = new Color(whiteoutColor.r, whiteoutColor.g, whiteoutColor.b, percentageFinished);
                 }
             }
 

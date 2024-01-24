@@ -227,11 +227,11 @@ public class Vessel : Soul
         bool isMaxLove = m_emotion == m_maxLove;
         if (!wasMaxLove && isMaxLove)
         {
-            m_battleHandlerRef.IncrementConvertedVessels(1);
+            m_battleHandlerRef.CrementConvertedVessels(1);
         }
         else if (wasMaxLove && !isMaxLove)
         {
-            m_battleHandlerRef.IncrementConvertedVessels(-1);
+            m_battleHandlerRef.CrementConvertedVessels(-1);
         }
 
         m_wanderSpeed = GetEmotion() == 0 ? m_defaultWanderSpeed : m_defaultWanderSpeed * m_loveWanderSpeedMult ;
