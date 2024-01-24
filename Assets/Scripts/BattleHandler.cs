@@ -57,6 +57,7 @@ public class BattleHandler : MonoBehaviour
     //Background
     [SerializeField] SpriteRenderer m_backgroundRef;
     [SerializeField] SpriteRenderer m_outerBackgroundRef;
+    [SerializeField] ScrollingRawImage m_scrollingBackgroundRef;
 
     //Timer
     float m_gameTime = 60f;
@@ -126,6 +127,8 @@ public class BattleHandler : MonoBehaviour
         m_speedText.text = m_playerHandlerRef.GetSpeed().ToString("f1") + " m/s";
         m_vesselsConvertedText.text = m_vesselsConverted.ToString();
         m_timeText.text = (m_gameTime - m_battleTimer.GetTimer()).ToString("f1");
+
+        m_scrollingBackgroundRef.SetAdditionalOffset(m_mainCameraRef.transform.position);
     }
 
     internal void FinishEarly()

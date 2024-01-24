@@ -29,10 +29,15 @@ public class PlayerHandler : Soul
     float m_maxSpeed;
     internal const float m_startingAcceleration = 1f;
     float m_acceleration;
+    bool m_brakingEnabled = false;
+    internal const float m_startingBrakingStrength = 1f;
+    float m_brakingStrength;
+    bool m_braking = false;
     internal const float m_startingRotateSpeed = 70f;
     float m_rotateSpeed;
     const float m_rotateDrag = 0.6f;
     float m_velocityAlignmentRotForce = 200f;
+
     //Drifting
     bool m_drifting = false;
     float m_driftDrag = 0.2f;
@@ -42,15 +47,18 @@ public class PlayerHandler : Soul
     bool m_aquaplaning = false;
 
     //Love Combat
-    int m_meleeLoveStrength = 1;
+    int m_meleeLoveStrength = 2;
 
     //Shoot
+    bool m_shootingEnabled = false;
     bool m_readyToShoot = true;
     internal const float m_startingFireRate = 1f;
     float m_fireRate;
     vTimer m_shootTimer;
     int m_shootSpread = 1;
     float m_shootSpreadAngle = 5f;
+    bool m_autoShootEnabled = false;
+    bool m_mouseAiming = false;
 
     //Speed Chime
     [SerializeField] AudioClip m_speedChimeAudioClip;
@@ -80,6 +88,7 @@ public class PlayerHandler : Soul
 
     static internal float GetMass() { return m_startingMass * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Mass)); }
 
+    static internal float GetBraking() { return m_startingBrakingStrength * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Braking)); }
     static internal float GetAcceleration() { return m_startingAcceleration * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Acceleration)); }
 
     static internal float GetMaxSpeed() { return m_startingMaxSpeed + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TopSpeed); }
@@ -123,6 +132,8 @@ public class PlayerHandler : Soul
     void InitialiseUpgrades()
     {
         m_rigidBodyRef.mass = GetMass();
+        m_brakingEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Braking);
+        m_brakingStrength = GetBraking();
         m_acceleration = GetAcceleration();
         m_maxSpeed = GetMaxSpeed();
         m_rotateSpeed = GetRotateSpeed();
@@ -130,8 +141,11 @@ public class PlayerHandler : Soul
         m_vesselRadarRef.SetActive(false);// GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Radar));
         m_vesselRadarEulers = Vector3.zero;
         m_driftSpreadEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.DriftSpread);
+        m_shootingEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Shooting);
         m_shootSpread = 1 + (int)GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.ShootSpread);
         m_aquaplaningEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Aquaplane);
+        m_autoShootEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.AutoShoot);
+        m_mouseAiming = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
     }
 
     // Start is called before the first frame update
@@ -152,23 +166,32 @@ public class PlayerHandler : Soul
 
     void ShootUpdate()
     {
-        Vector3 worldMousePoint = m_cameraRef.ScreenToWorldPoint(Input.mousePosition);
-
-        Vector2 deltaMousePos = worldMousePoint - transform.position;
-        //deltaMousePos = new Vector2(1f,0f);
-        if (Input.GetMouseButton(0) && m_readyToShoot)
+        if (m_shootingEnabled)
         {
-            m_readyToShoot = false;
-            for (int i = 0; i < m_shootSpread; i++)
-            {
-                float angle = i * (2* m_shootSpreadAngle) - ((m_shootSpread - 1) * m_shootSpreadAngle);
-                Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
-                loveVibe.Init(m_battleHandlerRef, null, deltaMousePos.normalized.RotateVector2(angle), m_rigidBodyRef.velocity, m_emotion);
-            }
+            Vector2 aimDirection = VLib.EulerAngleToVector2(-m_rigidBodyRef.rotation);
 
-            GameHandler._audioManager.PlayOneShot(m_fireSound, 0.5f);
+            if (m_mouseAiming)
+            {
+                Vector3 worldMousePoint = m_cameraRef.ScreenToWorldPoint(Input.mousePosition);
+                aimDirection = worldMousePoint - transform.position;
+            }
+            aimDirection = aimDirection.normalized;
+
+            //deltaMousePos = new Vector2(1f,0f);
+            if ((m_autoShootEnabled || Input.GetKey(KeyCode.W)) && m_readyToShoot)
+            {
+                m_readyToShoot = false;
+                for (int i = 0; i < m_shootSpread; i++)
+                {
+                    float angle = i * (2 * m_shootSpreadAngle) - ((m_shootSpread - 1) * m_shootSpreadAngle);
+                    Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
+                    loveVibe.Init(m_battleHandlerRef, null, aimDirection.normalized.RotateVector2(angle), m_rigidBodyRef.velocity, m_emotion);
+                }
+
+                GameHandler._audioManager.PlayOneShot(m_fireSound, 0.5f);
+            }
+            UpdateShootTimer();
         }
-        UpdateShootTimer();
     }
 
     float GetDriftAngle()
@@ -187,8 +210,21 @@ public class PlayerHandler : Soul
     {
         float driftAngle = GetDriftAngle();
         m_drifting = Mathf.Abs(driftAngle) >= m_driftAngleNeededForEffects;
-        m_drifting &= !m_aquaplaning; 
-        if (m_drifting) 
+        m_drifting &= !m_aquaplaning;
+        if (m_braking)
+        {
+            if (!m_driftParticlesLeftRef.isPlaying)
+            {
+                m_driftParticlesLeftRef.Play();
+            }
+            if (!m_driftParticlesRightRef.isPlaying)
+            {
+                m_driftParticlesRightRef.Play();
+            }
+            m_driftTrailLeftRef.emitting = true;
+            m_driftTrailRightRef.emitting = true;
+        }
+        else if (m_drifting) 
         {
             if (driftAngle > 0)
             {
@@ -260,11 +296,11 @@ public class PlayerHandler : Soul
 
         if (m_rigidBodyRef.velocity.magnitude != 0f)
         {
-            if (Input.GetKey(KeyCode.A))
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             {
                 m_rigidBodyRef.AddTorque(m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);
             }
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
             {
                 m_rigidBodyRef.AddTorque(-m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);
             }
@@ -307,6 +343,15 @@ public class PlayerHandler : Soul
         }
     }
 
+    void HandleBraking()
+    {
+        m_braking = m_brakingEnabled && Input.GetKey(KeyCode.S);
+        if (m_braking)
+        {
+            m_rigidBodyRef.velocity *= 1f - m_brakingStrength*Time.deltaTime;
+        }
+    }
+
     void MovementUpdate()
     {
         HandleRotation();
@@ -314,6 +359,8 @@ public class PlayerHandler : Soul
         AccelerateForwards();
         HandleSpeedChimeSoundEffect();
         UpdateDriftingEffects();
+
+        HandleBraking();
 
         float velocity = m_rigidBodyRef.velocity.magnitude;
         float speedPercentage = velocity/ GetMaxTheorheticalSpeed();

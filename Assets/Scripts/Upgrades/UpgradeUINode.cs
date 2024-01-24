@@ -23,6 +23,8 @@ public class UpgradeUINode : MonoBehaviour
 
     [SerializeField] GameObject m_levelIndicator;
     [SerializeField] TextMeshProUGUI m_levelText;
+    [SerializeField] TextMeshProUGUI m_costText;
+    [SerializeField] GameObject m_costPlateRef;
 
     [SerializeField] GameObject m_availableUpgradeIndicatorRef;
 
@@ -109,6 +111,14 @@ public class UpgradeUINode : MonoBehaviour
 
         m_backdropRef.color = nodeColor;
         m_buttonRef.interactable = interactable;
+        if (m_upgradeItemRef.m_level < m_upgradeItemRef.m_maxLevel)
+        {
+            m_costText.text = m_upgradeItemRef.m_cost.ToString();
+        }
+        else
+        {
+            m_costPlateRef.SetActive(false);
+        }
     }
 
     internal void SetSelectedStatus(bool a_selected)

@@ -32,13 +32,17 @@ public class UpgradeItem
     public enum UpgradeId
     {
         Mass,
+        Braking,
         Acceleration,
         TopSpeed,
         TurnSpeed,
         Aquaplane,
         DriftSpread,
+        Shooting,
         FireRate,
         ShootSpread,
+        AutoShoot,
+        MouseAim,
         //Radar,
         //Minimap,
         AdditionalTime
