@@ -7,6 +7,7 @@ TagManager:
   - LoveVibe
   - Vessel
   - Environment
+  - MiniMapCamera
   layers:
   - Default
   - TransparentFX

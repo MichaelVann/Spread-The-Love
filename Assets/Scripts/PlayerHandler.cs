@@ -16,7 +16,10 @@ public class PlayerHandler : Soul
     [SerializeField] ParticleSystem m_driftParticlesLeftRef;
     [SerializeField] ParticleSystem m_driftParticlesRightRef;
     [SerializeField] TrailRenderer m_loveTrailRef;
-    [SerializeField] SpriteRenderer m_miniMapIconRef;
+
+    //Minimap
+    [SerializeField] MiniMapIcon m_miniMapIconRef;
+    [SerializeField] Camera m_miniMapCameraRef;
 
     GameHandler m_gameHandlerRef;
     BattleHandler m_battleHandlerRef;
@@ -108,6 +111,7 @@ public class PlayerHandler : Soul
         m_speedChimeTimer = new vTimer(m_speedChimeTimerRepeatTime);
         InitialiseAudio();
         InitialiseColors();
+        m_miniMapIconRef.Init(m_miniMapCameraRef);
     }
 
     void InitialiseAudio()
@@ -125,7 +129,7 @@ public class PlayerHandler : Soul
         m_spriteRendererRef.color = gameHandler.m_loveColor;
         m_loveTrailRef.startColor = m_spriteRendererRef.color;
         m_loveTrailRef.endColor = new Color(gameHandler.m_loveColor.r, gameHandler.m_loveColor.g, gameHandler.m_loveColor.b, 0f);
-        m_miniMapIconRef.color = m_spriteRendererRef.color;
+        m_miniMapIconRef.GetComponent<SpriteRenderer>().color = m_spriteRendererRef.color;
         m_vesselRadarCaretRef.color = gameHandler.m_fearColor;
     }
 

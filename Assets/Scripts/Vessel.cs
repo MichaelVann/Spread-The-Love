@@ -10,7 +10,7 @@ public class Vessel : Soul
     [SerializeField] MouthLineHandler m_mouthLineHandlerRef;
     [SerializeField] EyebrowHandler[] m_eyebrowHandlers; 
     [SerializeField] TrailRenderer m_lovedTrailRef;
-    [SerializeField] SpriteRenderer m_minimapIconRef;
+    [SerializeField] SpriteRenderer m_miniMapSpriteRendererRef;
     [SerializeField] GameObject m_risingTextPrefab;
     [SerializeField] ParticleSystem m_loveExplosionRef;
     GameHandler m_gameHandlerRef;
@@ -22,12 +22,13 @@ public class Vessel : Soul
     [SerializeField] SpriteRenderer m_eyesRef;
     [SerializeField] Sprite[] m_eyeSprites;
 
-    //Soul Attraction
+    //Movement
     const float m_defaultWanderSpeed = 1.0f;
     float m_loveWanderSpeedMult = 2f;
     float m_wanderSpeed = 1.0f;
     float m_wanderRotationSpeed = 5f;
 
+    //Soul Attraction
     const float m_soulAttractionConstant = 1.3f;
     const float m_attractionExponent = 1f;
     const float m_soulRepulsionConstant = 1f;
@@ -75,13 +76,14 @@ public class Vessel : Soul
         m_rigidBodyRef.velocity = VLib.RotateVector3In2D(new Vector2(1f, 0f), VLib.vRandom(0f, 360f)) * m_wanderSpeed;
     }
 
-    internal void Init(BattleHandler a_battleHandler, PlayerHandler a_playerHandler, int a_emotion)
+    internal void Init(BattleHandler a_battleHandler, PlayerHandler a_playerHandler, int a_emotion, Camera a_minimapCamera)
     {
         m_battleHandlerRef = a_battleHandler;
         m_playerHandlerRef = a_playerHandler;
         m_emotion = a_emotion;
         m_wanderSpeed = m_defaultWanderSpeed;
         m_gameHandlerRef = m_battleHandlerRef.m_gameHandlerRef;
+        m_miniMapSpriteRendererRef.GetComponent<MiniMapIcon>().Init(a_minimapCamera);
         UpdateVisuals();
     }
 
@@ -101,7 +103,7 @@ public class Vessel : Soul
     void UpdateVisuals()
     {
         CalculateEmotionColor();
-        m_spriteRendererRef.color = m_minimapIconRef.color = CalculateEmotionColor(m_emotion);
+        m_spriteRendererRef.color = m_miniMapSpriteRendererRef.color = CalculateEmotionColor(m_emotion);
         m_mouthLineHandlerRef.Refresh(GetEmotionMappedFromMinToMax(m_emotion));
         for (int i = 0; i < m_eyebrowHandlers.Length; i++)
         {

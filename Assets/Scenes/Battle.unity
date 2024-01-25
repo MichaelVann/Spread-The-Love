@@ -644,7 +644,7 @@ MonoBehaviour:
   m_whiteOutImageRef: {fileID: 65707955}
   m_worldTextCanvasRef: {fileID: 596031870}
   m_miniMapRef: {fileID: 869044382}
-  m_miniMapCameraRef: {fileID: 905535224}
+  m_miniMapCameraRef: {fileID: 905535228}
   m_outerWallPrefab: {fileID: 7301994271561646457, guid: ab8e5ea7397592d48b2080dfd68c0e35, type: 3}
   m_buildingPrefabs:
   - {fileID: 2753874526810083808, guid: 05f084dc93b56204bbd3bb9fcc8e7145, type: 3}
@@ -1648,7 +1648,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 82.5
+  orthographic size: 8.25
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -7857,6 +7857,18 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.11612
       objectReference: {fileID: 0}
+    - target: {fileID: 4142846517832926291, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4142846517832926291, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4142846517832926291, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4214626578408195873, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
       propertyPath: m_Color.b
       value: 0.8705883
@@ -7922,10 +7934,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1749459936}
     - target: {fileID: 7384323082261636868, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
-      propertyPath: m_driftSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 9a3cbfe08dc01794bb2bd8d687c7871d, type: 3}
-    - target: {fileID: 7384323082261636868, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
       propertyPath: m_speedRampRef
       value: 
       objectReference: {fileID: 259326426}
@@ -7937,6 +7945,10 @@ PrefabInstance:
       propertyPath: m_hitMarkerSound
       value: 
       objectReference: {fileID: 8300000, guid: 73004edd7cefbe64fb83d6cb74bc3323, type: 3}
+    - target: {fileID: 7384323082261636868, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
+      propertyPath: m_miniMapCameraRef
+      value: 
+      objectReference: {fileID: 905535228}
     - target: {fileID: 7884063313529379444, guid: 408df63a1188fe448b6c0ee3816d0f68, type: 3}
       propertyPath: m_Enabled
       value: 0

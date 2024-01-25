@@ -190,7 +190,7 @@ public class UpgradeTreeUIHandler : MonoBehaviour
         bounds.Encapsulate(transform.localPosition);
 
         float xSize = m_viewportTransform.rect.width;// bounds.size.x / 2f + xPadding;
-        float ySize = bounds.size.y + yPadding;
+        float ySize = bounds.size.y;
         ySize = Mathf.Max(m_contentTransform.sizeDelta.y, ySize);
         m_contentTransform.sizeDelta = new Vector2(xSize, ySize);
 

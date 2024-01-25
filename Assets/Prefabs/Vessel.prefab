@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3777701328347439507}
   - component: {fileID: 8396369501751920676}
+  - component: {fileID: 7622703385118703733}
   m_Layer: 11
   m_Name: Minimap Icon
   m_TagString: Untagged
@@ -27,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.000000011176, y: 0, z: 0}
-  m_LocalScale: {x: 12.887791, y: 12.887791, z: 12.887791}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7222597647158151256}
@@ -84,6 +85,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7622703385118703733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915191191299260511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c19ad0a842345b41b1adaaa0df22244, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3715644846292135559
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,7 +614,7 @@ MonoBehaviour:
   - {fileID: 6248055444138891354}
   - {fileID: 1460208321626614557}
   m_lovedTrailRef: {fileID: 2151251703944370843}
-  m_minimapIconRef: {fileID: 8396369501751920676}
+  m_miniMapSpriteRendererRef: {fileID: 8396369501751920676}
   m_risingTextPrefab: {fileID: 4912411465336466117, guid: e34a8a8c5434ca24b97f82cf4762afbf, type: 3}
   m_loveExplosionRef: {fileID: 7502927058812874007}
   m_eyesRef: {fileID: 9048605901342537787}

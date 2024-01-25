@@ -33,7 +33,7 @@ public class BattleHandler : MonoBehaviour
 
     //Minimap
     [SerializeField] GameObject m_miniMapRef;
-    [SerializeField] GameObject m_miniMapCameraRef;
+    [SerializeField] Camera m_miniMapCameraRef;
 
     //Vessels
     int starterSouls = 20;
@@ -76,18 +76,18 @@ public class BattleHandler : MonoBehaviour
     private void Awake()
     {
         m_gameHandlerRef = FindObjectOfType<GameHandler>();
+        Time.timeScale = 1f;
+        m_vesselList = new List<Vessel>();
+        m_buildingColumns = m_buildingRows = GameHandler._mapSize * 2;
+        m_miniMapCameraRef.GetComponent<Camera>().orthographicSize = GetMapSize().x;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        Time.timeScale = 1f;
-        m_vesselList = new List<Vessel>();
-        m_buildingColumns = m_buildingRows = GameHandler._mapSize * 2;
         SpawnBuildings();
         SpawnOuterWalls();
         SpawnVessels();
-        m_miniMapCameraRef.GetComponent<Camera>().orthographicSize = GetMapSize().x;
         m_gameTime += GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.AdditionalTime);
         m_battleTimer = new vTimer(m_gameTime, true, true, false);
         m_secondPassedTimer = new vTimer(1f);
@@ -200,7 +200,7 @@ public class BattleHandler : MonoBehaviour
     Vessel SpawnVessel(Vector3 a_position, int a_emotion = 0)
     {
         Vessel vessel = Instantiate(m_vesselPrefab, a_position, Quaternion.identity, m_vesselContainer.transform).GetComponent<Vessel>();
-        vessel.Init(this, m_playerHandlerRef, a_emotion);
+        vessel.Init(this, m_playerHandlerRef, a_emotion, m_miniMapCameraRef);
         m_vesselList.Add(vessel);
         return vessel;
     }
