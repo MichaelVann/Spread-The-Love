@@ -6,6 +6,8 @@ public class UICheckBox : MonoBehaviour
 {
     public GameObject m_tickRef;
     bool m_checked = false;
+    internal bool GetToggled() { return m_checked; }
+
     // Start is called before the first frame update
     void Start()
     {

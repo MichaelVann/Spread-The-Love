@@ -664,6 +664,19 @@ MonoBehaviour:
   - {fileID: 8609283742134472166, guid: fe49277d7d62fc24b814311695665d18, type: 3}
   - {fileID: 4374340777152962153, guid: 649ae1fa67e26de418ec5d8da60c504e, type: 3}
   - {fileID: 4121673968160350184, guid: b3606c4cb7347ad4eb59410254b7b682, type: 3}
+  m_trashDecalPrefabs:
+  - {fileID: 1417537889647273220, guid: 55c26d3eb4c629d47a4fdff8fab3aadb, type: 3}
+  - {fileID: 410404409515706832, guid: 8d54f11f39d2c0f40b15e51e1dd1f9a8, type: 3}
+  - {fileID: 4677384989593271253, guid: 0b5ac331e0b9cb34982e5c88b32af2b0, type: 3}
+  - {fileID: 6910844363089489223, guid: cf4a155602dd91245972adcefa87bd59, type: 3}
+  - {fileID: 4263597678002669986, guid: d0fc32956c935504eb5d22b5314508c5, type: 3}
+  - {fileID: 8101427309426728963, guid: 4fe72108062ab1b48be5fdfea58325fc, type: 3}
+  - {fileID: 689438665629516720, guid: eadbb3556c1976045a6880007a8fa61c, type: 3}
+  - {fileID: 6281214459059992929, guid: c019b98013868fe4a94d22ce7b80e657, type: 3}
+  - {fileID: 3978217301061583108, guid: f53940a08506b6245bb58862d82d9fdd, type: 3}
+  - {fileID: 1432675156737087731, guid: 251556077a2b6fd4fa7aa52bff8d67d4, type: 3}
+  m_cornerDecals:
+  - {fileID: 4869584457715346161, guid: fd1a557bcf6b19a41a1116e1865bcc6a, type: 3}
   m_backgroundRef: {fileID: 1942700574}
   m_outerBackgroundRef: {fileID: 84963508}
   m_scrollingBackgroundRef: {fileID: 492764728}
@@ -2368,6 +2381,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4029502613970937371}
     m_Modifications:
+    - target: {fileID: 1259903515831071199, guid: c6a3107c6030cec40bf2d0d192be5e49, type: 3}
+      propertyPath: m_pauseTime
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3970656688794659871, guid: c6a3107c6030cec40bf2d0d192be5e49, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.297
@@ -2469,6 +2486,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: a7b76748124280247a0eeeffe5924440, type: 3}
     - target: {fileID: 5754900169004892956, guid: c6a3107c6030cec40bf2d0d192be5e49, type: 3}
+      propertyPath: m_Color.b
+      value: 0.6354673
+      objectReference: {fileID: 0}
+    - target: {fileID: 5754900169004892956, guid: c6a3107c6030cec40bf2d0d192be5e49, type: 3}
+      propertyPath: m_Color.g
+      value: 0.48593804
+      objectReference: {fileID: 0}
+    - target: {fileID: 5754900169004892956, guid: c6a3107c6030cec40bf2d0d192be5e49, type: 3}
+      propertyPath: m_Color.r
+      value: 0.9811321
+      objectReference: {fileID: 0}
+    - target: {fileID: 5754900169004892956, guid: c6a3107c6030cec40bf2d0d192be5e49, type: 3}
       propertyPath: m_SortingOrder
       value: 11
       objectReference: {fileID: 0}
@@ -2561,6 +2590,134 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1569258460}
   m_CullTransparentMesh: 1
+--- !u!1 &1733020868
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1733020869}
+  - component: {fileID: 1733020870}
+  m_Layer: 6
+  m_Name: Drift Sound
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1733020869
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1733020868}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4029502613970937371}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &1733020870
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1733020868}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: -1495935374484927699, guid: 0d108089e46cdef4bbe22ed82ef34e83, type: 2}
+  m_audioClip: {fileID: 8300000, guid: a8894f6804ace09469d85739b8457673, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 0.1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1747537588
 GameObject:
   m_ObjectHideFlags: 0
@@ -8114,6 +8271,7 @@ Transform:
   - {fileID: 1339666426}
   - {fileID: 484458497236447158}
   - {fileID: 1398232427}
+  - {fileID: 1733020869}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!4 &4270613885886292984
@@ -8361,6 +8519,7 @@ MonoBehaviour:
   m_speedChimeAudioClip: {fileID: 8300000, guid: d6f1d6481ac2aa444823c2a39ec3691b, type: 3}
   m_vesselRadarRef: {fileID: 1847994844525985962}
   m_vesselRadarCaretRef: {fileID: 6626167323809088476}
+  m_driftSoundAudioSource: {fileID: 1733020870}
   m_driftSound: {fileID: 8300000, guid: 9a3cbfe08dc01794bb2bd8d687c7871d, type: 3}
   m_vesselHitSound: {fileID: 8300000, guid: 73004edd7cefbe64fb83d6cb74bc3323, type: 3}
   m_wallHitSound: {fileID: 8300000, guid: 5ae98bd6d1acdd042b7409b8bd3d0736, type: 3}
@@ -8585,7 +8744,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_Sprite: {fileID: 21300000, guid: 06de4471d59b09d4cac9f4de60fa4d3e, type: 3}
-  m_Color: {r: 0.9019608, g: 0.6313726, b: 0.09019604, a: 1}
+  m_Color: {r: 0.90099996, g: 0.08919903, b: 0.3343312, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

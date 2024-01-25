@@ -80,7 +80,7 @@ public class PlayerHandler : Soul
     float m_driftSpread = 1f;
 
     //Audio
-    AudioSource m_driftSoundAudioSource;
+    [SerializeField] AudioSource m_driftSoundAudioSource;
     [SerializeField] AudioClip m_driftSound;
     [SerializeField] AudioClip m_vesselHitSound;
     [SerializeField] AudioClip m_wallHitSound;
@@ -116,7 +116,6 @@ public class PlayerHandler : Soul
 
     void InitialiseAudio()
     {
-        m_driftSoundAudioSource = gameObject.AddComponent<AudioSource>();
         m_driftSoundAudioSource.clip = m_driftSound;
         m_driftSoundAudioSource.pitch = 0.1f;
         m_driftSoundAudioSource.loop = true;
@@ -193,7 +192,7 @@ public class PlayerHandler : Soul
                     loveVibe.Init(m_battleHandlerRef, null, aimDirection.normalized.RotateVector2(angle), m_rigidBodyRef.velocity, m_emotion);
                 }
 
-                GameHandler._audioManager.PlayOneShot(m_fireSound, 0.5f);
+                GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
             }
             UpdateShootTimer();
         }
@@ -343,7 +342,7 @@ public class PlayerHandler : Soul
                 Debug.Log(volume);
                 volume = Mathf.Clamp(volume, 0f, 1f);
                 //volume = Mathf.Pow(volume, 3f);
-                GameHandler._audioManager.PlayOneShot(m_speedChimeAudioClip, volume);
+                GameHandler._audioManager.PlaySFX(m_speedChimeAudioClip, volume);
             }
         }
     }
@@ -424,12 +423,12 @@ public class PlayerHandler : Soul
             Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
 
             vessel.CollideWithPlayer(m_meleeLoveStrength, -a_collision.contacts[0].normal);
-            GameHandler._audioManager.PlayOneShot(m_vesselHitSound);
+            GameHandler._audioManager.PlaySFX(m_vesselHitSound);
         }
         else if (a_collision.gameObject.tag == "Environment")
         {
             m_driftSpread = 1f;
-            GameHandler._audioManager.PlayOneShot(m_wallHitSound);
+            GameHandler._audioManager.PlaySFX(m_wallHitSound);
             //m_rotation = VLib.Vector2ToEulerAngle(m_rigidBodyRef.velocity);
             //m_rigidBodyRef.rotation = m_rotation;
             m_rigidBodyRef.velocity += a_collision.contacts[0].normal * 1f;

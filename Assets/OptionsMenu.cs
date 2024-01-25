@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class OptionsMenu : MonoBehaviour
 {
@@ -9,10 +10,20 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField] GameObject m_resumeButtonRef;
     [SerializeField] GameObject m_perishButtonRef;
     [SerializeField] GameObject m_quitButtonRef;
+
+    [SerializeField] Slider m_SFXAudioSlider;
+    [SerializeField] Slider m_ambienceAudioSlider;
+    [SerializeField] UICheckBox m_SFXCheckBox;
+    [SerializeField] UICheckBox m_ambienceCheckBox;
+
     // Start is called before the first frame update
     void Awake()
     {
         m_perishButtonRef.SetActive(false);
+        m_SFXAudioSlider.value = GameHandler._audioManager.GetChannelVolume(AudioManager.eSoundChannel.SFX);
+        m_ambienceAudioSlider.value = GameHandler._audioManager.GetChannelVolume(AudioManager.eSoundChannel.Ambience);
+        m_SFXCheckBox.SetToggled(GameHandler._audioManager.GetChannelEnabled(AudioManager.eSoundChannel.SFX));
+        m_ambienceCheckBox.SetToggled(GameHandler._audioManager.GetChannelEnabled(AudioManager.eSoundChannel.Ambience));
     }
 
     // Update is called once per frame
@@ -48,5 +59,27 @@ public class OptionsMenu : MonoBehaviour
     public void QuitGame()
     {
         GameHandler.Quit();
+    }
+
+    public void ChangeSFXVolume()
+    {
+        GameHandler._audioManager.SetChannelVolume(AudioManager.eSoundChannel.SFX, m_SFXAudioSlider.value);
+    }
+
+    public void ChangeAmbienceVolume()
+    {
+        GameHandler._audioManager.SetChannelVolume(AudioManager.eSoundChannel.Ambience, m_ambienceAudioSlider.value);
+    }
+
+    public void ToggleSFX()
+    {
+        m_SFXCheckBox.Toggle();
+        GameHandler._audioManager.SetChannelEnabled(AudioManager.eSoundChannel.SFX, m_SFXCheckBox.GetToggled());
+    }
+
+    public void ToggleAmbience()
+    {
+        m_ambienceCheckBox.Toggle();
+        GameHandler._audioManager.SetChannelEnabled(AudioManager.eSoundChannel.Ambience, m_ambienceCheckBox.GetToggled());
     }
 }

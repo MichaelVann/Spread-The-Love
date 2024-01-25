@@ -8,8 +8,8 @@ public class ReflectiveSheen : MonoBehaviour
     [SerializeField] GameObject m_bottomRightTransform;
     [SerializeField] GameObject m_sheenRef;
     vTimer m_timer;
-    float m_pauseTime = 2.6f;
-    float m_runTime = 0.4f;
+    [SerializeField] float m_pauseTime = 2.6f;
+    [SerializeField] float m_runTime = 0.4f;
     [SerializeField] bool m_stayIndependentOfParentRotation = true;
     Quaternion m_originalRotation;
     // Start is called before the first frame update

@@ -53,6 +53,8 @@ public class BattleHandler : MonoBehaviour
     int m_buildingRows = 2;
     float m_buildingSize = 5f;
     float m_streetSize = 5f;
+    [SerializeField] GameObject[] m_trashDecalPrefabs;
+    [SerializeField] GameObject[] m_cornerDecals;
 
     //Background
     [SerializeField] SpriteRenderer m_backgroundRef;
@@ -264,10 +266,38 @@ public class BattleHandler : MonoBehaviour
         }
     }
 
+    void SpawnBuildingDecals(Vector3 a_position)
+    {
+        float spreadRange = 0.6f + m_buildingSize / 2f;
+
+        int trashToSpawn = VLib.vRandom(3, 6);
+        for (int i = 0; i < trashToSpawn; i++)
+        {
+            int trashRoll = VLib.vRandom(0, m_trashDecalPrefabs.Length - 1);
+            Vector3 spawnPos = new Vector3(VLib.vRandom(-spreadRange, spreadRange), spreadRange, 0f);
+            spawnPos += a_position;
+            int wallToSpawnBy = VLib.vRandom(0, 3);
+            spawnPos = VLib.RotateVector3In2D(spawnPos, wallToSpawnBy * 90f);
+            Instantiate(m_trashDecalPrefabs[trashRoll], spawnPos, Quaternion.identity);
+        }
+
+        int cornerDecalsToSpawn = VLib.vRandom(2, 4);
+        for (int i = 0; i < cornerDecalsToSpawn; i++)
+        {
+            int decalRoll = VLib.vRandom(0, m_cornerDecals.Length - 1);
+            Vector3 spawnPos = new Vector3(spreadRange, spreadRange, 0f);
+            spawnPos += a_position;
+            int corner = VLib.vRandom(0, 3);
+            spawnPos = VLib.RotateVector3In2D(spawnPos, corner * 90f);
+            Instantiate(m_cornerDecals[decalRoll], spawnPos, Quaternion.identity);
+        }
+    }
+
     void SpawnBuilding(Vector3 a_position)
     {
         GameObject prefab = m_buildingPrefabs[VLib.vRandom(0,m_buildingPrefabs.Length-1)];
         Instantiate(prefab, a_position, Quaternion.identity, m_buildingContainer.transform);
+        SpawnBuildingDecals(a_position);
     }
 
     void SpawnBuildings()
