@@ -23,7 +23,7 @@ public class RadarPing : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D a_collision)
     {
         Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
-        if (vessel != null && vessel.GetEmotion() < Soul.GetMaxLove())
+        if (vessel != null && vessel.GetEmotion() < Soul.GetMaxPossibleLove())
         {
             m_playerHandler.ReceiveVesselRadarPing(a_collision.transform.position);
             transform.localScale = m_startingScale;

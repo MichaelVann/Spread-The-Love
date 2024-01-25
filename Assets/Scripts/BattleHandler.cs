@@ -58,18 +58,16 @@ public class BattleHandler : MonoBehaviour
 
     //Background
     [SerializeField] SpriteRenderer m_backgroundRef;
-    [SerializeField] SpriteRenderer m_outerBackgroundRef;
     [SerializeField] ScrollingRawImage m_scrollingBackgroundRef;
 
     //Timer
-    float m_gameTime = 60f;
+    float m_gameTime = 30f;
     vTimer m_battleTimer;
     vTimer m_battleExplosionTimer;
     vTimer m_secondPassedTimer;
     bool m_gameEnding = false;
 
     internal bool m_paused = false;
-
 
     internal Vector2 GetMapSize() { return new Vector2(m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingColumns / 2f, m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingRows / 2f); }
 
@@ -95,7 +93,6 @@ public class BattleHandler : MonoBehaviour
         m_secondPassedTimer = new vTimer(1f);
         m_vesselCountText.text = "/" + m_vesselList.Count;
         m_backgroundRef.size = GetMapSize() * new Vector2(2f/m_backgroundRef.transform.localScale.x,2f/ m_backgroundRef.transform.localScale.y);
-        m_outerBackgroundRef.size = m_backgroundRef.size + new Vector2(2f * m_mainCameraRef.orthographicSize * m_mainCameraRef.aspect, 2f * m_mainCameraRef.orthographicSize);
     }
 
     internal void CrementConvertedVessels(int a_change)
@@ -229,9 +226,10 @@ public class BattleHandler : MonoBehaviour
 
                 if (inACorner)
                 {
-                    SpawnVessel(new Vector3(posX, posY), -1);
-                    SpawnVessel(new Vector3(posX, posY), -1);
-                    SpawnVessel(new Vector3(posX, posY), -1);
+                    int vesselStrength = Mathf.Clamp(-GameHandler._mapSize, Soul.GetMinPossibleLove(), -1);
+                    SpawnVessel(new Vector3(posX, posY), vesselStrength);
+                    SpawnVessel(new Vector3(posX, posY), vesselStrength);
+                    SpawnVessel(new Vector3(posX, posY), vesselStrength);
                 }
                 else
                 {

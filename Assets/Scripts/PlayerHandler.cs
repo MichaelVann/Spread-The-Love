@@ -50,7 +50,7 @@ public class PlayerHandler : Soul
     bool m_aquaplaning = false;
 
     //Love Combat
-    int m_meleeLoveStrength = 1;
+    int m_meleeLoveStrength = Soul.m_maxLove;
 
     //Shoot
     bool m_shootingEnabled = false;
@@ -129,7 +129,7 @@ public class PlayerHandler : Soul
         //m_spriteRendererRef.color = playerColor;
         //m_loveTrailRef.startColor = m_spriteRendererRef.color;
         //m_loveTrailRef.endColor = new Color(playerColor.r, playerColor.g, playerColor.b, 0f);
-        m_miniMapIconRef.GetComponent<SpriteRenderer>().color = m_spriteRendererRef.color;
+        //m_miniMapIconRef.GetComponent<SpriteRenderer>().color = m_spriteRendererRef.color;
         m_vesselRadarCaretRef.color = gameHandler.m_fearColor1;
     }
 

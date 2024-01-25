@@ -1,6 +1,7 @@
 using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Vessel : Soul
@@ -83,7 +84,7 @@ public class Vessel : Soul
         m_battleHandlerRef = a_battleHandler;
         m_playerHandlerRef = a_playerHandler;
         m_emotion = a_emotion;
-        m_wanderSpeed = m_defaultWanderSpeed;
+        UpdateWanderSpeed();
         m_gameHandlerRef = m_battleHandlerRef.m_gameHandlerRef;
         m_miniMapSpriteRendererRef.GetComponent<MiniMapIcon>().Init(a_minimapCamera);
         UpdateVisuals();
@@ -166,6 +167,11 @@ public class Vessel : Soul
         }
     }
 
+    void UpdateWanderSpeed()
+    {
+        m_wanderSpeed = m_defaultWanderSpeed * (Mathf.Abs(m_emotion) + 1);
+    }
+
     void MovementUpdate()
     {
         if (m_rigidBodyRef.velocity.magnitude <= m_wanderSpeed)
@@ -237,7 +243,7 @@ public class Vessel : Soul
             m_battleHandlerRef.CrementConvertedVessels(-1);
         }
 
-        m_wanderSpeed = GetEmotion() == 0 ? m_defaultWanderSpeed : m_defaultWanderSpeed * m_loveWanderSpeedMult;
+        UpdateWanderSpeed();
 
         UpdateVisuals();
     }
@@ -281,7 +287,12 @@ public class Vessel : Soul
             int oppEmotion = opposingVessel.GetEmotion();
             if (oppEmotion != 0 && oppEmotion != m_emotion)
             {
-                AddEmotion(Mathf.Clamp(oppEmotion - m_emotion, -1, 1));
+                bool negativeAndAffected = m_emotion < 0 && (oppEmotion < m_emotion-1 || oppEmotion > 0);
+                bool positiveAndAffected = m_emotion > 0 && (oppEmotion > m_emotion+1 || oppEmotion < 0);
+                if (m_emotion == 0 || negativeAndAffected || positiveAndAffected)
+                {
+                    AddEmotion(Mathf.Clamp(oppEmotion - m_emotion, -1, 1));
+                }
             }
         }
     }
