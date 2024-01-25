@@ -46,9 +46,9 @@ namespace Assets.Scripts
             return color;
         }
 
-        protected void CalculateEmotionColor()
+        protected Color CalculateEmotionColor()
         {
-            m_spriteRendererRef.color = CalculateEmotionColor(m_emotion);
+            return m_spriteRendererRef.color = CalculateEmotionColor(m_emotion);
         }
 
         protected int AffectEmotion(int a_change)

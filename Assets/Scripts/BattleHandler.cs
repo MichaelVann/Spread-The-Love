@@ -222,7 +222,10 @@ public class BattleHandler : MonoBehaviour
                 float posY = j * buildingGap;
                 posY -= buildingGap * m_buildingRows / 2f;
 
-                if (i == 0 || i == m_buildingColumns-1)
+                bool inACorner = (i == 0 || i == m_buildingColumns);
+                inACorner &= (j == 0 || j == m_buildingRows);
+
+                if (inACorner)
                 {
                     SpawnVessel(new Vector3(posX, posY), -1);
                     SpawnVessel(new Vector3(posX, posY), -1);

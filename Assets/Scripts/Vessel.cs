@@ -61,7 +61,9 @@ public class Vessel : Soul
     //Audio
     [SerializeField] AudioClip m_vibeHitSound;
 
-    bool IsMaxLoved() { return m_emotion >= m_maxLove; }
+    bool IsLoved() { return m_emotion > 0; }
+
+    internal void SetEmotion(int a_emotion) { AddEmotion(a_emotion - m_emotion); }
 
     void Awake()
     {
@@ -102,18 +104,17 @@ public class Vessel : Soul
 
     void UpdateVisuals()
     {
-        CalculateEmotionColor();
-        m_spriteRendererRef.color = m_miniMapSpriteRendererRef.color = CalculateEmotionColor(m_emotion);
+        m_spriteRendererRef.color = m_miniMapSpriteRendererRef.color = CalculateEmotionColor();
         m_mouthLineHandlerRef.Refresh(GetEmotionMappedFromMinToMax(m_emotion));
         for (int i = 0; i < m_eyebrowHandlers.Length; i++)
         {
             m_eyebrowHandlers[i].SetEybrowRotation(GetEmotionMappedFromMinToMax(m_emotion));
         }
-        m_lovedTrailRef.emitting = IsMaxLoved();
+        m_lovedTrailRef.emitting = IsLoved();
         m_lovedTrailRef.startColor = m_gameHandlerRef.m_loveColor;
         m_lovedTrailRef.endColor = new Color(m_gameHandlerRef.m_loveColor.r, m_gameHandlerRef.m_loveColor.g, m_gameHandlerRef.m_loveColor.b, 0f);
 
-        m_eyesRef.sprite = IsMaxLoved() ? m_eyeSprites[2] : (m_emotion < 0 ? m_eyeSprites[0] : m_eyeSprites[1]);
+        m_eyesRef.sprite = IsLoved() ? m_eyeSprites[2] : (m_emotion < 0 ? m_eyeSprites[0] : m_eyeSprites[1]);
     }
 
     void ExchangeForceWithPlayer()
@@ -196,7 +197,7 @@ public class Vessel : Soul
 
     internal void AddEmotion(int a_emotion)
     {
-        bool wasMaxLove = m_emotion == m_maxLove;
+        bool wasLoved = m_emotion > 0;
         int deltaEmotion = AffectEmotion(a_emotion);
 
         //Rising Fading Text
@@ -226,17 +227,17 @@ public class Vessel : Soul
         }
 
         //Change score
-        bool isMaxLove = m_emotion == m_maxLove;
-        if (!wasMaxLove && isMaxLove)
+        bool isLoved = m_emotion > 0;
+        if (!wasLoved && isLoved)
         {
             m_battleHandlerRef.CrementConvertedVessels(1);
         }
-        else if (wasMaxLove && !isMaxLove)
+        else if (wasLoved && !isLoved)
         {
             m_battleHandlerRef.CrementConvertedVessels(-1);
         }
 
-        m_wanderSpeed = GetEmotion() == 0 ? m_defaultWanderSpeed : m_defaultWanderSpeed * m_loveWanderSpeedMult ;
+        m_wanderSpeed = GetEmotion() == 0 ? m_defaultWanderSpeed : m_defaultWanderSpeed * m_loveWanderSpeedMult;
 
         UpdateVisuals();
     }
@@ -257,6 +258,12 @@ public class Vessel : Soul
         AddEmotion(a_vibe.GetEmotionalAffect());
     }
 
+    internal void CollideWithPlayer(int a_meleeStrength, Vector2 a_collisionNormal)
+    {
+        SetEmotion(a_meleeStrength);
+        m_rigidBodyRef.velocity += a_collisionNormal;
+    }
+
     private void OnCollisionEnter2D(Collision2D a_collision)
     {
         Vibe vibe = a_collision.gameObject.GetComponent<Vibe>();
@@ -271,7 +278,7 @@ public class Vessel : Soul
         else if (a_collision.gameObject.tag == "Vessel")
         {
             Vessel opposingVessel = a_collision.gameObject.GetComponent<Vessel>();
-            if (opposingVessel.IsMaxLoved())
+            if (opposingVessel.IsLoved())
             {
                 AddEmotion(1);
             }

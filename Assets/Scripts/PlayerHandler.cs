@@ -50,7 +50,7 @@ public class PlayerHandler : Soul
     bool m_aquaplaning = false;
 
     //Love Combat
-    int m_meleeLoveStrength = 2;
+    int m_meleeLoveStrength = 1;
 
     //Shoot
     bool m_shootingEnabled = false;
@@ -422,8 +422,7 @@ public class PlayerHandler : Soul
             float impulseStrength = Mathf.Pow(a_collision.relativeVelocity.magnitude,2f) * contactStrength;
             Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
 
-            vessel.AddEmotion(m_meleeLoveStrength);
-            vessel.GetComponent<Rigidbody2D>().velocity -= a_collision.contacts[0].normal * 1f;
+            vessel.CollideWithPlayer(m_meleeLoveStrength, -a_collision.contacts[0].normal);
             GameHandler._audioManager.PlayOneShot(m_vesselHitSound);
         }
         else if (a_collision.gameObject.tag == "Environment")
