@@ -126,11 +126,12 @@ public class PlayerHandler : Soul
     void InitialiseColors()
     {
         GameHandler gameHandler = FindObjectOfType<GameHandler>();
-        m_spriteRendererRef.color = gameHandler.m_loveColor;
-        m_loveTrailRef.startColor = m_spriteRendererRef.color;
-        m_loveTrailRef.endColor = new Color(gameHandler.m_loveColor.r, gameHandler.m_loveColor.g, gameHandler.m_loveColor.b, 0f);
+        Color playerColor = gameHandler.m_loveColorMax;
+        //m_spriteRendererRef.color = playerColor;
+        //m_loveTrailRef.startColor = m_spriteRendererRef.color;
+        //m_loveTrailRef.endColor = new Color(playerColor.r, playerColor.g, playerColor.b, 0f);
         m_miniMapIconRef.GetComponent<SpriteRenderer>().color = m_spriteRendererRef.color;
-        m_vesselRadarCaretRef.color = gameHandler.m_fearColor;
+        m_vesselRadarCaretRef.color = gameHandler.m_fearColor1;
     }
 
     void InitialiseUpgrades()
@@ -144,7 +145,7 @@ public class PlayerHandler : Soul
         m_fireRate = GetFireRate();
         m_vesselRadarRef.SetActive(false);// GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Radar));
         m_vesselRadarEulers = Vector3.zero;
-        m_driftSpreadEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.DriftSpread);
+        //m_driftSpreadEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.DriftSpread);
         m_shootingEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Shooting);
         m_shootSpread = 1 + (int)GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.ShootSpread);
         m_aquaplaningEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Aquaplane);
@@ -369,7 +370,7 @@ public class PlayerHandler : Soul
         float velocity = m_rigidBodyRef.velocity.magnitude;
         float speedPercentage = velocity/ GetMaxTheorheticalSpeed();
         m_speedRampRef.SetRampPercent(speedPercentage);
-        m_speedRampRef.SetColor(Color.Lerp(m_gameHandlerRef.m_fearColor, m_gameHandlerRef.m_loveColor, speedPercentage));
+        m_speedRampRef.SetColor(Color.Lerp(m_gameHandlerRef.m_fearColor1, m_gameHandlerRef.m_loveColorMax, speedPercentage));
     }
 
     void VesselRadarUpdate()
@@ -432,7 +433,6 @@ public class PlayerHandler : Soul
             //m_rotation = VLib.Vector2ToEulerAngle(m_rigidBodyRef.velocity);
             //m_rigidBodyRef.rotation = m_rotation;
             m_rigidBodyRef.velocity += a_collision.contacts[0].normal * 1f;
-
         }
     }
 }

@@ -12,9 +12,10 @@ public class GameHandler : MonoBehaviour
     internal static int _lastSeenScore;
     internal static int _mapSize;
 
-    [SerializeField] internal Color m_loveColor;
+    [SerializeField] internal Color m_loveColorMax;
     [SerializeField] internal Color m_neutralColor;
-    [SerializeField] internal Color m_fearColor;
+    [SerializeField] internal Color m_fearColor1;
+    [SerializeField] internal Color m_fearColor2;
     // Start is called before the first frame update
 
     internal static void ChangeScore(int a_change) { _score += a_change; }

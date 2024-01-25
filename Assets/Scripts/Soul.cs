@@ -10,7 +10,7 @@ namespace Assets.Scripts
 
         protected int m_emotion;
         protected const int m_maxLove = 1;
-        protected const int m_minLove = -1;
+        protected const int m_minLove = -2;
 
         internal int GetEmotion() { return m_emotion;}
         internal int GetFear() { return m_maxLove - GetEmotion(); }
@@ -35,13 +35,30 @@ namespace Assets.Scripts
         {
             Color color = new Color(0f, 0f, 0f, 1f);
             float lerp = GetEmotionMappedFromMinToMax(a_emotion);
+            switch (a_emotion)
+            {
+                case -2:
+                    color = GameHandler._autoRef.m_fearColor2;
+                    break;
+                case -1:
+                    color = GameHandler._autoRef.m_fearColor1;
+                    break;
+                case 0: 
+                    color = GameHandler._autoRef.m_neutralColor;
+                    break;
+                case 1:
+                    color = GameHandler._autoRef.m_loveColorMax;
+                    break;
+                default:
+                    break;
+            }
             if (a_emotion < 0f)
             {
-                color = Color.Lerp(GameHandler._autoRef.m_neutralColor, GameHandler._autoRef.m_fearColor, -lerp);
+                color = Color.Lerp(GameHandler._autoRef.m_neutralColor, GameHandler._autoRef.m_fearColor1, -lerp);
             }
             else
             {
-                color = Color.Lerp(GameHandler._autoRef.m_neutralColor, GameHandler._autoRef.m_loveColor, lerp);
+                color = Color.Lerp(GameHandler._autoRef.m_neutralColor, GameHandler._autoRef.m_loveColorMax, lerp);
             }
             return color;
         }

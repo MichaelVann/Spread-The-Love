@@ -28,6 +28,8 @@ public class UpgradeUINode : MonoBehaviour
 
     [SerializeField] GameObject m_availableUpgradeIndicatorRef;
 
+    [SerializeField] Color m_baseColor;
+
     //Selection
     [SerializeField] GameObject m_selectionRing;
     bool m_selected = false;
@@ -76,7 +78,7 @@ public class UpgradeUINode : MonoBehaviour
 
         if (m_upgradeItemRef.m_owned)
         {
-            nodeColor = m_gameHandlerRef.m_loveColor;
+            nodeColor = m_baseColor;
 
             if (m_upgradeItemRef.m_toggleable)
             {

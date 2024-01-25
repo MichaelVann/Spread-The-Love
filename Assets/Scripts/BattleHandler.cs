@@ -138,7 +138,7 @@ public class BattleHandler : MonoBehaviour
 
     void Enlighten()
     {
-        m_whiteOutImageRef.color = m_gameHandlerRef.m_loveColor;
+        m_whiteOutImageRef.color = m_gameHandlerRef.m_loveColorMax;
         GameHandler.IncrementMapSize();
         FinishEarly();
     }

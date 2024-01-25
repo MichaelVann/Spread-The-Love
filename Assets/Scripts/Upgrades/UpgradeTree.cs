@@ -33,13 +33,13 @@ public class UpgradeTree
 
     void SetupUpgrades()
     {
-        UpgradeItem mass = NewUpgrade(UpgradeId.Mass, "Density", 1.5f, 10, 0.25f, null, "Increases desnity by 25% for each level. This helps maintain speed when colliding with the souls in the world.");
+        /**/UpgradeItem mass = NewUpgrade(UpgradeId.Mass, "Density", 1.5f, 10, 0.25f, null, "Increases desnity by 25% for each level. This helps maintain speed when colliding with the souls in the world.");
         UpgradeItem braking = NewUpgrade(UpgradeId.Braking, "Braking", 2f, 10, 0.1f, mass, "Unlocks the ability to brake and increases braking strength by 10% each level.");
-        UpgradeItem acceleration = NewUpgrade(UpgradeId.Acceleration, "Acceleration", 1.5f, 10, 0.25f, null, "Increases acceleration by 25% each level.");
-        UpgradeItem topSpeed = NewUpgrade(UpgradeId.TopSpeed, "Top Speed", 1.5f, 10, 1f, acceleration, "Increases top speed by 1 m/s each level.");
+        /**/UpgradeItem acceleration = NewUpgrade(UpgradeId.Acceleration, "Acceleration", 1.5f, 10, 0.25f, null, "Increases acceleration by 25% each level.");
+        /**/UpgradeItem topSpeed = NewUpgrade(UpgradeId.TopSpeed, "Top Speed", 1.5f, 10, 1f, acceleration, "Increases top speed by 1 m/s each level.");
         UpgradeItem turnSpeed = NewUpgrade(UpgradeId.TurnSpeed, "Turn Speed", 1f, 10, 0.1f, null, "Increases turn speed by 10% each level.");
         UpgradeItem aquaplane = NewUpgrade(UpgradeId.Aquaplane, "Aquaplane", 3f, 1, 1f, turnSpeed, "Allows you to aquaplane by pressing <color=#ff004c>space</color>, removing all friction against the ground.");
-        UpgradeItem driftSpread = NewUpgrade(UpgradeId.DriftSpread, "Drift Spread", 20f, 1, 0.25f, aquaplane, "Spreads you out when drifting. This is a gimmick ability I wouldn't recommend actually buying this.", true);
+        //UpgradeItem driftSpread = NewUpgrade(UpgradeId.DriftSpread, "Drift Spread", 20f, 1, 0.25f, aquaplane, "Spreads you out when drifting. This is a gimmick ability I wouldn't recommend actually buying this.", true);
         UpgradeItem shooting = NewUpgrade(UpgradeId.Shooting, "Spread Kindness", 2f, 1, 0.25f, null, "Unlocks the ability to spread good vibes remotely.");
         UpgradeItem fireRate = NewUpgrade(UpgradeId.FireRate, "Fire Rate", 1.5f, 10, 0.25f, shooting, "Increases fire rate by 25% each level.");
         UpgradeItem shootSpread = NewUpgrade(UpgradeId.ShootSpread, "Blast Spread", 5f, 10, 1f, fireRate, "Increases amount of love sent with each spread of kindness by 1.");

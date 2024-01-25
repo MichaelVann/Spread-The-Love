@@ -111,8 +111,8 @@ public class Vessel : Soul
             m_eyebrowHandlers[i].SetEybrowRotation(GetEmotionMappedFromMinToMax(m_emotion));
         }
         m_lovedTrailRef.emitting = IsLoved();
-        m_lovedTrailRef.startColor = m_gameHandlerRef.m_loveColor;
-        m_lovedTrailRef.endColor = new Color(m_gameHandlerRef.m_loveColor.r, m_gameHandlerRef.m_loveColor.g, m_gameHandlerRef.m_loveColor.b, 0f);
+        m_lovedTrailRef.startColor = m_spriteRendererRef.color;
+        m_lovedTrailRef.endColor = new Color(m_spriteRendererRef.color.r, m_spriteRendererRef.color.g, m_spriteRendererRef.color.b, 0f);
 
         m_eyesRef.sprite = IsLoved() ? m_eyeSprites[2] : (m_emotion < 0 ? m_eyeSprites[0] : m_eyeSprites[1]);
     }
@@ -206,7 +206,7 @@ public class Vessel : Soul
         if(deltaEmotion > 0)
         {
             spawningText = true;
-            textColor = m_gameHandlerRef.m_loveColor;
+            textColor = m_gameHandlerRef.m_loveColorMax;
             var main = m_loveExplosionRef.main;
             main.startColor = textColor;
             m_loveExplosionRef.Play();
@@ -214,7 +214,7 @@ public class Vessel : Soul
         else if (deltaEmotion < 0)
         {
             spawningText = true;
-            textColor = m_gameHandlerRef.m_fearColor;
+            textColor = m_gameHandlerRef.m_fearColor1;
             var main = m_loveExplosionRef.main;
             main.startColor = textColor;
             m_loveExplosionRef.Play();
@@ -278,13 +278,10 @@ public class Vessel : Soul
         else if (a_collision.gameObject.tag == "Vessel")
         {
             Vessel opposingVessel = a_collision.gameObject.GetComponent<Vessel>();
-            if (opposingVessel.IsLoved())
+            int oppEmotion = opposingVessel.GetEmotion();
+            if (oppEmotion != 0 && oppEmotion != m_emotion)
             {
-                AddEmotion(1);
-            }
-            else if (opposingVessel.m_emotion < 0)
-            {
-                AddEmotion(-1);
+                AddEmotion(Mathf.Clamp(oppEmotion - m_emotion, -1, 1));
             }
         }
     }
