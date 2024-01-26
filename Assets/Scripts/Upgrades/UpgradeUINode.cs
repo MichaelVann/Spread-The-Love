@@ -25,10 +25,12 @@ public class UpgradeUINode : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_levelText;
     [SerializeField] TextMeshProUGUI m_costText;
     [SerializeField] GameObject m_costPlateRef;
+    [SerializeField] ParticleSystem m_upgradeEffectParticleSystemRef;
 
     [SerializeField] GameObject m_availableUpgradeIndicatorRef;
 
     [SerializeField] Color m_baseColor;
+    [SerializeField] Color m_notPurchaseableColor;
 
     //Selection
     [SerializeField] GameObject m_selectionRing;
@@ -78,7 +80,10 @@ public class UpgradeUINode : MonoBehaviour
 
         if (m_upgradeItemRef.m_owned)
         {
-            nodeColor = m_baseColor;
+            bool purchaseable = GameHandler._score >= m_upgradeItemRef.m_cost;
+            purchaseable |= m_upgradeItemRef.m_level >= m_upgradeItemRef.m_maxLevel;
+            purchaseable |= !m_upgradeItemRef.m_hasLevels;
+            nodeColor = purchaseable ? m_baseColor : m_notPurchaseableColor;
 
             if (m_upgradeItemRef.m_toggleable)
             {
@@ -141,5 +146,10 @@ public class UpgradeUINode : MonoBehaviour
     public void ButtonPressed()
     {
         m_upgradeTreeUIHandler.SelectUpgrade(this);
+    }
+
+    internal void RunUpgradeEffect()
+    {
+        m_upgradeEffectParticleSystemRef.Play();
     }
 }

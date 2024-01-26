@@ -84,6 +84,7 @@ public class AudioManager : MonoBehaviour
         float vol = 1f;
         vol *= a_channel.volume;
         vol *= a_channel.enabled ? 1f : 0f;
+        vol *= 1f-m_sceneFadeAmount;
         m_audioMixer.SetFloat(a_channel.exposedParameterName, VolumeScaleToDB(vol));
     }
 

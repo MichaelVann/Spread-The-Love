@@ -28,7 +28,7 @@ public class MainMenuHandler : MonoBehaviour
 
     public void MoveToSamsara()
     {
-        SceneManager.LoadScene("Samsara");
+        FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
     }
 
     public void Exit()

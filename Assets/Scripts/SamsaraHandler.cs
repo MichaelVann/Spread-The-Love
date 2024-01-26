@@ -52,12 +52,12 @@ public class SamsaraHandler : MonoBehaviour
 
     public void Reincarnate()
     {
-        SceneManager.LoadScene("Battle");
+        FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Battle);
         GameHandler.UpdateLastSeenScore();
     }
 
     public void ReturnToMainMenu()
     {
-        SceneManager.LoadScene("Main Menu");
+        FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.MainMenu);
     }
 }

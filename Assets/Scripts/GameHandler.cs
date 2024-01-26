@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms.Impl;
+using UnityEngine.UI;
 
 public class GameHandler : MonoBehaviour
 {
@@ -18,7 +20,20 @@ public class GameHandler : MonoBehaviour
     [SerializeField] internal Color m_fearColor1;
     [SerializeField] internal Color m_fearColor2;
     [SerializeField] internal Color m_fearColor3;
-    // Start is called before the first frame update
+
+    //Scenes
+    internal enum eScene
+    {
+        MainMenu,
+        Samsara,
+        Battle
+    }
+    eScene m_currentScene, m_queuedScene;
+    [SerializeField] Image m_sceneFadeImageRef;
+    [SerializeField] internal Canvas m_sceneFadeCanvasRef;
+    vTimer m_sceneFadeTimer;
+    bool m_sceneFadingOut;
+    const float m_sceneFadeDuration = 0.35f;
 
     internal static void ChangeScore(int a_change) { _score += a_change; }
     internal static void UpdateLastSeenScore() { _lastSeenScore = _score; }
@@ -50,7 +65,7 @@ public class GameHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        SceneFadeUpdate();
     }
 
     static internal void AutoSaveCheck()
@@ -61,5 +76,57 @@ public class GameHandler : MonoBehaviour
     static internal void Quit()
     {
         Application.Quit();
+    }
+
+    internal void TransitionScene(eScene a_scene)
+    {
+        m_queuedScene = a_scene;
+        m_sceneFadeTimer = new vTimer(m_sceneFadeDuration, true, true, false, false);
+        m_sceneFadingOut = true;
+        m_sceneFadeCanvasRef.worldCamera = FindObjectOfType<Camera>();
+        m_sceneFadeCanvasRef.sortingLayerName = "UI";
+        m_sceneFadeCanvasRef.sortingOrder = 20;
+    }
+
+    internal void ChangeScene()
+    {
+        m_currentScene = m_queuedScene;
+
+        switch (m_queuedScene)
+        {
+            case eScene.MainMenu:
+                SceneManager.LoadScene("Main Menu");
+                break;
+            case eScene.Samsara:
+                SceneManager.LoadScene("Samsara");
+                break;
+            case eScene.Battle:
+                SceneManager.LoadScene("Battle");
+                break;
+            default:
+                break;
+        }
+        m_sceneFadeTimer = new vTimer(m_sceneFadeDuration, true, true, false, false);
+        m_sceneFadingOut = false;
+    }
+
+    internal void SceneFadeUpdate()
+    {
+        if (m_sceneFadeTimer != null && !m_sceneFadeTimer.m_finished)
+        {
+            if (m_sceneFadeTimer.Update())
+            {
+                if (m_sceneFadingOut)
+                {
+                    ChangeScene();
+                }
+            }
+            float compPerc = m_sceneFadeTimer.GetCompletionPercentage();
+            float fade = m_sceneFadingOut ? compPerc : 1f - compPerc;
+            fade = Mathf.Clamp(fade, 0f, 1f);
+            m_sceneFadeImageRef.color = new Color(0f, 0f, 0f, fade);
+            _audioManager.m_sceneFadeAmount = fade;
+            _audioManager.Refresh();
+        }
     }
 }

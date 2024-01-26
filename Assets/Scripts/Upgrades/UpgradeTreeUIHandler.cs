@@ -74,6 +74,7 @@ public class UpgradeTreeUIHandler : MonoBehaviour
     public void AttemptToPurchaseUpgrade(UpgradeItem a_upgradeItemRef)
     {
         m_upgradeTreeRef.AttemptToBuyUpgrade(a_upgradeItemRef);
+        m_upgradeNodes[(int)a_upgradeItemRef.m_ID].RunUpgradeEffect();
         Refresh();
     }
 
