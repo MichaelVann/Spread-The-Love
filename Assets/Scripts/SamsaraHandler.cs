@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -24,7 +25,7 @@ public class SamsaraHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.Alpha7))
+        if (Application.isEditor && Input.GetKey(KeyCode.Alpha7))
         {
             GameHandler.ChangeScore(1);
             RefreshUI();

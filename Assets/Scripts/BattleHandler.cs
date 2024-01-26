@@ -2,6 +2,7 @@ using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -118,7 +119,7 @@ public class BattleHandler : MonoBehaviour
     void MoveToSamsara()
     {
         GameHandler.ChangeScore(m_vesselsConverted);
-        SceneManager.LoadScene("Samsara");
+        FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
     }
 
     void UpdateUI()
@@ -187,7 +188,7 @@ public class BattleHandler : MonoBehaviour
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.Alpha8))
+            if (Application.isEditor && Input.GetKeyDown(KeyCode.Alpha8))
             {
                 Perish();
             }
