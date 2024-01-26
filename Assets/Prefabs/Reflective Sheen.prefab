@@ -50,6 +50,8 @@ MonoBehaviour:
   m_topLeftTransform: {fileID: 6812601684144369519}
   m_bottomRightTransform: {fileID: 7883892214731640087}
   m_sheenRef: {fileID: 2193552095411282474}
+  m_pauseTime: 2.6
+  m_runTime: 0.4
   m_stayIndependentOfParentRotation: 1
 --- !u!1 &2193552095411282474
 GameObject:
@@ -124,15 +126,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 31b871bb1e0d8674e9bdfb2cc06ee139, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a7b76748124280247a0eeeffe5924440, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2.56, y: 2.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 1
   m_SpriteSortPoint: 0
 --- !u!1 &5689295601339802640

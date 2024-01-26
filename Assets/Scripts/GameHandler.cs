@@ -17,6 +17,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] internal Color m_neutralColor;
     [SerializeField] internal Color m_fearColor1;
     [SerializeField] internal Color m_fearColor2;
+    [SerializeField] internal Color m_fearColor3;
     // Start is called before the first frame update
 
     internal static void ChangeScore(int a_change) { _score += a_change; }
@@ -43,7 +44,7 @@ public class GameHandler : MonoBehaviour
         _upgradeTree = new UpgradeTree();
         _score = 0;
         _lastSeenScore = -1;
-        _mapSize = 1;
+        _mapSize = 2;
     }
 
     // Update is called once per frame

@@ -10,7 +10,7 @@ namespace Assets.Scripts
 
         protected int m_emotion;
         protected const int m_maxLove = 2;
-        protected const int m_minLove = -2;
+        protected const int m_minLove = -3;
 
         internal int GetEmotion() { return m_emotion;}
         internal int GetFear() { return m_maxLove - GetEmotion(); }
@@ -38,6 +38,9 @@ namespace Assets.Scripts
             float lerp = GetEmotionMappedFromMinToMax(a_emotion);
             switch (a_emotion)
             {
+                case -3:
+                    color = GameHandler._autoRef.m_fearColor3;
+                    break;
                 case -2:
                     color = GameHandler._autoRef.m_fearColor2;
                     break;

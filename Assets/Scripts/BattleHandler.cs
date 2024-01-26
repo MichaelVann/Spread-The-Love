@@ -30,6 +30,7 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_vesselsConvertedDeltaText;
     [SerializeField] Image m_whiteOutImageRef;
     [SerializeField] internal GameObject m_worldTextCanvasRef;
+    [SerializeField] ClockRadialCircle m_clockRadialCircle;
 
     //Minimap
     [SerializeField] GameObject m_miniMapRef;
@@ -61,7 +62,7 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] ScrollingRawImage m_scrollingBackgroundRef;
 
     //Timer
-    float m_gameTime = 30f;
+    float m_gameTime = 45f;
     vTimer m_battleTimer;
     vTimer m_battleExplosionTimer;
     vTimer m_secondPassedTimer;
@@ -147,6 +148,20 @@ public class BattleHandler : MonoBehaviour
         FinishEarly();
     }
 
+    void UpdateBattleTimer()
+    {
+        if (!m_gameEnding && m_battleTimer.Update())
+        {
+            m_gameEnding = true;
+            m_battleExplosionTimer = new vTimer(2);
+            m_battleExplosionTimer.SetUsingUnscaledDeltaTime(true);
+        }
+        else
+        {
+            m_clockRadialCircle.SetPieFillAmount(m_battleTimer.GetCompletionPercentage());
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -154,13 +169,7 @@ public class BattleHandler : MonoBehaviour
         {
             UpdateUI();
 
-            //Battle Timer
-            if (!m_gameEnding && m_battleTimer.Update())
-            {
-                m_gameEnding = true;
-                m_battleExplosionTimer = new vTimer(2);
-                m_battleExplosionTimer.SetUsingUnscaledDeltaTime(true);
-            }
+            UpdateBattleTimer();
 
             //Game ending
             if (m_gameEnding)

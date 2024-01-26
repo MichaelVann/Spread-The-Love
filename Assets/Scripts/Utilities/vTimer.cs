@@ -17,6 +17,7 @@ public class vTimer
     bool m_clampingTimer;
 
     public float GetTimer() { return m_timer; }
+    public bool IsActive() { return m_active; }
     public void SetActive(bool a_active) { m_active = a_active; }
     internal void SetTimer(float a_timer) {m_timer = a_timer; }
     internal void SetTimerMax(float a_timerMax) { m_timerMax = a_timerMax; }

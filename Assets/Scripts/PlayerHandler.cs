@@ -49,6 +49,10 @@ public class PlayerHandler : Soul
     bool m_aquaplaningEnabled = false;
     bool m_aquaplaning = false;
 
+    //Wake
+    [SerializeField] GameObject m_wakeRef;
+    bool m_wakeEnabled = false;
+
     //Love Combat
     int m_meleeLoveStrength = Soul.m_maxLove;
 
@@ -100,7 +104,6 @@ public class PlayerHandler : Soul
     static internal float GetRotateSpeed() { return m_startingRotateSpeed * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TurnSpeed)); }
 
     static internal float GetFireRate() { return m_startingFireRate * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.FireRate)); }
-
 
     void Awake()
     {
@@ -368,6 +371,10 @@ public class PlayerHandler : Soul
 
         float velocity = m_rigidBodyRef.velocity.magnitude;
         float speedPercentage = velocity/ GetMaxTheorheticalSpeed();
+        if (m_wakeEnabled)
+        {
+            m_wakeRef.transform.eulerAngles = VLib.Vector2ToEulerAngles(m_rigidBodyRef.velocity);
+        }
         m_speedRampRef.SetRampPercent(speedPercentage);
         m_speedRampRef.SetColor(Color.Lerp(m_gameHandlerRef.m_fearColor1, m_gameHandlerRef.m_loveColorMax, speedPercentage));
     }
@@ -422,8 +429,18 @@ public class PlayerHandler : Soul
             float impulseStrength = Mathf.Pow(a_collision.relativeVelocity.magnitude,2f) * contactStrength;
             Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
 
-            vessel.CollideWithPlayer(m_meleeLoveStrength, -a_collision.contacts[0].normal);
-            GameHandler._audioManager.PlaySFX(m_vesselHitSound);
+            Vector2 collisionDirection = a_collision.contacts[0].normal;
+
+            if (vessel.GetEmotion() == Vessel._bullyType)
+            {
+                m_rigidBodyRef.AddForce(collisionDirection * 10000f);
+                vessel.TriggerShieldEffect(collisionDirection);
+            }
+            else
+            {
+                vessel.CollideWithPlayer(m_meleeLoveStrength, -collisionDirection);
+                GameHandler._audioManager.PlaySFX(m_vesselHitSound);
+            }
         }
         else if (a_collision.gameObject.tag == "Environment")
         {

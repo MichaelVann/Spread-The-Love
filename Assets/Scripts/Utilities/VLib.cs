@@ -128,7 +128,6 @@ public static class VLib
             }
         }
         return result;
-
     }
 
     public static Vector2 EulerAngleToVector2(float a_angle)
@@ -249,6 +248,15 @@ public static class VLib
         newColor.g = VLib.vRandom(0f, 1f);
         newColor.b = VLib.vRandom(0f, 1f);
         newColor.a = 1f;
+
+        return newColor;
+    }
+
+    //Returns the color with specified alpha
+    public static Color WithAlpha(this Color a_color, float a_alpha)
+    {
+        Color newColor = a_color;
+        newColor.a = a_alpha;
 
         return newColor;
     }

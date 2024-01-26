@@ -14,11 +14,19 @@ public class Vessel : Soul
     [SerializeField] SpriteRenderer m_miniMapSpriteRendererRef;
     [SerializeField] GameObject m_risingTextPrefab;
     [SerializeField] ParticleSystem m_loveExplosionRef;
+    [SerializeField] SpriteRenderer m_hatSpriteRendererRef;
     GameHandler m_gameHandlerRef;
 
     BattleHandler m_battleHandlerRef;
     PlayerHandler m_playerHandlerRef;
 
+    //Shieldhit
+    const float _shieldHitLength = 0.4f;
+    [SerializeField] SpriteRenderer m_shieldHitRenderer;
+    vTimer m_shieldHitFadeTimer;
+
+    //Hats
+    [SerializeField] Sprite[] m_hatSprites;
     //Eyes
     [SerializeField] SpriteRenderer m_eyesRef;
     [SerializeField] Sprite[] m_eyeSprites;
@@ -28,6 +36,12 @@ public class Vessel : Soul
     float m_loveWanderSpeedMult = 2f;
     float m_wanderSpeed = 1.0f;
     float m_wanderRotationSpeed = 5f;
+
+    //AI
+    const int _cowardType = -2;
+    internal const int _bullyType = -3;
+    float m_playerSeenDistance = 9f;
+    float m_neg2RotateRate = 4f;
 
     //Soul Attraction
     const float m_soulAttractionConstant = 1.3f;
@@ -81,9 +95,12 @@ public class Vessel : Soul
 
     internal void Init(BattleHandler a_battleHandler, PlayerHandler a_playerHandler, int a_emotion, Camera a_minimapCamera)
     {
+        m_shieldHitRenderer.color = m_shieldHitRenderer.color.WithAlpha(0f);
         m_battleHandlerRef = a_battleHandler;
         m_playerHandlerRef = a_playerHandler;
         m_emotion = a_emotion;
+        m_shieldHitFadeTimer = new vTimer(_shieldHitLength, true, false, false, false, true);
+
         UpdateWanderSpeed();
         m_gameHandlerRef = m_battleHandlerRef.m_gameHandlerRef;
         m_miniMapSpriteRendererRef.GetComponent<MiniMapIcon>().Init(a_minimapCamera);
@@ -116,6 +133,12 @@ public class Vessel : Soul
         m_lovedTrailRef.endColor = new Color(m_spriteRendererRef.color.r, m_spriteRendererRef.color.g, m_spriteRendererRef.color.b, 0f);
 
         m_eyesRef.sprite = IsLoved() ? m_eyeSprites[2] : (m_emotion < 0 ? m_eyeSprites[0] : m_eyeSprites[1]);
+        bool hatActive = m_emotion <= _cowardType;
+        m_hatSpriteRendererRef.gameObject.SetActive(hatActive);
+        if (hatActive)
+        {
+            m_hatSpriteRendererRef.sprite = m_emotion == _cowardType ? m_hatSprites[0] : m_hatSprites[1];
+        }
     }
 
     void ExchangeForceWithPlayer()
@@ -180,10 +203,55 @@ public class Vessel : Soul
         }
     }
 
+    void AIUpdate()
+    {
+        if (m_emotion <= _cowardType)
+        {
+            Vector3 deltaPlayerPos = m_playerHandlerRef.transform.position - transform.position;
+            float deltaPlayerMag = deltaPlayerPos.magnitude;
+            if (deltaPlayerMag < m_playerSeenDistance)
+            {
+                float deltaAngle = Vector2.SignedAngle(m_rigidBodyRef.velocity, deltaPlayerPos.ToVector2());
+                deltaAngle += m_emotion < _cowardType ? 0f: 180f;
+                deltaAngle = VLib.ClampRotation(deltaAngle);
+                m_rigidBodyRef.velocity = VLib.RotateVector2(m_rigidBodyRef.velocity, deltaAngle * m_neg2RotateRate * Time.deltaTime).normalized * m_wanderSpeed;
+            }
+            else
+            {
+                MovementUpdate();
+            }
+        }
+    }
+
+    internal void TriggerShieldEffect(Vector2 a_collisionNormal)
+    {
+        m_shieldHitFadeTimer.SetActive(true);
+        m_shieldHitFadeTimer.Reset();
+        m_shieldHitRenderer.transform.eulerAngles = VLib.Vector2ToEulerAngles(a_collisionNormal);
+    }
+
+    void ShieldHitUpdate()
+    {
+        if (m_shieldHitFadeTimer.IsActive())
+        {
+            if (m_shieldHitFadeTimer.Update())
+            {
+
+            }
+            Color color = m_shieldHitRenderer.color;
+            m_shieldHitRenderer.color = m_shieldHitRenderer.color.WithAlpha(1f-m_shieldHitFadeTimer.GetCompletionPercentage());
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
-        MovementUpdate();
+        if (m_emotion != _cowardType)
+        {
+            MovementUpdate();
+        }
+        AIUpdate();
+        ShieldHitUpdate();
         //AbsorbedEmotionUpdate();
         //ExchangeForceWithPlayer();
         //ProcessEmotions();
@@ -275,10 +343,17 @@ public class Vessel : Soul
         Vibe vibe = a_collision.gameObject.GetComponent<Vibe>();
         if (vibe != null && !vibe.IsOriginSoul(this)) 
         {
-            AbsorbVibe(a_collision.contacts[0].normal, vibe);
-            if (m_spriteRendererRef.isVisible)
+            if (m_emotion != _cowardType)
             {
-                GameHandler._audioManager.PlaySFX(m_vibeHitSound, 0.2f);
+                AbsorbVibe(a_collision.contacts[0].normal, vibe);
+                if (m_spriteRendererRef.isVisible)
+                {
+                    GameHandler._audioManager.PlaySFX(m_vibeHitSound, 0.2f);
+                }
+            }
+            else
+            {
+                TriggerShieldEffect(-a_collision.contacts[0].normal);
             }
         }
         else if (a_collision.gameObject.tag == "Vessel")
@@ -287,8 +362,8 @@ public class Vessel : Soul
             int oppEmotion = opposingVessel.GetEmotion();
             if (oppEmotion != 0 && oppEmotion != m_emotion)
             {
-                bool negativeAndAffected = m_emotion < 0 && (oppEmotion < m_emotion-1 || oppEmotion > 0);
-                bool positiveAndAffected = m_emotion > 0 && (oppEmotion > m_emotion+1 || oppEmotion < 0);
+                bool negativeAndAffected = m_emotion < 0 && (oppEmotion < m_emotion || oppEmotion > 0);
+                bool positiveAndAffected = m_emotion > 0 && (oppEmotion > m_emotion || oppEmotion < 0);
                 if (m_emotion == 0 || negativeAndAffected || positiveAndAffected)
                 {
                     AddEmotion(Mathf.Clamp(oppEmotion - m_emotion, -1, 1));
