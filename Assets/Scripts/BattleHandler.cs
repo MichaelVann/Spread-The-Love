@@ -24,6 +24,7 @@ public class BattleHandler : MonoBehaviour
     //UI
     [SerializeField] GameObject m_uiContainerRef;
     [SerializeField] GameObject m_optionsMenuPrefab;
+    [SerializeField] TextMeshProUGUI m_tierText;
     [SerializeField] TextMeshProUGUI m_timeText;
     [SerializeField] TextMeshProUGUI m_speedText;
     [SerializeField] TextMeshProUGUI m_vesselsConvertedText;
@@ -68,6 +69,7 @@ public class BattleHandler : MonoBehaviour
     vTimer m_battleExplosionTimer;
     vTimer m_secondPassedTimer;
     bool m_gameEnding = false;
+    bool m_gameEnded = false;
 
     internal bool m_paused = false;
 
@@ -94,6 +96,11 @@ public class BattleHandler : MonoBehaviour
         m_battleTimer = new vTimer(m_gameTime, true, true, false);
         m_secondPassedTimer = new vTimer(1f);
         m_vesselCountText.text = "/" + m_vesselList.Count;
+        m_tierText.text = "Tier " + GameHandler._mapSize;
+        if (GameHandler._mapSize <= 3)
+        {
+            m_tierText.text += "/3";
+        }
         m_backgroundRef.size = GetMapSize() * new Vector2(2f/m_backgroundRef.transform.localScale.x,2f/ m_backgroundRef.transform.localScale.y);
     }
 
@@ -119,6 +126,7 @@ public class BattleHandler : MonoBehaviour
     void MoveToSamsara()
     {
         GameHandler.ChangeScore(m_vesselsConverted);
+        m_gameEnded = true;
         FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
     }
 
@@ -128,7 +136,6 @@ public class BattleHandler : MonoBehaviour
         m_speedText.text = m_playerHandlerRef.GetSpeed().ToString("f1") + " m/s";
         m_vesselsConvertedText.text = m_vesselsConverted.ToString();
         m_timeText.text = (m_gameTime - m_battleTimer.GetTimer()).ToString("f1");
-
         m_scrollingBackgroundRef.SetAdditionalOffset(m_mainCameraRef.transform.position);
     }
 
@@ -173,7 +180,7 @@ public class BattleHandler : MonoBehaviour
             UpdateBattleTimer();
 
             //Game ending
-            if (m_gameEnding)
+            if (!m_gameEnded && m_gameEnding)
             {
                 if (m_battleExplosionTimer.Update())
                 {

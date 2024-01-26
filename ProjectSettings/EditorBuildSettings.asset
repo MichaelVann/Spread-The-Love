@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Main Menu.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
+    path: Assets/Scenes/FirstTimeCutScene.unity
+    guid: 48860afa26696c142b4591bb90c6ef79
+  - enabled: 1
     path: Assets/Scenes/Samsara.unity
     guid: 6b938e7d36cb95b4db8acb66bf62640d
   - enabled: 1

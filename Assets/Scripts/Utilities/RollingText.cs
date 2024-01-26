@@ -29,6 +29,8 @@ public class RollingText : MonoBehaviour
 
     public void SetDesiredValue(float a_value) { m_desiredValue = a_value; }
 
+    internal void SetRollTime(float a_time) { m_rollTime = a_time; }
+
     public void SetCurrentValue(float a_value) { m_currentValue = a_value; }
 
     internal void SetBrackets(bool a_value) { m_inBrackets = a_value; }

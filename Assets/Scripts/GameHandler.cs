@@ -13,6 +13,7 @@ public class GameHandler : MonoBehaviour
     internal static int _score;
     internal static int _lastSeenScore;
     internal static int _mapSize;
+    internal static bool _firstTimeCutscenePlayed = false;
 
     [SerializeField] internal Color m_loveColorMax;
     [SerializeField] internal Color m_loveColor1;
@@ -26,6 +27,7 @@ public class GameHandler : MonoBehaviour
     {
         MainMenu,
         Samsara,
+        FirstTimeCutScene,
         Battle
     }
     eScene m_currentScene, m_queuedScene;
@@ -36,6 +38,7 @@ public class GameHandler : MonoBehaviour
     const float m_sceneFadeDuration = 0.35f;
 
     internal static void ChangeScore(int a_change) { _score += a_change; }
+    internal static void ChangeScoreFromSamsara(int a_change) { _score += a_change; UpdateLastSeenScore(); }
     internal static void UpdateLastSeenScore() { _lastSeenScore = _score; }
     internal static void IncrementMapSize() { _mapSize++; }
 
@@ -81,7 +84,7 @@ public class GameHandler : MonoBehaviour
     internal void TransitionScene(eScene a_scene)
     {
         m_queuedScene = a_scene;
-        m_sceneFadeTimer = new vTimer(m_sceneFadeDuration, true, true, false, false);
+        m_sceneFadeTimer = new vTimer(m_sceneFadeDuration, true, true, false, true);
         m_sceneFadingOut = true;
         m_sceneFadeCanvasRef.worldCamera = FindObjectOfType<Camera>();
         m_sceneFadeCanvasRef.sortingLayerName = "UI";
@@ -99,6 +102,9 @@ public class GameHandler : MonoBehaviour
                 break;
             case eScene.Samsara:
                 SceneManager.LoadScene("Samsara");
+                break;
+            case eScene.FirstTimeCutScene:
+                SceneManager.LoadScene("FirstTimeCutScene");
                 break;
             case eScene.Battle:
                 SceneManager.LoadScene("Battle");

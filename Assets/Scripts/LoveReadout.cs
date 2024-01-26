@@ -12,8 +12,10 @@ public class LoveReadout : MonoBehaviour
     {
         m_rollingTextRef.SetCurrentValue(GameHandler._lastSeenScore);
         m_rollingTextRef.SetDesiredValue(GameHandler._score);
+        m_rollingTextRef.SetRollTime(1f);
         m_deltaRollingTextRef.SetCurrentValue(GameHandler._score - GameHandler._lastSeenScore);
         m_deltaRollingTextRef.SetDesiredValue(0f);
+        m_deltaRollingTextRef.SetRollTime(1f);
         m_deltaRollingTextRef.SetPlusMinusSign(true);
         m_deltaRollingTextRef.SetBrackets(true);
         m_deltaRollingTextRef.SetDestroyGameObjectOnFinish(true);

@@ -28,7 +28,14 @@ public class MainMenuHandler : MonoBehaviour
 
     public void MoveToSamsara()
     {
-        FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
+        if (!GameHandler._firstTimeCutscenePlayed)
+        {
+            FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.FirstTimeCutScene);
+        }
+        else
+        {
+            FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
+        }
     }
 
     public void Exit()

@@ -4,6 +4,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SamsaraHandler : MonoBehaviour
 {
@@ -14,11 +15,24 @@ public class SamsaraHandler : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_fireRateText;
     [SerializeField] LoveReadout m_loveReadoutRef;
     [SerializeField] GameObject m_optionsMenuPrefab;
+    [SerializeField] Button m_nextHintButton;
+
+    //Hints
+    [SerializeField] TextMeshProUGUI m_hintText;
+    [SerializeField] TextMeshProUGUI m_hintCostText;
+    int m_currentHint = -1;
+    int m_hintCost = 3;
+
+    List<string> m_hints = new List<string> {
+        "Try to focus on loving the saddest and most fearful of the souls first, they cause the most pain.",
+        "Time is all you have and all you need.",
+    };
 
     // Start is called before the first frame update
     void Start()
     {
         Time.timeScale = 1.0f;
+        m_hintCostText.text = m_hintCost.ToString();
         RefreshUI();
     }
 
@@ -27,7 +41,7 @@ public class SamsaraHandler : MonoBehaviour
     {
         if (Application.isEditor && Input.GetKey(KeyCode.Alpha7))
         {
-            GameHandler.ChangeScore(1);
+            GameHandler.ChangeScoreFromSamsara(1);
             RefreshUI();
         }
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -45,20 +59,35 @@ public class SamsaraHandler : MonoBehaviour
         m_fireRateText.text = "Fire Rate: " + PlayerHandler.GetFireRate() + "/s";
     }
 
+    void RefreshHintButton()
+    {
+        m_nextHintButton.interactable =  GameHandler._lastSeenScore >= m_hintCost;
+    }
+
     public void RefreshUI()
     {
         RefreshStats();
+        RefreshHintButton();
         m_loveReadoutRef.RefreshRollingText();
     }
 
     public void Reincarnate()
     {
         FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Battle);
+
         GameHandler.UpdateLastSeenScore();
     }
 
     public void ReturnToMainMenu()
     {
         FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.MainMenu);
+    }
+
+    public void PurchaseHint()
+    {
+        GameHandler.ChangeScoreFromSamsara(-m_hintCost);
+        m_currentHint = (m_currentHint+1)%m_hints.Count;
+        m_hintText.text = m_hints[m_currentHint];
+        RefreshUI();
     }
 }
