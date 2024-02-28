@@ -24,8 +24,11 @@ public class SamsaraHandler : MonoBehaviour
     int m_hintCost = 3;
 
     List<string> m_hints = new List<string> {
+        "I'd suggest getting your movement to a better place before trying to mess around with the shooting stuff",
         "Try to focus on loving the saddest and most fearful of the souls first, they cause the most pain.",
         "Time is all you have and all you need.",
+        "The mohawk looking dudes are invulnerable to your shot love vibes, try giving them a hug.",
+        "The guys chasing you down are not going to engage with you well physically, try zapping them with a good vibe first.",
     };
 
     // Start is called before the first frame update
@@ -61,7 +64,7 @@ public class SamsaraHandler : MonoBehaviour
 
     void RefreshHintButton()
     {
-        m_nextHintButton.interactable =  GameHandler._lastSeenScore >= m_hintCost;
+        m_nextHintButton.interactable =  GameHandler._score >= m_hintCost;
     }
 
     public void RefreshUI()

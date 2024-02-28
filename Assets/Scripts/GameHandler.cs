@@ -62,7 +62,7 @@ public class GameHandler : MonoBehaviour
         _upgradeTree = new UpgradeTree();
         _score = 0;
         _lastSeenScore = -1;
-        _mapSize = 2;
+        _mapSize = 1;
     }
 
     // Update is called once per frame

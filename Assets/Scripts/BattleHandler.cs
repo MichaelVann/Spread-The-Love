@@ -33,6 +33,10 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] Image m_whiteOutImageRef;
     [SerializeField] internal GameObject m_worldTextCanvasRef;
     [SerializeField] ClockRadialCircle m_clockRadialCircle;
+    //Abilities UI
+    [SerializeField] AbilityReadout m_shootAbilityReadout;
+    [SerializeField] AbilityReadout m_brakeAbilityReadout;
+    [SerializeField] AbilityReadout m_aquaplaneAbilityReadout;
 
     //Minimap
     [SerializeField] GameObject m_miniMapRef;
@@ -86,13 +90,23 @@ public class BattleHandler : MonoBehaviour
         m_miniMapCameraRef.GetComponent<Camera>().orthographicSize = GetMapSize().x;
     }
 
+    void InitialiseUpgrades()
+    {
+        m_gameTime += GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.AdditionalTime);
+
+        m_shootAbilityReadout.SetUnlocked(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Shooting));
+        m_brakeAbilityReadout.SetUnlocked(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Braking));
+
+        m_aquaplaneAbilityReadout.SetUnlocked(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Aquaplane));
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         SpawnBuildings();
         SpawnOuterWalls();
         SpawnVessels();
-        m_gameTime += GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.AdditionalTime);
+        InitialiseUpgrades();
         m_battleTimer = new vTimer(m_gameTime, true, true, false);
         m_secondPassedTimer = new vTimer(1f);
         m_vesselCountText.text = "/" + m_vesselList.Count;

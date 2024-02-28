@@ -20,6 +20,7 @@ public class CutsceneHandler : MonoBehaviour
         sprites.Add(concernedSprite);
 
         dialogs.Add("Letting go. And spreading <color=#ff004c>love</color>.");
+        dialogs.Add("(Attempt to cherish as many of the grief stricken and fearful souls wandering these streets as possible, before the end draws near. As you get to higher tiers, they may be more <color=blue>resistant</color>)");
         sprites.Add(enlightenedSprite);
 
         m_dialogBoxRef.Init(MoveToNextScene);

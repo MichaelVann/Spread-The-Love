@@ -15,6 +15,10 @@ public static class VLib
     internal static Color COLOR_yellow = new Color(1f,188f/255f,0f);
     public static string GetEnumName<T>(T a_type) { return Enum.GetName(typeof(T), a_type); }
 
+    public const float _degreesToRadians = 3.14159265358979323f / 180f;
+
+    public const float _msToKmh = 3.6f;
+
     public static string FirstLetterToUpperCaseOrConvertNullToEmptyString(this string s)
     {
         if (string.IsNullOrEmpty(s))
@@ -204,6 +208,16 @@ public static class VLib
     public static Quaternion Vector3ToQuaternion(Vector3 a_vector3)
     {
         return Quaternion.Euler(Vector3ToEulerAngles(a_vector3));
+    }
+
+    public static Vector3 RandomVector3Direction()
+    {
+        return new Vector3(vRandom(-1f,1f), vRandom(-1f, 1f), vRandom(-1f, 1f));
+    }
+
+    public static float CosDeg(float a_angle)
+    {
+        return Mathf.Cos(a_angle * Mathf.PI/180f);
     }
 
     public static int SafeMod(int a_value, int a_mod)
