@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_Test Shader Graph
-  m_Shader: {fileID: -6465566751694194690, guid: 761c38cee927e174f976f95e2e1d1451, type: 3}
+  m_Name: Love Trail Mat
+  m_Shader: {fileID: -6465566751694194690, guid: 2c3d7e4e253b8e24ba7da75e3d6efc9a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -23,16 +23,8 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 06de4471d59b09d4cac9f4de60fa4d3e, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Texture2D:
-        m_Texture: {fileID: 2800000, guid: 06de4471d59b09d4cac9f4de60fa4d3e, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Texture2DAsset_55769c7010174c7f849750854bf77f96_Out_0_Texture2D:
-        m_Texture: {fileID: 2800000, guid: a7b76748124280247a0eeeffe5924440, type: 3}
+    - _Texture:
+        m_Texture: {fileID: 2800000, guid: 9b3811bedb124b448b83ae7d9185711e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -49,13 +41,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Scroll_Speed: 4
+    - _Pulse_Amount: 0.3
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Scroll_Direction: {r: -1, g: 1, b: 0, a: 0}
-    - _Scroll_Vector: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 0.7921569, g: 0.16635293, b: 0.35950255, a: 1}
   m_BuildTextureStacks: []
---- !u!114 &5774236730239247665
+--- !u!114 &6405002689103747350
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

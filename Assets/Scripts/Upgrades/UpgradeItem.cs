@@ -31,9 +31,10 @@ public class UpgradeItem
 
     public enum UpgradeId
     {
+        Acceleration,
         Mass,
         Braking,
-        Acceleration,
+        Grip,
         TopSpeed,
         TurnSpeed,
         Aquaplane,

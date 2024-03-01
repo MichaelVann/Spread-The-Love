@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2645577837268583233}
   - component: {fileID: 3800325710316415260}
   - component: {fileID: 3011794995234358692}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Cap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 1903825905078104965}
   - component: {fileID: 2070258975557583106}
   - component: {fileID: 611399220430125835}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Cap (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -271,7 +271,7 @@ GameObject:
   - component: {fileID: 1837599673205195091}
   - component: {fileID: 2432163365536495723}
   - component: {fileID: 2239667129023661977}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: OuterWall
   m_TagString: Environment
   m_Icon: {fileID: 0}

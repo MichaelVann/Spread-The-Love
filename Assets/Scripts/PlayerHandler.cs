@@ -31,7 +31,9 @@ public class PlayerHandler : Soul
     internal const float m_startingMaxSpeed = 10f;
     float m_maxSpeed;
     internal const float m_startingAcceleration = 1f;
+    internal const float m_startingGrip = 2f;
     float m_acceleration;
+    float m_grip;
     bool m_brakingEnabled = false;
     internal const float m_startingBrakingStrength = 1f;
     float m_brakingStrength;
@@ -98,6 +100,8 @@ public class PlayerHandler : Soul
     static internal float GetBraking() { return m_startingBrakingStrength * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Braking)); }
     static internal float GetAcceleration() { return m_startingAcceleration * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Acceleration)); }
 
+    static internal float GetGrip() { return m_startingGrip * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Grip)); }
+
     static internal float GetMaxSpeed() { return m_startingMaxSpeed + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TopSpeed); }
     static internal float GetMaxTheorheticalSpeed() { return m_startingMaxSpeed + GameHandler._upgradeTree.GetUpgradeMaxLeveledStrength(UpgradeItem.UpgradeId.TopSpeed); }
 
@@ -138,10 +142,11 @@ public class PlayerHandler : Soul
 
     void InitialiseUpgrades()
     {
+        m_acceleration = GetAcceleration();
         m_rigidBodyRef.mass = GetMass();
         m_brakingEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Braking);
         m_brakingStrength = GetBraking();
-        m_acceleration = GetAcceleration();
+        m_grip = GetGrip();
         m_maxSpeed = GetMaxSpeed();
         m_rotateSpeed = GetRotateSpeed();
         m_fireRate = GetFireRate();
@@ -284,8 +289,9 @@ public class PlayerHandler : Soul
         float windCorrectionForce = driftAngle;
         windCorrectionForce += driftAngle * 10f * Mathf.Clamp(Mathf.Abs(driftAngle) - 90f, 0f, 90f) / 90f;
         m_rigidBodyRef.AddTorque(-windCorrectionForce * Time.deltaTime * m_rigidBodyRef.mass * GetSpeedPercentage());
-        float alignSpeed = 2f;
-        m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.RotateVector2(driftAngle * alignSpeed * Time.deltaTime);
+        float maxRotation = driftAngle < 0 ? 0f : driftAngle;
+        float minRotation = driftAngle < 0 ? driftAngle : 0f;
+        m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.RotateVector2(Mathf.Clamp(driftAngle * m_grip * Time.deltaTime, minRotation, maxRotation));
         float angleDrag = Mathf.Abs(Mathf.Sin(Mathf.PI * driftAngle / 180f));
         angleDrag *= m_rotateDrag;
         angleDrag *= Time.deltaTime;
@@ -320,7 +326,7 @@ public class PlayerHandler : Soul
 
     void AccelerateForwards()
     {
-        Vector2 forwardDirection = Vector3.zero;
+        Vector2 forwardDirection;
         if (m_rigidBodyRef.velocity.magnitude == 0)
         {
             forwardDirection = VLib.Euler2dAngleToVector3(transform.eulerAngles.z);
@@ -446,9 +452,6 @@ public class PlayerHandler : Soul
         {
             m_driftSpread = 1f;
             GameHandler._audioManager.PlaySFX(m_wallHitSound);
-            //m_rotation = VLib.Vector2ToEulerAngle(m_rigidBodyRef.velocity);
-            //m_rigidBodyRef.rotation = m_rotation;
-            m_rigidBodyRef.velocity += a_collision.contacts[0].normal * 1f;
         }
     }
 }
