@@ -42,6 +42,8 @@ public class GameHandler : MonoBehaviour
     internal static void UpdateLastSeenScore() { _lastSeenScore = _score; }
     internal static void IncrementMapSize() { _mapSize++; }
 
+    internal static void SetFirstTimeCutscenePlayed(bool a_value) { _firstTimeCutscenePlayed = true; }
+
     void Awake()
     {
         if (_autoRef == null)
@@ -69,6 +71,14 @@ public class GameHandler : MonoBehaviour
     void Update()
     {
         SceneFadeUpdate();
+        if (Input.GetKeyDown(KeyCode.Minus))
+        {
+            LoadGame();
+        }
+        else if(Input.GetKeyDown(KeyCode.Equals))
+        {
+            SaveGame();
+        }
     }
 
     static internal void AutoSaveCheck()
@@ -134,5 +144,17 @@ public class GameHandler : MonoBehaviour
             _audioManager.m_sceneFadeAmount = fade;
             _audioManager.Refresh();
         }
+    }
+
+    static void SaveGame()
+    {
+        SaveDataUtility saveDataUtility = new SaveDataUtility();
+        saveDataUtility.Save();
+    }
+
+    static void LoadGame()
+    {
+        SaveDataUtility saveDataUtility = new SaveDataUtility();
+        saveDataUtility.TryLoad();
     }
 }

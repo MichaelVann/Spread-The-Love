@@ -24,7 +24,7 @@ public class UpgradeTree
         SetupUpgrades();
     }
 
-    UpgradeItem NewUpgrade(UpgradeItem.UpgradeId a_ID, string a_name, float a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description, bool a_toggleable = false)
+    UpgradeItem NewUpgrade(UpgradeId a_ID, string a_name, float a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description, bool a_toggleable = false)
     {
         UpgradeItem upgrade = new UpgradeItem(a_ID,a_name, (int)(a_cost * m_baseUpgradePrice), a_maxLevel, a_effectStrength, a_precursorUpgrade, a_description, a_toggleable);
         m_upgradeItemList.Add(upgrade);

@@ -16,6 +16,7 @@ public class AudioManager : MonoBehaviour
         SFX,
         Music,
         Ambience,
+        Count
     }
 
     struct SoundChannel

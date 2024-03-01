@@ -37,5 +37,6 @@ public class CutsceneHandler : MonoBehaviour
     void MoveToNextScene()
     {
         FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Battle);
+        GameHandler.SetFirstTimeCutscenePlayed(true);
     }
 }
