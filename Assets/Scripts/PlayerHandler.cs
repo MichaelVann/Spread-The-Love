@@ -197,7 +197,7 @@ public class PlayerHandler : Soul
                 {
                     float angle = i * (2 * m_shootSpreadAngle) - ((m_shootSpread - 1) * m_shootSpreadAngle);
                     Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
-                    loveVibe.Init(m_battleHandlerRef, null, aimDirection.normalized.RotateVector2(angle), m_rigidBodyRef.velocity, m_emotion);
+                    loveVibe.Init(null, aimDirection.normalized.RotateVector2(angle), m_rigidBodyRef.velocity, m_emotion);
                 }
 
                 GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);

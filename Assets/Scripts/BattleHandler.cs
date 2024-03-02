@@ -75,11 +75,33 @@ public class BattleHandler : MonoBehaviour
     bool m_gameEnding = false;
     bool m_gameEnded = false;
 
+    //Entities
+    [SerializeField] GameObject m_lootBagPrefab;
+    int m_lootBagsToSpawn = 4;
+
     internal bool m_paused = false;
 
     internal Vector2 GetMapSize() { return new Vector2(m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingColumns / 2f, m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingRows / 2f); }
 
     internal void SetPaused(bool a_paused) { m_paused = a_paused; Time.timeScale = m_paused ? 0f : 1f; }
+
+    internal float GetBuildingGap() { return m_buildingSize + m_streetSize; }
+
+    internal bool IsCentreIntersection(int a_x, int a_y)
+    {
+        return (a_x == m_buildingColumns / 2 && a_y == m_buildingRows / 2);
+    }
+
+    internal Vector2 GetIntersectionPos(int a_x, int a_y)
+    {
+        float buildingGap = GetBuildingGap();
+        Vector2 returnPos =  Vector2.zero;
+        returnPos.x = a_x * buildingGap;
+        returnPos.x -= buildingGap * m_buildingColumns / 2f;
+        returnPos.y = a_y * buildingGap;
+        returnPos.y -= buildingGap * m_buildingRows / 2f;
+        return returnPos;
+    }
 
     private void Awake()
     {
@@ -103,9 +125,7 @@ public class BattleHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SpawnBuildings();
-        SpawnOuterWalls();
-        SpawnVessels();
+        SetupMap();
         InitialiseUpgrades();
         m_battleTimer = new vTimer(m_gameTime, true, true, false);
         m_secondPassedTimer = new vTimer(1f);
@@ -237,51 +257,38 @@ public class BattleHandler : MonoBehaviour
 
     void SpawnVessels()
     {
-        float buildingGap = m_buildingSize + m_streetSize;
-
         for (int i = 0; i < m_buildingColumns+1; i++)
         {
             for (int j = 0; j < m_buildingRows+1; j++)
             {
-                if (i == m_buildingColumns/2 && j == m_buildingRows/2)
+                if (IsCentreIntersection(i,j))
                 {
                     continue;
                 }
-                float posX = i * buildingGap;
-                posX -= buildingGap * m_buildingColumns / 2f;
-                float posY = j * buildingGap;
-                posY -= buildingGap * m_buildingRows / 2f;
+
+                Vector3 spawnPos = GetIntersectionPos(i,j);
 
                 bool inACorner = (i == 0 || i == m_buildingColumns);
                 inACorner &= (j == 0 || j == m_buildingRows);
 
-                if (inACorner)
-                {
-                    int vesselStrength = Mathf.Clamp(-GameHandler._mapSize, Soul.GetMinPossibleLove(), -1);
-                    SpawnVessel(new Vector3(posX, posY), vesselStrength);
-                    SpawnVessel(new Vector3(posX, posY), vesselStrength);
-                    SpawnVessel(new Vector3(posX, posY), vesselStrength);
-                }
-                else
-                {
-                    SpawnVessel(new Vector3(posX, posY));
-                    SpawnVessel(new Vector3(posX, posY));
-                    SpawnVessel(new Vector3(posX, posY));
-                }
+                int vesselStrength = inACorner ? Mathf.Clamp(-GameHandler._mapSize, Soul.GetMinPossibleLove(), -1) : 0;
+
+                SpawnVessel(spawnPos, vesselStrength);
+                SpawnVessel(spawnPos, vesselStrength);
+                SpawnVessel(spawnPos, vesselStrength);
             }
         }
     }
 
     void SpawnOuterWalls()
     {
-        float buildingGap = m_buildingSize + m_streetSize;
+        float buildingGap = GetBuildingGap();
         float xOffset = m_streetSize/2f + buildingGap * m_buildingColumns / 2f;
         float yOffset = m_streetSize/2f + buildingGap * m_buildingRows / 2f;
         for (int i = 0; i < 4; i++)
         {
             float posX = i < 2 ? (i % 2 == 0 ? -xOffset : xOffset): 0f;
             float posY = i >= 2 ? (i % 2 == 0 ? -yOffset : yOffset): 0f;
-            float angle = i < 2 ? 0f : 90f;
             SpriteRenderer spriteRenderer = Instantiate(m_outerWallPrefab, new Vector3(posX, posY, 0f), Quaternion.identity).GetComponent<SpriteRenderer>();
             if (i < 2)
             {
@@ -291,7 +298,6 @@ public class BattleHandler : MonoBehaviour
             {
                 spriteRenderer.size = spriteRenderer.GetComponent<BoxCollider2D>().size = new Vector2(Mathf.Abs(posY) * 2f, 1f);
             }
-            //spriteRenderer.gameObject.transform.eulerAngles = new Vector3 (0f, 0f, angle);
         }
     }
 
@@ -346,6 +352,31 @@ public class BattleHandler : MonoBehaviour
                 SpawnBuilding(new Vector3(posX, posY));
             }
         }
+    }
+
+    void SpawnEntities()
+    {
+        int[][] spawnPositions = new int[m_lootBagsToSpawn][];
+        for (int i = 0; i < m_lootBagsToSpawn; i++)
+        {
+            spawnPositions[i] = new int[2];
+            do
+            {
+                spawnPositions[i][0] = VLib.vRandom(0, m_buildingColumns);
+                spawnPositions[i][1] = VLib.vRandom(0, m_buildingRows);
+            } while (IsCentreIntersection(spawnPositions[i][0], spawnPositions[i][1]));
+
+
+            Instantiate(m_lootBagPrefab, GetIntersectionPos(spawnPositions[i][0], spawnPositions[i][1]), Quaternion.identity);
+        }
+    }
+
+    void SetupMap()
+    {
+        SpawnBuildings();
+        SpawnOuterWalls();
+        SpawnVessels();
+        SpawnEntities();
     }
 
     internal void DestroyVessel(Vessel a_vessel)
