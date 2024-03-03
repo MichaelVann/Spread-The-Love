@@ -56,18 +56,23 @@ public class PlayerHandler : Soul
     bool m_wakeEnabled = false;
 
     //Love Combat
-    int m_meleeLoveStrength = Soul.m_maxLove;
+    int m_meleeLoveStrength = m_maxLove;
 
     //Shoot
-    bool m_shootingEnabled = false;
-    bool m_readyToShoot = true;
     internal const float m_startingFireRate = 1f;
-    float m_fireRate;
-    vTimer m_shootTimer;
+    //bool m_shootingEnabled = false;
+    //bool m_readyToShoot = true;
+    //float m_fireRate;
+    //vTimer m_shootTimer;
+    Ability m_abilityShoot;
+
     int m_shootSpread = 1;
     float m_shootSpreadAngle = 5f;
     bool m_autoShootEnabled = false;
     bool m_mouseAiming = false;
+
+    Ability m_abilityBulletTime;
+
 
     //Speed Chime
     [SerializeField] AudioClip m_speedChimeAudioClip;
@@ -109,12 +114,28 @@ public class PlayerHandler : Soul
 
     static internal float GetFireRate() { return m_startingFireRate * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.FireRate)); }
 
+    internal Ability GetAbility(UpgradeItem.UpgradeId a_id)
+    {
+        Ability ability = null;
+        switch (a_id)
+        {
+            case UpgradeItem.UpgradeId.Shooting:
+                ability = m_abilityShoot;
+                break;
+            case UpgradeItem.UpgradeId.BulletTime:
+                ability = m_abilityBulletTime;
+                break;
+            default:
+                break;
+        }
+        return ability;
+    }
+
     void Awake()
     {
         m_rigidBodyRef = GetComponent<Rigidbody2D>();
         m_rigidBodyRef.velocity = new Vector2(0f, -1f);
         InitialiseUpgrades();
-        m_shootTimer = new vTimer(1f/m_fireRate);
         m_speedChimeTimer = new vTimer(m_speedChimeTimerRepeatTime);
         InitialiseAudio();
         InitialiseColors();
@@ -140,6 +161,11 @@ public class PlayerHandler : Soul
         m_vesselRadarCaretRef.color = gameHandler.m_fearColor1;
     }
 
+    void InitialiseBulletTime()
+    {
+        m_abilityBulletTime = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BulletTime), 10f, 0.5f, 1f);
+    }
+
     void InitialiseUpgrades()
     {
         m_acceleration = GetAcceleration();
@@ -149,15 +175,17 @@ public class PlayerHandler : Soul
         m_grip = GetGrip();
         m_maxSpeed = GetMaxSpeed();
         m_rotateSpeed = GetRotateSpeed();
-        m_fireRate = GetFireRate();
         m_vesselRadarRef.SetActive(false);// GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Radar));
         m_vesselRadarEulers = Vector3.zero;
-        //m_driftSpreadEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.DriftSpread);
-        m_shootingEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Shooting);
+
+        //Shooting
+        m_abilityShoot = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Shooting), 1f/GetFireRate());
         m_shootSpread = 1 + (int)GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.ShootSpread);
         m_aquaplaningEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Aquaplane);
         m_autoShootEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.AutoShoot);
         m_mouseAiming = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
+
+        InitialiseBulletTime();
     }
 
     // Start is called before the first frame update
@@ -168,18 +196,11 @@ public class PlayerHandler : Soul
         m_gameHandlerRef =  FindObjectOfType<GameHandler>();
     }
 
-    void UpdateShootTimer()
-    {
-        if (!m_readyToShoot && m_shootTimer.Update())
-        {
-            m_readyToShoot = true;
-        }
-    }
-
     void ShootUpdate()
     {
-        if (m_shootingEnabled)
+        if (m_abilityShoot.m_enabled)
         {
+            m_abilityShoot.UpdateCooldown();
             Vector2 aimDirection = VLib.EulerAngleToVector2(-m_rigidBodyRef.rotation);
 
             if (m_mouseAiming)
@@ -190,9 +211,8 @@ public class PlayerHandler : Soul
             aimDirection = aimDirection.normalized;
 
             //deltaMousePos = new Vector2(1f,0f);
-            if ((m_autoShootEnabled || Input.GetKey(KeyCode.W)) && m_readyToShoot)
+            if ((m_autoShootEnabled || Input.GetKey(KeyCode.W)) && m_abilityShoot.AttemptToActivate())
             {
-                m_readyToShoot = false;
                 for (int i = 0; i < m_shootSpread; i++)
                 {
                     float angle = i * (2 * m_shootSpreadAngle) - ((m_shootSpread - 1) * m_shootSpreadAngle);
@@ -202,7 +222,23 @@ public class PlayerHandler : Soul
 
                 GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
             }
-            UpdateShootTimer();
+        }
+
+        //////////////
+        if (m_abilityBulletTime.IsActive())
+        {
+            if (m_abilityBulletTime.DurationUpdate())
+            {
+                m_battleHandlerRef.SetBulletTimeFactor(1f);
+            }
+        }
+        else
+        {
+            m_abilityBulletTime.UpdateCooldown();
+            if (Input.GetKey(KeyCode.T) && m_abilityBulletTime.AttemptToActivate())
+            {
+                m_battleHandlerRef.SetBulletTimeFactor(m_abilityBulletTime.m_effectStrength);
+            }
         }
     }
 
@@ -413,6 +449,25 @@ public class PlayerHandler : Soul
         }
     }
 
+    void BulletTimeUpdate()
+    {
+        if (m_abilityBulletTime.IsActive())
+        {
+            if (m_abilityBulletTime.DurationUpdate())
+            {
+                m_battleHandlerRef.SetBulletTimeFactor(1f);
+            }
+        }
+        else
+        {
+            m_abilityBulletTime.UpdateCooldown();
+            if (Input.GetKey(KeyCode.T) && m_abilityBulletTime.AttemptToActivate())
+            {
+                m_battleHandlerRef.SetBulletTimeFactor(m_abilityBulletTime.m_effectStrength);
+            }
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -422,6 +477,7 @@ public class PlayerHandler : Soul
             MovementUpdate();
             SpreadUpdate();
             VesselRadarUpdate();
+            BulletTimeUpdate();
         }
     }
 
@@ -437,7 +493,7 @@ public class PlayerHandler : Soul
 
             Vector2 collisionDirection = a_collision.contacts[0].normal;
 
-            if (vessel.GetEmotion() == Vessel._bullyType)
+            if (vessel.GetEmotion() == (int)Vessel.eFearType.Bully)
             {
                 m_rigidBodyRef.AddForce(collisionDirection * 10000f);
                 vessel.TriggerShieldEffect(collisionDirection);

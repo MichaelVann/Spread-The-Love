@@ -4,21 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using UnityEngine;
 
 [Serializable]
 public class UpgradeItem
 {
-    public string m_name;
-    public string m_description;
+    internal string m_name;
+    internal string m_description;
 
-    public int m_cost;
-    public float m_costScaling = 1.2f;
-    public bool m_owned = false;
-    public bool m_hasLevels = false;
-    public int m_level = 0;
-    public int m_maxLevel = 0;
+    internal int m_cost;
+    internal float m_costScaling;
+    internal bool m_owned = false;
+    internal bool m_hasLevels = false;
+    internal int m_level = 0;
+    internal int m_maxLevel = 0;
 
-    public bool m_unlocked;
+    internal bool m_unlocked;
+    internal KeyCode m_key = KeyCode.None;
 
     //Toggle
     internal bool m_toggled = true;
@@ -46,7 +48,8 @@ public class UpgradeItem
         MouseAim,
         //Radar,
         //Minimap,
-        AdditionalTime
+        AdditionalTime,
+        BulletTime
     }
     public UpgradeId m_ID;
 
@@ -69,10 +72,13 @@ public class UpgradeItem
 
     internal void SetToggleable(bool a_value) { m_toggleable = a_value; }
 
+    internal void SetKey(KeyCode a_key) { m_key = a_key; }
+
     internal bool IsEnabled() { return m_toggled && m_owned; }
 
     internal float GetLeveledStrength() { return m_effectStrength * m_level; }
     internal float GetMaxLeveledStrength() { return m_effectStrength * m_maxLevel; }
+
 
     internal bool IsReadyToUpgrade(float a_cash) { return m_unlocked && a_cash >= m_cost && (m_hasLevels ? (m_level < m_maxLevel) : true); }
 
@@ -86,7 +92,7 @@ public class UpgradeItem
         m_upgradeChildren = new List<UpgradeItem>();
     }
 
-    public UpgradeItem(UpgradeId a_ID, string a_name, int a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description, bool a_toggleable)
+    public UpgradeItem(UpgradeId a_ID, string a_name, int a_cost, int a_maxLevel, float a_effectStrength, UpgradeItem a_precursorUpgrade, string a_description, bool a_toggleable, float a_costScaling)
     {
         m_upgradeChildren = new List<UpgradeItem>();
         SetID(a_ID);
@@ -105,6 +111,7 @@ public class UpgradeItem
         }
         m_effectStrength = a_effectStrength;
         m_toggleable = a_toggleable;
+        m_costScaling = a_costScaling;
         Refresh();
     }
 

@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AbilityReadout : MonoBehaviour
+public class PreparationScreen : MonoBehaviour
 {
-    [SerializeField] GameObject m_lockRef;
     // Start is called before the first frame update
     void Start()
     {
@@ -15,10 +14,5 @@ public class AbilityReadout : MonoBehaviour
     void Update()
     {
         
-    }
-
-    internal void SetUnlocked(bool a_unlocked)
-    {
-        m_lockRef.SetActive(!a_unlocked);
     }
 }

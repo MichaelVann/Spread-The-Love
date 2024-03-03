@@ -38,8 +38,17 @@ public class Vessel : Soul
     float m_wanderRotationSpeed = 5f;
 
     //AI
-    const int _cowardType = -2;
-    internal const int _bullyType = -3;
+    internal enum eFearType
+    {
+        Regular = -1,
+        Coward = -2,
+        Bully = -3,
+
+    }
+
+
+    //const int _cowardType = -2;
+    //internal const int _bullyType = -3;
     float m_playerSeenDistance = 9f;
     float m_neg2RotateRate = 4f;
 
@@ -133,11 +142,11 @@ public class Vessel : Soul
         m_lovedTrailRef.endColor = new Color(m_spriteRendererRef.color.r, m_spriteRendererRef.color.g, m_spriteRendererRef.color.b, 0f);
 
         m_eyesRef.sprite = IsLoved() ? m_eyeSprites[2] : (m_emotion < 0 ? m_eyeSprites[0] : m_eyeSprites[1]);
-        bool hatActive = m_emotion <= _cowardType;
+        bool hatActive = m_emotion <= (int)eFearType.Coward;
         m_hatSpriteRendererRef.gameObject.SetActive(hatActive);
         if (hatActive)
         {
-            m_hatSpriteRendererRef.sprite = m_emotion == _cowardType ? m_hatSprites[0] : m_hatSprites[1];
+            m_hatSpriteRendererRef.sprite = m_emotion == (int)eFearType.Coward ? m_hatSprites[0] : m_hatSprites[1];
         }
     }
 
@@ -205,14 +214,14 @@ public class Vessel : Soul
 
     void AIUpdate()
     {
-        if (m_emotion <= _cowardType)
+        if (m_emotion <= (int)eFearType.Coward)
         {
             Vector3 deltaPlayerPos = m_playerHandlerRef.transform.position - transform.position;
             float deltaPlayerMag = deltaPlayerPos.magnitude;
             if (deltaPlayerMag < m_playerSeenDistance)
             {
                 float deltaAngle = Vector2.SignedAngle(m_rigidBodyRef.velocity, deltaPlayerPos.ToVector2());
-                deltaAngle += m_emotion < _cowardType ? 0f: 180f;
+                deltaAngle += m_emotion < (int)eFearType.Coward ? 0f: 180f;
                 deltaAngle = VLib.ClampRotation(deltaAngle);
                 m_rigidBodyRef.velocity = VLib.RotateVector2(m_rigidBodyRef.velocity, deltaAngle * m_neg2RotateRate * Time.deltaTime).normalized * m_wanderSpeed;
             }
@@ -246,7 +255,7 @@ public class Vessel : Soul
     // Update is called once per frame
     void Update()
     {
-        if (m_emotion != _cowardType)
+        if (m_emotion != (int)eFearType.Coward)
         {
             MovementUpdate();
         }
@@ -343,7 +352,7 @@ public class Vessel : Soul
         Vibe vibe = a_collision.gameObject.GetComponent<Vibe>();
         if (vibe != null && !vibe.IsOriginSoul(this)) 
         {
-            if (m_emotion != _cowardType)
+            if (m_emotion != (int)eFearType.Coward)
             {
                 AbsorbVibe(a_collision.contacts[0].normal, vibe);
                 if (m_spriteRendererRef.isVisible)

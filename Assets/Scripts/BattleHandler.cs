@@ -34,6 +34,7 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] internal GameObject m_worldTextCanvasRef;
     [SerializeField] ClockRadialCircle m_clockRadialCircle;
     //Abilities UI
+    [SerializeField] AbilityReadout[] m_abilityReadouts;
     [SerializeField] AbilityReadout m_shootAbilityReadout;
     [SerializeField] AbilityReadout m_brakeAbilityReadout;
     [SerializeField] AbilityReadout m_aquaplaneAbilityReadout;
@@ -74,16 +75,22 @@ public class BattleHandler : MonoBehaviour
     vTimer m_secondPassedTimer;
     bool m_gameEnding = false;
     bool m_gameEnded = false;
+    float m_bulletTimeFactor = 1f;
+    float m_pauseTimeFactor = 1f;
+    float m_gameEndingTimeFactor = 1f;
 
     //Entities
     [SerializeField] GameObject m_lootBagPrefab;
     int m_lootBagsToSpawn = 4;
 
+
     internal bool m_paused = false;
 
     internal Vector2 GetMapSize() { return new Vector2(m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingColumns / 2f, m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingRows / 2f); }
 
-    internal void SetPaused(bool a_paused) { m_paused = a_paused; Time.timeScale = m_paused ? 0f : 1f; }
+    internal void SetPaused(bool a_paused) { m_paused = a_paused; m_pauseTimeFactor = m_paused ? 0f : 1f; }
+
+    internal void SetBulletTimeFactor(float a_factor) { m_bulletTimeFactor = a_factor; } 
 
     internal float GetBuildingGap() { return m_buildingSize + m_streetSize; }
 
@@ -115,6 +122,11 @@ public class BattleHandler : MonoBehaviour
     void InitialiseUpgrades()
     {
         m_gameTime += GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.AdditionalTime);
+
+        //for (int i = 0; i < m_abilityReadouts.Length; i++)
+        //{
+        //    m_abilityReadouts[i].Init()
+        //}
 
         m_shootAbilityReadout.SetUnlocked(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Shooting));
         m_brakeAbilityReadout.SetUnlocked(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Braking));
@@ -204,9 +216,16 @@ public class BattleHandler : MonoBehaviour
         }
     }
 
+    void UpdateTimeScale()
+    {
+        Time.timeScale = Mathf.Min(m_bulletTimeFactor, m_gameEndingTimeFactor) * m_pauseTimeFactor;
+        Debug.Log(Time.timeScale);
+    }
+
     // Update is called once per frame
     void Update()
     {
+        UpdateTimeScale();
         if (!m_paused)
         {
             UpdateUI();
@@ -223,7 +242,7 @@ public class BattleHandler : MonoBehaviour
                 else
                 {
                     float percentageFinished = m_battleExplosionTimer.GetCompletionPercentage();
-                    Time.timeScale = 1f - percentageFinished;
+                    m_gameEndingTimeFactor = 1f - percentageFinished;
                     Color whiteoutColor = m_whiteOutImageRef.color;
                     m_whiteOutImageRef.color = new Color(whiteoutColor.r, whiteoutColor.g, whiteoutColor.b, percentageFinished);
                 }

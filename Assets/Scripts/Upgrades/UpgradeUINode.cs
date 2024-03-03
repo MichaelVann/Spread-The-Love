@@ -14,7 +14,7 @@ public class UpgradeUINode : MonoBehaviour
     UpgradeTreeUIHandler m_upgradeTreeUIHandler;
     [SerializeField] Image m_backdropRef;
     [SerializeField] Image m_iconRef;
-    [SerializeField] Sprite[] m_possibleIconRefs;
+    //[SerializeField] Sprite[] m_possibleIconRefs;
     [SerializeField] Sprite m_lockIconRef;
     [SerializeField] Button m_buttonRef;
     [SerializeField] Image m_tickCrossRef;
@@ -32,6 +32,10 @@ public class UpgradeUINode : MonoBehaviour
     [SerializeField] Color m_baseColor;
     [SerializeField] Color m_notPurchaseableColor;
 
+    //Key Indicator
+    [SerializeField] GameObject m_keyIndicatorRef;
+    [SerializeField] TextMeshProUGUI m_keyIndicatorText;
+
     //Selection
     [SerializeField] GameObject m_selectionRing;
     bool m_selected = false;
@@ -39,6 +43,12 @@ public class UpgradeUINode : MonoBehaviour
 
     internal void SetNameText(string a_name) { m_nameText.text = a_name;}
     internal void SetAvailableSpace(float a_space) { m_availableSpace = a_space;}
+
+    internal void SetKeyIndicator(string a_key) 
+    {
+        m_keyIndicatorRef.SetActive(true);
+        m_keyIndicatorText.text = a_key;
+    }
 
     // Start is called before the first frame update
     void Awake()
@@ -73,7 +83,7 @@ public class UpgradeUINode : MonoBehaviour
 
     internal void Refresh()
     {
-        m_iconRef.sprite = m_possibleIconRefs[(int)m_upgradeItemRef.m_ID];
+        m_iconRef.sprite = GameHandler._autoRef.m_upgradeImages[(int)m_upgradeItemRef.m_ID];
 
         Color nodeColor = Color.white;
         bool interactable = true;

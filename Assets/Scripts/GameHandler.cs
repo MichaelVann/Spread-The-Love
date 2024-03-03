@@ -37,6 +37,8 @@ public class GameHandler : MonoBehaviour
     bool m_sceneFadingOut;
     const float m_sceneFadeDuration = 0.35f;
 
+    [SerializeField] internal Sprite[] m_upgradeImages;
+
     internal static void ChangeScore(int a_change) { _score += a_change; }
     internal static void ChangeScoreFromSamsara(int a_change) { _score += a_change; UpdateLastSeenScore(); }
     internal static void UpdateLastSeenScore() { _lastSeenScore = _score; }

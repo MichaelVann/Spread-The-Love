@@ -81,6 +81,45 @@ public class UpgradeTreeUIHandler : MonoBehaviour
     void SpawnNode(UpgradeItem a_upgrade, Vector3 a_parentPos, int a_index, float a_parentWidth, float a_width, bool a_drawingConnection)
     {
         UpgradeUINode node = Instantiate(m_upgradeNodePrefab, m_contentTransform).GetComponent<UpgradeUINode>();
+
+
+        switch (a_upgrade.m_ID)
+        {
+            case UpgradeItem.UpgradeId.Acceleration:
+                break;
+            case UpgradeItem.UpgradeId.Mass:
+                break;
+            case UpgradeItem.UpgradeId.Braking:
+                node.SetKeyIndicator("S");
+                break;
+            case UpgradeItem.UpgradeId.Grip:
+                break;
+            case UpgradeItem.UpgradeId.TopSpeed:
+                break;
+            case UpgradeItem.UpgradeId.TurnSpeed:
+                break;
+            case UpgradeItem.UpgradeId.Aquaplane:
+                break;
+            case UpgradeItem.UpgradeId.Shooting:
+                node.SetKeyIndicator("W");
+                break;
+            case UpgradeItem.UpgradeId.FireRate:
+                break;
+            case UpgradeItem.UpgradeId.ShootSpread:
+                break;
+            case UpgradeItem.UpgradeId.AutoShoot:
+                break;
+            case UpgradeItem.UpgradeId.MouseAim:
+                break;
+            case UpgradeItem.UpgradeId.AdditionalTime:
+                break;
+            case UpgradeItem.UpgradeId.BulletTime:
+                node.SetKeyIndicator("T");
+                break;
+            default:
+                break;
+        }
+
         m_upgradeNodes.Add(node);
         node.SetUp(a_upgrade, this);
         node.SetNameText(a_upgrade.m_name);
