@@ -64,7 +64,7 @@ namespace Assets.Scripts
 
         protected Color CalculateEmotionColor()
         {
-            return m_spriteRendererRef.color = CalculateEmotionColor(m_emotion);
+            return CalculateEmotionColor(m_emotion);
         }
 
         protected int AffectEmotion(int a_change)

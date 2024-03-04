@@ -43,9 +43,7 @@ public class Vessel : Soul
         Regular = -1,
         Coward = -2,
         Bully = -3,
-
     }
-
 
     //const int _cowardType = -2;
     //internal const int _bullyType = -3;
@@ -85,6 +83,10 @@ public class Vessel : Soul
     //Audio
     [SerializeField] AudioClip m_vibeHitSound;
 
+    //Damage Flash
+    Material m_spriteMaterialRef;
+    vTimer m_damageFlashTimer;
+
     bool IsLoved() { return m_emotion > 0; }
 
     internal void SetEmotion(int a_emotion) { AddEmotion(a_emotion - m_emotion); }
@@ -94,12 +96,16 @@ public class Vessel : Soul
         m_absorbedLoveList = new List<AbsorbedLove>();
         m_expressionTimer = new vTimer(m_expressInterval);
         m_expressionTimer.SetTimer(VLib.vRandom(0f, m_expressInterval));
+
+        m_spriteMaterialRef = Instantiate(m_spriteRendererRef.material);
+        m_spriteRendererRef.material = m_spriteMaterialRef;
     }
 
     // Start is called before the first frame update
     void Start()
     {
         m_rigidBodyRef.velocity = VLib.RotateVector3In2D(new Vector2(1f, 0f), VLib.vRandom(0f, 360f)) * m_wanderSpeed;
+        m_damageFlashTimer = new vTimer(0.07f, true);
     }
 
     internal void Init(BattleHandler a_battleHandler, PlayerHandler a_playerHandler, int a_emotion, Camera a_minimapCamera)
@@ -131,15 +137,17 @@ public class Vessel : Soul
 
     void UpdateVisuals()
     {
-        m_spriteRendererRef.color = m_miniMapSpriteRendererRef.color = CalculateEmotionColor();
+        Color emotionColor = CalculateEmotionColor();
+        m_miniMapSpriteRendererRef.color = emotionColor;
+        m_spriteMaterialRef.SetColor("_Color", emotionColor);
         m_mouthLineHandlerRef.Refresh(GetEmotionMappedFromMinToMax(m_emotion));
         for (int i = 0; i < m_eyebrowHandlers.Length; i++)
         {
             m_eyebrowHandlers[i].SetEybrowRotation(GetEmotionMappedFromMinToMax(m_emotion));
         }
         m_lovedTrailRef.emitting = IsLoved();
-        m_lovedTrailRef.startColor = m_spriteRendererRef.color;
-        m_lovedTrailRef.endColor = new Color(m_spriteRendererRef.color.r, m_spriteRendererRef.color.g, m_spriteRendererRef.color.b, 0f);
+        m_lovedTrailRef.startColor = emotionColor;
+        m_lovedTrailRef.endColor = new Color(emotionColor.r, emotionColor.g, emotionColor.b, 0f);
 
         m_eyesRef.sprite = IsLoved() ? m_eyeSprites[2] : (m_emotion < 0 ? m_eyeSprites[0] : m_eyeSprites[1]);
         bool hatActive = m_emotion <= (int)eFearType.Coward;
@@ -261,6 +269,10 @@ public class Vessel : Soul
         }
         AIUpdate();
         ShieldHitUpdate();
+        if (m_damageFlashTimer.Update())
+        {
+            m_spriteMaterialRef.SetInteger("_WhiteFlashOn", 0);
+        }
         //AbsorbedEmotionUpdate();
         //ExchangeForceWithPlayer();
         //ProcessEmotions();
@@ -307,6 +319,12 @@ public class Vessel : Soul
             RisingFadingText rft = Instantiate(m_risingTextPrefab, transform.position, Quaternion.identity, m_battleHandlerRef.m_worldTextCanvasRef.transform).GetComponent<RisingFadingText>();
             rft.SetUp(deltaEmotion > 0 ? "+" + deltaEmotion : deltaEmotion.ToString(), textColor, textColor);
             rft.SetOriginalScale(0.7f);
+        }
+
+        if (deltaEmotion != 0)
+        {
+            m_damageFlashTimer.Reset();
+            m_spriteMaterialRef.SetInteger("_WhiteFlashOn", 1);
         }
 
         //Change score

@@ -32,6 +32,14 @@ public class AbilityReadout : MonoBehaviour
 
     }
 
+    private void OnDestroy()
+    {
+        if (m_cooldownMaterialRef != null)
+        {
+            Destroy(m_cooldownMaterialRef);
+        }
+    }
+
     void SetupCooldownIndicator()
     {
         m_cooldownMaterialRef = Instantiate(m_cooldownRadialIndicator.material);
