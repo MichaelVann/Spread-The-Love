@@ -73,6 +73,7 @@ public class PlayerHandler : Soul
 
     Ability m_abilityBulletTime;
 
+    [SerializeField] GameObject m_collisionEffectPrefab;
 
     //Speed Chime
     [SerializeField] AudioClip m_speedChimeAudioClip;
@@ -158,7 +159,7 @@ public class PlayerHandler : Soul
         //m_loveTrailRef.startColor = m_spriteRendererRef.color;
         //m_loveTrailRef.endColor = new Color(playerColor.r, playerColor.g, playerColor.b, 0f);
         //m_miniMapIconRef.GetComponent<SpriteRenderer>().color = m_spriteRendererRef.color;
-        m_vesselRadarCaretRef.color = gameHandler.m_fearColor1;
+        m_vesselRadarCaretRef.color = gameHandler.m_fearColors[0];
     }
 
     void InitialiseBulletTime()
@@ -418,7 +419,7 @@ public class PlayerHandler : Soul
             m_wakeRef.transform.eulerAngles = VLib.Vector2ToEulerAngles(m_rigidBodyRef.velocity);
         }
         m_speedRampRef.SetRampPercent(speedPercentage);
-        m_speedRampRef.SetColor(Color.Lerp(m_gameHandlerRef.m_fearColor1, m_gameHandlerRef.m_loveColorMax, speedPercentage));
+        m_speedRampRef.SetColor(Color.Lerp(m_gameHandlerRef.m_fearColors[0], m_gameHandlerRef.m_loveColorMax, speedPercentage));
     }
 
     void VesselRadarUpdate()
@@ -481,6 +482,11 @@ public class PlayerHandler : Soul
         }
     }
 
+    void SpawnCollisionEffect(Vector2 a_collisionPos, Vector2 a_normal)
+    {
+        GameObject m_collisionEffect = Instantiate(m_collisionEffectPrefab, a_collisionPos, VLib.Vector2DirectionToQuaternion(VLib.RotateVector2(a_normal, 90f)), transform);
+    }
+
     private void OnCollisionEnter2D(Collision2D a_collision)
     {
         if (a_collision.gameObject.tag == "Vessel")
@@ -492,6 +498,8 @@ public class PlayerHandler : Soul
             Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
 
             Vector2 collisionDirection = a_collision.contacts[0].normal;
+
+            SpawnCollisionEffect(a_collision.contacts[0].point, collisionDirection);
 
             if (vessel.GetEmotion() == (int)Vessel.eFearType.Bully)
             {

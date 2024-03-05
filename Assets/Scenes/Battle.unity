@@ -1997,7 +1997,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!224 &629038493 stripped
 RectTransform:
@@ -19953,6 +19953,7 @@ MonoBehaviour:
   m_miniMapCameraRef: {fileID: 905535228}
   m_speedRampRef: {fileID: 259326426}
   m_wakeRef: {fileID: 1119146722}
+  m_collisionEffectPrefab: {fileID: 855370420418561725, guid: 9a3955de1b83a9649a82b5ec86a79124, type: 3}
   m_speedChimeAudioClip: {fileID: 8300000, guid: d6f1d6481ac2aa444823c2a39ec3691b, type: 3}
   m_vesselRadarRef: {fileID: 1847994844525985962}
   m_vesselRadarCaretRef: {fileID: 6626167323809088476}

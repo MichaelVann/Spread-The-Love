@@ -24,7 +24,10 @@ public class Vibe : MonoBehaviour
 
     internal bool IsOriginSoul(Vessel a_soul) { return m_originSoul == a_soul; }
 
-    internal int GetEmotionalAffect() { return m_emotion; }
+    internal int GetEmotionalAffect() 
+    {
+        return m_emotion; 
+    }
 
     // Start is called before the first frame update
     void Awake()

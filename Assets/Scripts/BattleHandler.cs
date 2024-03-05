@@ -81,7 +81,8 @@ public class BattleHandler : MonoBehaviour
 
     //Entities
     [SerializeField] GameObject m_lootBagPrefab;
-    int m_lootBagsToSpawn = 4;
+    int m_lootBagsToSpawn;
+    int m_minimumLivesLivedToSpawnLootBags = 1;
 
 
     internal bool m_paused = false;
@@ -160,112 +161,6 @@ public class BattleHandler : MonoBehaviour
         }
     }
 
-    void SecondPassedTimerUpdate()
-    {
-        if (m_secondPassedTimer.Update())
-        {
-            m_vesselsConvertedDeltaText.text = "+" + m_vesselsConvertedDelta.ToString() + "/s";
-            m_vesselsConvertedDelta = 0;
-        }
-    }
-
-    void MoveToSamsara()
-    {
-        GameHandler.ChangeScore(m_vesselsConverted);
-        m_gameEnded = true;
-        FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
-    }
-
-    void UpdateUI()
-    {
-        SecondPassedTimerUpdate();
-        m_speedText.text = m_playerHandlerRef.GetSpeed().ToString("f1") + " m/s";
-        m_vesselsConvertedText.text = m_vesselsConverted.ToString();
-        m_timeText.text = (m_gameTime - m_battleTimer.GetTimer()).ToString("f1");
-        m_scrollingBackgroundRef.SetAdditionalOffset(m_mainCameraRef.transform.position);
-    }
-
-    internal void FinishEarly()
-    {
-        m_battleTimer.SetTimer(m_battleTimer.GetTimerMax());
-    }
-
-    void Enlighten()
-    {
-        m_whiteOutImageRef.color = m_gameHandlerRef.m_loveColorMax;
-        GameHandler.IncrementMapSize();
-        FinishEarly();
-    }
-
-    internal void Perish()
-    {
-        FinishEarly();
-    }
-
-    void UpdateBattleTimer()
-    {
-        if (!m_gameEnding && m_battleTimer.Update())
-        {
-            m_gameEnding = true;
-            m_battleExplosionTimer = new vTimer(2);
-            m_battleExplosionTimer.SetUsingUnscaledDeltaTime(true);
-        }
-        else
-        {
-            m_clockRadialCircle.SetPieFillAmount(m_battleTimer.GetCompletionPercentage());
-        }
-    }
-
-    void UpdateTimeScale()
-    {
-        Time.timeScale = Mathf.Min(m_bulletTimeFactor, m_gameEndingTimeFactor) * m_pauseTimeFactor;
-        Debug.Log(Time.timeScale);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        UpdateTimeScale();
-        if (!m_paused)
-        {
-            UpdateUI();
-
-            UpdateBattleTimer();
-
-            //Game ending
-            if (!m_gameEnded && m_gameEnding)
-            {
-                if (m_battleExplosionTimer.Update())
-                {
-                    MoveToSamsara();
-                }
-                else
-                {
-                    float percentageFinished = m_battleExplosionTimer.GetCompletionPercentage();
-                    m_gameEndingTimeFactor = 1f - percentageFinished;
-                    Color whiteoutColor = m_whiteOutImageRef.color;
-                    m_whiteOutImageRef.color = new Color(whiteoutColor.r, whiteoutColor.g, whiteoutColor.b, percentageFinished);
-                }
-            }
-
-            if (Application.isEditor && Input.GetKeyDown(KeyCode.Alpha8))
-            {
-                Perish();
-            }
-
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                OpenPauseMenu();
-            }
-        }
-    }
-
-    void OpenPauseMenu()
-    {
-        Instantiate(m_optionsMenuPrefab, m_uiContainerRef.transform).GetComponent<OptionsMenu>().Init(this);
-        SetPaused(true);
-    }
-
     Vessel SpawnVessel(Vector3 a_position, int a_emotion = 0)
     {
         Vessel vessel = Instantiate(m_vesselPrefab, a_position, Quaternion.identity, m_vesselContainer.transform).GetComponent<Vessel>();
@@ -276,16 +171,16 @@ public class BattleHandler : MonoBehaviour
 
     void SpawnVessels()
     {
-        for (int i = 0; i < m_buildingColumns+1; i++)
+        for (int i = 0; i < m_buildingColumns + 1; i++)
         {
-            for (int j = 0; j < m_buildingRows+1; j++)
+            for (int j = 0; j < m_buildingRows + 1; j++)
             {
-                if (IsCentreIntersection(i,j))
+                if (IsCentreIntersection(i, j))
                 {
                     continue;
                 }
 
-                Vector3 spawnPos = GetIntersectionPos(i,j);
+                Vector3 spawnPos = GetIntersectionPos(i, j);
 
                 bool inACorner = (i == 0 || i == m_buildingColumns);
                 inACorner &= (j == 0 || j == m_buildingRows);
@@ -302,12 +197,12 @@ public class BattleHandler : MonoBehaviour
     void SpawnOuterWalls()
     {
         float buildingGap = GetBuildingGap();
-        float xOffset = m_streetSize/2f + buildingGap * m_buildingColumns / 2f;
-        float yOffset = m_streetSize/2f + buildingGap * m_buildingRows / 2f;
+        float xOffset = m_streetSize / 2f + buildingGap * m_buildingColumns / 2f;
+        float yOffset = m_streetSize / 2f + buildingGap * m_buildingRows / 2f;
         for (int i = 0; i < 4; i++)
         {
-            float posX = i < 2 ? (i % 2 == 0 ? -xOffset : xOffset): 0f;
-            float posY = i >= 2 ? (i % 2 == 0 ? -yOffset : yOffset): 0f;
+            float posX = i < 2 ? (i % 2 == 0 ? -xOffset : xOffset) : 0f;
+            float posY = i >= 2 ? (i % 2 == 0 ? -yOffset : yOffset) : 0f;
             SpriteRenderer spriteRenderer = Instantiate(m_outerWallPrefab, new Vector3(posX, posY, 0f), Quaternion.identity).GetComponent<SpriteRenderer>();
             if (i < 2)
             {
@@ -349,7 +244,7 @@ public class BattleHandler : MonoBehaviour
 
     void SpawnBuilding(Vector3 a_position)
     {
-        GameObject prefab = m_buildingPrefabs[VLib.vRandom(0,m_buildingPrefabs.Length-1)];
+        GameObject prefab = m_buildingPrefabs[VLib.vRandom(0, m_buildingPrefabs.Length - 1)];
         Instantiate(prefab, a_position, Quaternion.identity, m_buildingContainer.transform);
         SpawnBuildingDecals(a_position);
     }
@@ -365,7 +260,7 @@ public class BattleHandler : MonoBehaviour
                 posX -= buildingGap * m_buildingColumns / 2f;
                 posX += buildingGap / 2f;
                 float posY = j * buildingGap;
-                posY -= buildingGap * m_buildingRows / 2f ;
+                posY -= buildingGap * m_buildingRows / 2f;
                 posY += buildingGap / 2f;
 
                 SpawnBuilding(new Vector3(posX, posY));
@@ -375,19 +270,28 @@ public class BattleHandler : MonoBehaviour
 
     void SpawnEntities()
     {
-        int[][] spawnPositions = new int[m_lootBagsToSpawn][];
-        for (int i = 0; i < m_lootBagsToSpawn; i++)
+        if (GameHandler._livesLived > 0)
         {
-            spawnPositions[i] = new int[2];
-            do
+            while (VLib.vRandom(0, 1) == 0)
             {
-                spawnPositions[i][0] = VLib.vRandom(0, m_buildingColumns);
-                spawnPositions[i][1] = VLib.vRandom(0, m_buildingRows);
-            } while (IsCentreIntersection(spawnPositions[i][0], spawnPositions[i][1]));
+                m_lootBagsToSpawn++;
+            }
+            Debug.Log(m_lootBagsToSpawn);
+            int[][] spawnPositions = new int[m_lootBagsToSpawn][];
+            for (int i = 0; i < m_lootBagsToSpawn; i++)
+            {
+                spawnPositions[i] = new int[2];
+                do
+                {
+                    spawnPositions[i][0] = VLib.vRandom(0, m_buildingColumns);
+                    spawnPositions[i][1] = VLib.vRandom(0, m_buildingRows);
+                } while (IsCentreIntersection(spawnPositions[i][0], spawnPositions[i][1]));
 
 
-            Instantiate(m_lootBagPrefab, GetIntersectionPos(spawnPositions[i][0], spawnPositions[i][1]), Quaternion.identity);
+                Instantiate(m_lootBagPrefab, GetIntersectionPos(spawnPositions[i][0], spawnPositions[i][1]), Quaternion.identity);
+            }
         }
+
     }
 
     void SetupMap()
@@ -396,6 +300,122 @@ public class BattleHandler : MonoBehaviour
         SpawnOuterWalls();
         SpawnVessels();
         SpawnEntities();
+    }
+
+    void SecondPassedTimerUpdate()
+    {
+        if (m_secondPassedTimer.Update())
+        {
+            m_vesselsConvertedDeltaText.text = "+" + m_vesselsConvertedDelta.ToString() + "/s";
+            m_vesselsConvertedDelta = 0;
+        }
+    }
+
+    void MoveToSamsara()
+    {
+        GameHandler.ChangeScore(m_vesselsConverted);
+        m_gameEnded = true;
+        FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
+        GameHandler.IncrementLivesLived();
+    }
+
+    void UpdateUI()
+    {
+        SecondPassedTimerUpdate();
+        m_speedText.text = m_playerHandlerRef.GetSpeed().ToString("f1") + " m/s";
+        m_vesselsConvertedText.text = m_vesselsConverted.ToString();
+        m_timeText.text = (m_gameTime - m_battleTimer.GetTimer()).ToString("f1");
+        m_scrollingBackgroundRef.SetAdditionalOffset(m_mainCameraRef.transform.position);
+    }
+
+    internal void FinishEarly()
+    {
+        m_battleTimer.SetTimer(m_battleTimer.GetTimerMax());
+    }
+
+    void Enlighten()
+    {
+        m_whiteOutImageRef.color = m_gameHandlerRef.m_loveColorMax;
+        GameHandler.IncrementMapSize();
+        FinishEarly();
+        //ResetBattleExplosionTimer();
+    }
+
+    internal void Perish()
+    {
+        FinishEarly();
+    }
+
+    void UpdateBattleTimer()
+    {
+        if (!m_gameEnding && m_battleTimer.Update())
+        {
+            m_gameEnding = true;
+            m_battleExplosionTimer = new vTimer(2);
+            m_battleExplosionTimer.SetUsingUnscaledDeltaTime(true);
+        }
+        else
+        {
+            m_clockRadialCircle.SetPieFillAmount(m_battleTimer.GetCompletionPercentage());
+        }
+    }
+
+    void ResetBattleExplosionTimer()
+    {
+        m_battleExplosionTimer.Reset();
+    }
+
+    void UpdateTimeScale()
+    {
+        Time.timeScale = Mathf.Min(m_bulletTimeFactor, m_gameEndingTimeFactor) * m_pauseTimeFactor;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        UpdateTimeScale();
+        if (!m_paused)
+        {
+            UpdateUI();
+
+            UpdateBattleTimer();
+
+            //Game ending
+            if (!m_gameEnded && m_gameEnding)
+            {
+                if (m_battleExplosionTimer.Update())
+                {
+                    MoveToSamsara();
+                }
+                else
+                {
+                    float percentageFinished = m_battleExplosionTimer.GetCompletionPercentage();
+                    m_gameEndingTimeFactor = 1f - percentageFinished;
+                    Color whiteoutColor = m_whiteOutImageRef.color;
+                    m_whiteOutImageRef.color = new Color(whiteoutColor.r, whiteoutColor.g, whiteoutColor.b, percentageFinished);
+                }
+            }
+
+            if (Application.isEditor && Input.GetKeyDown(KeyCode.Alpha8))
+            {
+                Perish();
+            }
+            if (Application.isEditor && Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                Enlighten();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                OpenPauseMenu();
+            }
+        }
+    }
+
+    void OpenPauseMenu()
+    {
+        Instantiate(m_optionsMenuPrefab, m_uiContainerRef.transform).GetComponent<OptionsMenu>().Init(this);
+        SetPaused(true);
     }
 
     internal void DestroyVessel(Vessel a_vessel)

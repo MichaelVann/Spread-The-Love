@@ -10,7 +10,7 @@ namespace Assets.Scripts
 
         protected int m_emotion;
         protected const int m_maxLove = 2;
-        protected const int m_minLove = -3;
+        protected const int m_minLove = -4;
 
         internal int GetEmotion() { return m_emotion;}
         internal int GetFear() { return m_maxLove - GetEmotion(); }
@@ -36,29 +36,29 @@ namespace Assets.Scripts
         {
             Color color = new Color(0f, 0f, 0f, 1f);
             float lerp = GetEmotionMappedFromMinToMax(a_emotion);
-            switch (a_emotion)
+            if (a_emotion < 0)
             {
-                case -3:
-                    color = GameHandler._autoRef.m_fearColor3;
-                    break;
-                case -2:
-                    color = GameHandler._autoRef.m_fearColor2;
-                    break;
-                case -1:
-                    color = GameHandler._autoRef.m_fearColor1;
-                    break;
-                case 0: 
-                    color = GameHandler._autoRef.m_neutralColor;
-                    break;
-                case 1:
-                    color = GameHandler._autoRef.m_loveColor1;
-                    break;
-                case 2:
-                    color = GameHandler._autoRef.m_loveColorMax;
-                    break;
-                default:
-                    break;
+                int index = (int)-(a_emotion + 1);
+                color = GameHandler._autoRef.m_fearColors[index];
             }
+            else
+            {
+                switch (a_emotion)
+                {
+                    case 0:
+                        color = GameHandler._autoRef.m_neutralColor;
+                        break;
+                    case 1:
+                        color = GameHandler._autoRef.m_loveColor1;
+                        break;
+                    case 2:
+                        color = GameHandler._autoRef.m_loveColorMax;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
             return color;
         }
 

@@ -179,7 +179,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6648683358310405503}
   - component: {fileID: 4638863523553577436}
-  - component: {fileID: 8656386182530090056}
+  - component: {fileID: 5713144457447742840}
   m_Layer: 0
   m_Name: Shadow
   m_TagString: Untagged
@@ -254,7 +254,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8656386182530090056
+--- !u!114 &5713144457447742840
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -263,7 +263,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1982701452754496335}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea0ad7bd9727c4b4bb50c6409192819b, type: 3}
+  m_Script: {fileID: 11500000, guid: 60ee835dc8ce25942aa143e23e10eb8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_height: 0

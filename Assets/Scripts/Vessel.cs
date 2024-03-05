@@ -42,7 +42,8 @@ public class Vessel : Soul
     {
         Regular = -1,
         Coward = -2,
-        Bully = -3,
+        Jaded = -3,
+        Bully = -4,
     }
 
     //const int _cowardType = -2;
@@ -71,14 +72,17 @@ public class Vessel : Soul
     float m_expressInterval = 4f;
     vTimer m_expressionTimer;
 
-    struct AbsorbedLove
-    {
-        internal vTimer timer;
-        internal Vector2 collisionNormal;
-        internal int emotion;
-    } 
+    //On hit sprite scaling
+    Vector3 m_defaultSpriteScale;
+    float m_deltaEmotionSpriteScaleEffect = 1f;
+    const float m_deltaEmotionSpriteScaleOriginalSpeed = 2f;
+    float m_deltaEmotionSpriteScaleSpeed = m_deltaEmotionSpriteScaleOriginalSpeed;
+    const float m_deltaEmotionSpriteScaleDecay = 15f;
+    int m_deltaEmotionSpriteScaleDirection = 0;
+    bool m_deltaEmotionSpriteScaling = false;
 
-    List<AbsorbedLove> m_absorbedLoveList;
+    List<vTimer> m_absorbedLoveTimers;
+    float m_absorbedLoveReEmitTime = 0.4f;
 
     //Audio
     [SerializeField] AudioClip m_vibeHitSound;
@@ -89,16 +93,20 @@ public class Vessel : Soul
 
     bool IsLoved() { return m_emotion > 0; }
 
+    bool IsFearType(eFearType a_fearType) { return m_emotion == (int)a_fearType; }
+
     internal void SetEmotion(int a_emotion) { AddEmotion(a_emotion - m_emotion); }
 
     void Awake()
     {
-        m_absorbedLoveList = new List<AbsorbedLove>();
+        m_absorbedLoveTimers = new List<vTimer>();
         m_expressionTimer = new vTimer(m_expressInterval);
         m_expressionTimer.SetTimer(VLib.vRandom(0f, m_expressInterval));
 
         m_spriteMaterialRef = Instantiate(m_spriteRendererRef.material);
         m_spriteRendererRef.material = m_spriteMaterialRef;
+
+        m_defaultSpriteScale = m_spriteRendererRef.transform.localScale;
     }
 
     // Start is called before the first frame update
@@ -124,12 +132,12 @@ public class Vessel : Soul
 
     void AbsorbedEmotionUpdate()
     {
-        for (int i = 0; i < m_absorbedLoveList.Count; i++)
+        for (int i = 0; i < m_absorbedLoveTimers.Count; i++)
         {
-            if (m_absorbedLoveList[i].timer.Update())
+            if (m_absorbedLoveTimers[i].Update())
             {
-                ReEmitEmotion(m_absorbedLoveList[i]);
-                m_absorbedLoveList.RemoveAt(i);
+                ReEmitEmotion();
+                m_absorbedLoveTimers.RemoveAt(i);
                 i--;
             }
         }
@@ -150,36 +158,37 @@ public class Vessel : Soul
         m_lovedTrailRef.endColor = new Color(emotionColor.r, emotionColor.g, emotionColor.b, 0f);
 
         m_eyesRef.sprite = IsLoved() ? m_eyeSprites[2] : (m_emotion < 0 ? m_eyeSprites[0] : m_eyeSprites[1]);
-        bool hatActive = m_emotion <= (int)eFearType.Coward;
+
+
+        //Hats
+        const int hatStartPoint = -2;
+        bool hatActive = m_emotion <= hatStartPoint;
         m_hatSpriteRendererRef.gameObject.SetActive(hatActive);
         if (hatActive)
         {
-            m_hatSpriteRendererRef.sprite = m_emotion == (int)eFearType.Coward ? m_hatSprites[0] : m_hatSprites[1];
+            Sprite hatSprite = null;
+            int hatIndex = (m_emotion - hatStartPoint) * -1;
+            if (hatIndex < m_hatSprites.Length)
+            {
+                m_hatSpriteRendererRef.sprite = m_hatSprites[hatIndex];
+            }
         }
     }
 
-    void ExchangeForceWithPlayer()
+    void UpdateDeltaEmotionScale()
     {
-        ExchangeForceWithSoul(m_playerHandlerRef);
-    } 
-
-    internal void ExchangeForceWithSoul(Soul a_soul)
-    {
-        if (a_soul != null)
+        if (m_deltaEmotionSpriteScaling)
         {
-            Vector3 deltaVector = gameObject.transform.position - a_soul.transform.position;
-            Vector3 directionVector = deltaVector.normalized;
-            float distanceMagnitude = deltaVector.magnitude;
+            m_deltaEmotionSpriteScaleEffect += m_deltaEmotionSpriteScaleSpeed * m_deltaEmotionSpriteScaleDirection * Time.unscaledDeltaTime;
+            m_deltaEmotionSpriteScaleSpeed -= m_deltaEmotionSpriteScaleDecay * m_deltaEmotionSpriteScaleOriginalSpeed * Time.unscaledDeltaTime;
 
-            float baseAttractiveForce = m_soulAttractionConstant / Mathf.Pow(distanceMagnitude, m_attractionExponent);
-            float baseRepulsiveForce = m_soulRepulsionConstant / Mathf.Pow(distanceMagnitude, m_repulsionExponent);
-
-            baseAttractiveForce *= (GetEmotion() * a_soul.GetEmotion());
-
-            //attractiveForce += loveEffect;
-            Vector3 forceVector = directionVector * (baseRepulsiveForce - baseAttractiveForce);
-            forceVector *= m_soulToSoulForceConstant;
-            m_rigidBodyRef.AddForce(forceVector);
+            if ((m_deltaEmotionSpriteScaleDirection > 0 && m_deltaEmotionSpriteScaleEffect <= 1f) || (m_deltaEmotionSpriteScaleDirection < 0 && m_deltaEmotionSpriteScaleEffect >= 1f))
+            {
+                m_deltaEmotionSpriteScaling = false;
+                m_deltaEmotionSpriteScaleEffect = 1f;
+            }
+            
+            m_spriteRendererRef.transform.localScale = m_defaultSpriteScale * m_deltaEmotionSpriteScaleEffect;
         }
     }
 
@@ -222,7 +231,7 @@ public class Vessel : Soul
 
     void AIUpdate()
     {
-        if (m_emotion <= (int)eFearType.Coward)
+        if (IsFearType(eFearType.Coward) || IsFearType(eFearType.Bully))
         {
             Vector3 deltaPlayerPos = m_playerHandlerRef.transform.position - transform.position;
             float deltaPlayerMag = deltaPlayerPos.magnitude;
@@ -237,6 +246,7 @@ public class Vessel : Soul
             {
                 MovementUpdate();
             }
+            AbsorbedEmotionUpdate();
         }
     }
 
@@ -251,10 +261,7 @@ public class Vessel : Soul
     {
         if (m_shieldHitFadeTimer.IsActive())
         {
-            if (m_shieldHitFadeTimer.Update())
-            {
-
-            }
+            m_shieldHitFadeTimer.Update();
             Color color = m_shieldHitRenderer.color;
             m_shieldHitRenderer.color = m_shieldHitRenderer.color.WithAlpha(1f-m_shieldHitFadeTimer.GetCompletionPercentage());
         }
@@ -271,23 +278,18 @@ public class Vessel : Soul
         ShieldHitUpdate();
         if (m_damageFlashTimer.Update())
         {
-            m_spriteMaterialRef.SetInteger("_WhiteFlashOn", 0);
+            m_spriteMaterialRef.SetFloat("_WhiteFlashOn", 0f);
         }
         //AbsorbedEmotionUpdate();
         //ExchangeForceWithPlayer();
         //ProcessEmotions();
+        UpdateDeltaEmotionScale();
     }
 
-    void ReEmitEmotion(AbsorbedLove a_absorbedLove)
+    void ReEmitEmotion()
     {
-        for (int i = 0; i < m_loveToSpawn; i++)
-        {
-            float spawnAngle = ((float)(i+1)/(m_loveToSpawn+1)) * m_loveVibeSpawnAngleRange;
-            spawnAngle -= m_loveVibeSpawnAngleRange/2f;
-            Vector2 collisionDirection = VLib.RotateVector3In2D(a_absorbedLove.collisionNormal, spawnAngle);
-
-            EmitEmotion(collisionDirection, a_absorbedLove.emotion);
-        }
+        Vector2 direction = Vector2.up.RotateVector2(VLib.vRandom(0f, 360f));
+        EmitEmotion(direction, m_emotion);
     }
 
     internal void AddEmotion(int a_emotion)
@@ -309,7 +311,7 @@ public class Vessel : Soul
         else if (deltaEmotion < 0)
         {
             spawningText = true;
-            textColor = m_gameHandlerRef.m_fearColor1;
+            textColor = m_gameHandlerRef.m_fearColors[0];
             var main = m_loveExplosionRef.main;
             main.startColor = textColor;
             m_loveExplosionRef.Play();
@@ -324,7 +326,14 @@ public class Vessel : Soul
         if (deltaEmotion != 0)
         {
             m_damageFlashTimer.Reset();
-            m_spriteMaterialRef.SetInteger("_WhiteFlashOn", 1);
+            m_spriteMaterialRef.SetFloat("_WhiteFlashOn", 1f);
+            m_deltaEmotionSpriteScaleEffect = 1f + deltaEmotion / 10f;
+            m_deltaEmotionSpriteScaleDirection = deltaEmotion > 0f ? 1 : -1;
+            m_deltaEmotionSpriteScaling = true;
+            if (IsFearType(eFearType.Coward))
+            {
+                m_absorbedLoveTimers.Clear();
+            }
         }
 
         //Change score
@@ -343,20 +352,14 @@ public class Vessel : Soul
         UpdateVisuals();
     }
 
-    void AbsorbVibe(Vector3 a_collisionNormal, Vibe a_vibe)
+    void AbsorbVibe(Vibe a_vibe)
     {
-        AbsorbedLove absorbedLove = new AbsorbedLove();
-        absorbedLove.timer = new vTimer(m_reEmitTime);
-        absorbedLove.collisionNormal = a_collisionNormal;
-        int vibeEmotion = a_vibe.GetEmotionalAffect();
-        absorbedLove.emotion = vibeEmotion;
-
-        if (VLib.vRandom(0f,1f) < GetEmotion())
+        int affect = a_vibe.GetEmotionalAffect();
+        if (affect < 0)
         {
-            m_absorbedLoveList.Add(absorbedLove);
+            affect = Mathf.Clamp(m_emotion + affect, affect, 0) - m_emotion;
         }
-
-        AddEmotion(a_vibe.GetEmotionalAffect());
+        AddEmotion(affect);
     }
 
     internal void CollideWithPlayer(int a_meleeStrength, Vector2 a_collisionNormal)
@@ -370,9 +373,9 @@ public class Vessel : Soul
         Vibe vibe = a_collision.gameObject.GetComponent<Vibe>();
         if (vibe != null && !vibe.IsOriginSoul(this)) 
         {
-            if (m_emotion != (int)eFearType.Coward)
+            if (!IsFearType(eFearType.Coward) || vibe.GetEmotionalAffect() < 0)
             {
-                AbsorbVibe(a_collision.contacts[0].normal, vibe);
+                AbsorbVibe(vibe);
                 if (m_spriteRendererRef.isVisible)
                 {
                     GameHandler._audioManager.PlaySFX(m_vibeHitSound, 0.2f);
@@ -381,6 +384,7 @@ public class Vessel : Soul
             else
             {
                 TriggerShieldEffect(-a_collision.contacts[0].normal);
+                m_absorbedLoveTimers.Add(new vTimer(m_absorbedLoveReEmitTime)); //a_collision.contacts[0].normal
             }
         }
         else if (a_collision.gameObject.tag == "Vessel")

@@ -14,13 +14,12 @@ public class GameHandler : MonoBehaviour
     internal static int _lastSeenScore;
     internal static int _mapSize;
     internal static bool _firstTimeCutscenePlayed = false;
+    internal static int _livesLived = 0;
 
     [SerializeField] internal Color m_loveColorMax;
     [SerializeField] internal Color m_loveColor1;
     [SerializeField] internal Color m_neutralColor;
-    [SerializeField] internal Color m_fearColor1;
-    [SerializeField] internal Color m_fearColor2;
-    [SerializeField] internal Color m_fearColor3;
+    [SerializeField] internal Color[] m_fearColors;
 
     //Scenes
     internal enum eScene
@@ -43,6 +42,7 @@ public class GameHandler : MonoBehaviour
     internal static void ChangeScoreFromSamsara(int a_change) { _score += a_change; UpdateLastSeenScore(); }
     internal static void UpdateLastSeenScore() { _lastSeenScore = _score; }
     internal static void IncrementMapSize() { _mapSize++; }
+    internal static void IncrementLivesLived() { _livesLived++; }
 
     internal static void SetFirstTimeCutscenePlayed(bool a_value) { _firstTimeCutscenePlayed = true; }
 

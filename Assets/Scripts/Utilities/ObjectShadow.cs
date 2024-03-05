@@ -8,17 +8,17 @@ using UnityEngine;
 
 public class ObjectShadow : MonoBehaviour
 {
-    const float _shadowAngle = 135f;
-    const float _shadowDistance = 0.1f;
-    const float _opacity = 0.75f;
+    protected const float _shadowAngle = 135f;
+    protected const float _shadowDistance = 0.1f;
+    protected const float _opacity = 0.75f;
 
-    [SerializeField] float m_height = 0f;
+    [SerializeField] protected float m_height = 0f;
     public void Awake()
     {
 
     }
 
-    public void Start()
+    public virtual void Start()
     {
         if (transform.parent != null)
         {
@@ -32,7 +32,7 @@ public class ObjectShadow : MonoBehaviour
         }
     }
 
-    public void Update()
+    public virtual void Update()
     {
         float eulerAnglesForShadow = transform.eulerAngles.z + _shadowAngle;
         float x = Mathf.Sin(eulerAnglesForShadow * Mathf.PI / 180f) / transform.parent.transform.localScale.x;

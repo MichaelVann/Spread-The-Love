@@ -11,8 +11,10 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField] GameObject m_perishButtonRef;
     [SerializeField] GameObject m_quitButtonRef;
 
+    [SerializeField] Slider m_masterAudioSlider;
     [SerializeField] Slider m_SFXAudioSlider;
     [SerializeField] Slider m_ambienceAudioSlider;
+    [SerializeField] UICheckBox m_masterCheckBox;
     [SerializeField] UICheckBox m_SFXCheckBox;
     [SerializeField] UICheckBox m_ambienceCheckBox;
 
@@ -20,8 +22,10 @@ public class OptionsMenu : MonoBehaviour
     void Awake()
     {
         m_perishButtonRef.SetActive(false);
+        m_masterAudioSlider.value = GameHandler._audioManager.GetChannelVolume(AudioManager.eSoundChannel.Master);
         m_SFXAudioSlider.value = GameHandler._audioManager.GetChannelVolume(AudioManager.eSoundChannel.SFX);
         m_ambienceAudioSlider.value = GameHandler._audioManager.GetChannelVolume(AudioManager.eSoundChannel.Ambience);
+        m_masterCheckBox.SetToggled(GameHandler._audioManager.GetChannelEnabled(AudioManager.eSoundChannel.Master));
         m_SFXCheckBox.SetToggled(GameHandler._audioManager.GetChannelEnabled(AudioManager.eSoundChannel.SFX));
         m_ambienceCheckBox.SetToggled(GameHandler._audioManager.GetChannelEnabled(AudioManager.eSoundChannel.Ambience));
     }
@@ -61,6 +65,11 @@ public class OptionsMenu : MonoBehaviour
         GameHandler.Quit();
     }
 
+    public void ChangeMasterVolume()
+    {
+        GameHandler._audioManager.SetChannelVolume(AudioManager.eSoundChannel.Master, m_masterAudioSlider.value);
+    }
+
     public void ChangeSFXVolume()
     {
         GameHandler._audioManager.SetChannelVolume(AudioManager.eSoundChannel.SFX, m_SFXAudioSlider.value);
@@ -69,6 +78,12 @@ public class OptionsMenu : MonoBehaviour
     public void ChangeAmbienceVolume()
     {
         GameHandler._audioManager.SetChannelVolume(AudioManager.eSoundChannel.Ambience, m_ambienceAudioSlider.value);
+    }
+
+    public void ToggleMaster()
+    {
+        m_SFXCheckBox.Toggle();
+        GameHandler._audioManager.SetChannelEnabled(AudioManager.eSoundChannel.SFX, m_SFXCheckBox.GetToggled());
     }
 
     public void ToggleSFX()
