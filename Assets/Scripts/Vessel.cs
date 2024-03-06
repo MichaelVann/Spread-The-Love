@@ -42,9 +42,16 @@ public class Vessel : Soul
     {
         Regular = -1,
         Coward = -2,
-        Jaded = -3,
-        Bully = -4,
+        Bully = -3,
+        Jaded = -4,
     }
+
+    struct FearTraits
+    {
+        internal bool absorbingLove;
+        internal bool rejectingLove;
+    }
+    FearTraits m_fearTraits;
 
     //const int _cowardType = -2;
     //internal const int _bullyType = -3;
@@ -80,6 +87,8 @@ public class Vessel : Soul
     const float m_deltaEmotionSpriteScaleDecay = 15f;
     int m_deltaEmotionSpriteScaleDirection = 0;
     bool m_deltaEmotionSpriteScaling = false;
+
+    //Absorbed love
 
     List<vTimer> m_absorbedLoveTimers;
     float m_absorbedLoveReEmitTime = 0.4f;
@@ -128,6 +137,10 @@ public class Vessel : Soul
         m_gameHandlerRef = m_battleHandlerRef.m_gameHandlerRef;
         m_miniMapSpriteRendererRef.GetComponent<MiniMapIcon>().Init(a_minimapCamera);
         UpdateVisuals();
+
+        //Fear traits
+        m_fearTraits = new FearTraits();
+        UpdateFearTraits();
     }
 
     void AbsorbedEmotionUpdate()
@@ -166,7 +179,6 @@ public class Vessel : Soul
         m_hatSpriteRendererRef.gameObject.SetActive(hatActive);
         if (hatActive)
         {
-            Sprite hatSprite = null;
             int hatIndex = (m_emotion - hatStartPoint) * -1;
             if (hatIndex < m_hatSprites.Length)
             {
@@ -246,6 +258,17 @@ public class Vessel : Soul
             {
                 MovementUpdate();
             }
+            //if (IsFearType(eFearType.Coward))
+            //{
+            //    AbsorbedEmotionUpdate();
+            //}
+        }
+        else if (m_fearTraits.absorbingLove)
+        {
+            //if (m_absorbedLoveTimers.Count < 0)
+            //{
+            //    m_absorbedLoveTimers.Add(new vTimer(2f));
+            //}
             AbsorbedEmotionUpdate();
         }
     }
@@ -292,9 +315,69 @@ public class Vessel : Soul
         EmitEmotion(direction, m_emotion);
     }
 
+    void UpdateFearTraits()
+    {
+        m_fearTraits.rejectingLove = false;
+        m_fearTraits.absorbingLove = false;
+
+        switch ((eFearType)m_emotion)
+        {
+            case eFearType.Regular:
+                break;
+            case eFearType.Coward:
+                m_fearTraits.rejectingLove = true;
+                break;
+            case eFearType.Bully:
+                break;
+            case eFearType.Jaded:
+                m_fearTraits.absorbingLove = true;
+                break;
+            default:
+                break;
+        }
+    }
+
+    void FearTypeChanged(int a_deltaEmotion, bool a_wasLoved, bool a_wasFearful)
+    {
+        m_damageFlashTimer.Reset();
+        m_spriteMaterialRef.SetFloat("_WhiteFlashOn", 1f);
+        m_deltaEmotionSpriteScaleEffect = 1f + a_deltaEmotion / 10f;
+        m_deltaEmotionSpriteScaleDirection = a_deltaEmotion > 0f ? 1 : -1;
+        m_deltaEmotionSpriteScaling = true;
+
+
+        //Change score
+        bool isLoved = m_emotion > 0;
+        if (!a_wasLoved && isLoved)
+        {
+            m_battleHandlerRef.CrementLovedVessels(1);
+        }
+        else if (a_wasLoved && !isLoved)
+        {
+            m_battleHandlerRef.CrementLovedVessels(-1);
+        }
+
+        bool isFearful = m_emotion < 0;
+        if (!a_wasFearful && isFearful)
+        {
+            m_battleHandlerRef.CrementFearfulVessels(1);
+        }
+        else if (a_wasFearful && !isFearful)
+        {
+            m_battleHandlerRef.CrementFearfulVessels(-1);
+        }
+
+        UpdateFearTraits();
+
+        UpdateWanderSpeed();
+
+        UpdateVisuals();
+    }
+
     internal void AddEmotion(int a_emotion)
     {
         bool wasLoved = m_emotion > 0;
+        bool wasFearful = m_emotion < 0;
         int deltaEmotion = AffectEmotion(a_emotion);
 
         //Rising Fading Text
@@ -325,31 +408,8 @@ public class Vessel : Soul
 
         if (deltaEmotion != 0)
         {
-            m_damageFlashTimer.Reset();
-            m_spriteMaterialRef.SetFloat("_WhiteFlashOn", 1f);
-            m_deltaEmotionSpriteScaleEffect = 1f + deltaEmotion / 10f;
-            m_deltaEmotionSpriteScaleDirection = deltaEmotion > 0f ? 1 : -1;
-            m_deltaEmotionSpriteScaling = true;
-            if (IsFearType(eFearType.Coward))
-            {
-                m_absorbedLoveTimers.Clear();
-            }
+            FearTypeChanged(deltaEmotion, wasLoved, wasFearful);
         }
-
-        //Change score
-        bool isLoved = m_emotion > 0;
-        if (!wasLoved && isLoved)
-        {
-            m_battleHandlerRef.CrementConvertedVessels(1);
-        }
-        else if (wasLoved && !isLoved)
-        {
-            m_battleHandlerRef.CrementConvertedVessels(-1);
-        }
-
-        UpdateWanderSpeed();
-
-        UpdateVisuals();
     }
 
     void AbsorbVibe(Vibe a_vibe)
@@ -359,6 +419,7 @@ public class Vessel : Soul
         {
             affect = Mathf.Clamp(m_emotion + affect, affect, 0) - m_emotion;
         }
+        affect = Mathf.Clamp(affect, -1, 1);
         AddEmotion(affect);
     }
 
@@ -373,7 +434,7 @@ public class Vessel : Soul
         Vibe vibe = a_collision.gameObject.GetComponent<Vibe>();
         if (vibe != null && !vibe.IsOriginSoul(this)) 
         {
-            if (!IsFearType(eFearType.Coward) || vibe.GetEmotionalAffect() < 0)
+            if ((!m_fearTraits.absorbingLove && !m_fearTraits.rejectingLove) || vibe.GetEmotionalAffect() < 0)
             {
                 AbsorbVibe(vibe);
                 if (m_spriteRendererRef.isVisible)
@@ -384,7 +445,10 @@ public class Vessel : Soul
             else
             {
                 TriggerShieldEffect(-a_collision.contacts[0].normal);
-                m_absorbedLoveTimers.Add(new vTimer(m_absorbedLoveReEmitTime)); //a_collision.contacts[0].normal
+                if (m_fearTraits.absorbingLove)
+                {
+                    m_absorbedLoveTimers.Add(new vTimer(m_absorbedLoveReEmitTime)); //a_collision.contacts[0].normal
+                }
             }
         }
         else if (a_collision.gameObject.tag == "Vessel")

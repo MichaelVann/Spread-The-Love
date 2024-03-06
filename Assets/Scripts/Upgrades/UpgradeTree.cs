@@ -36,9 +36,9 @@ public class UpgradeTree
         UpgradeItem acceleration = NewUpgrade(UpgradeId.Acceleration, "Acceleration", 1.5f, 10, 0.25f, null, "Increases acceleration by 25% each rank.");
         UpgradeItem mass = NewUpgrade(UpgradeId.Mass, "Density", 1.5f, 10, 0.25f, acceleration, "Increases desnity by 25% for each rank. This helps maintain speed when colliding with the souls in the world.");
         UpgradeItem braking = NewUpgrade(UpgradeId.Braking, "Braking", 2f, 10, 0.1f, mass, "Unlocks the ability to brake and increases braking strength by 10% each rank.");
-        UpgradeItem grip = NewUpgrade(UpgradeId.Grip, "Grip", 1.5f, 12, 0.25f, acceleration, "Increases grip each rank.");
+        UpgradeItem grip = NewUpgrade(UpgradeId.Grip, "Grip", 1.5f, 12, 0.1f, acceleration, "Increases grip each rank.");
         UpgradeItem topSpeed = NewUpgrade(UpgradeId.TopSpeed, "Top Speed", 1.5f, 10, 1f, acceleration, "Increases top speed by 1 m/s each rank.");
-        UpgradeItem turnSpeed = NewUpgrade(UpgradeId.TurnSpeed, "Turn Speed", 1f, 10, 0.1f, acceleration, "Increases turn speed by 10% each rank.");
+        UpgradeItem turnSpeed = NewUpgrade(UpgradeId.TurnSpeed, "Turn Speed", 1f, 10, 0.05f, acceleration, "Increases turn speed by 5% each rank.");
         UpgradeItem aquaplane = NewUpgrade(UpgradeId.Aquaplane, "Aquaplane", 3f, 1, 1f, grip, "Allows you to aquaplane by pressing <color=#ff004c>space</color>, removing all friction against the ground.");
         //UpgradeItem driftSpread = NewUpgrade(UpgradeId.DriftSpread, "Drift Spread", 20f, 1, 0.25f, aquaplane, "Spreads you out when drifting. This is a gimmick ability I wouldn't recommend actually buying this.", true);
         UpgradeItem shooting = NewUpgrade(UpgradeId.Shooting, "Spread Kindness", 2f, 1, 0.25f, null, "Unlocks the ability to spread good vibes remotely.");

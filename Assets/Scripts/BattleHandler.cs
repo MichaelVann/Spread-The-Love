@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.VFX;
+using static Unity.Burst.Intrinsics.X86;
 
 public class BattleHandler : MonoBehaviour
 {
@@ -27,9 +28,7 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_tierText;
     [SerializeField] TextMeshProUGUI m_timeText;
     [SerializeField] TextMeshProUGUI m_speedText;
-    [SerializeField] TextMeshProUGUI m_vesselsConvertedText;
-    [SerializeField] TextMeshProUGUI m_vesselCountText;
-    [SerializeField] TextMeshProUGUI m_vesselsConvertedDeltaText;
+    [SerializeField] SpreadPercentageBar m_spreadPercentageBarRef;
     [SerializeField] Image m_whiteOutImageRef;
     [SerializeField] internal GameObject m_worldTextCanvasRef;
     [SerializeField] ClockRadialCircle m_clockRadialCircle;
@@ -43,12 +42,18 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] GameObject m_miniMapRef;
     [SerializeField] Camera m_miniMapCameraRef;
 
+    //Score
+    [SerializeField] TextMeshProUGUI m_scoreText;
+    int m_score = 0;
+
     //Vessels
     int starterSouls = 20;
     float m_spawnDistance = 2f;
     internal List<Vessel> m_vesselList;
-    int m_vesselsConverted = 0;
-    int m_vesselsConvertedDelta = 0;
+    int m_vesselsLoved = 0;
+    int m_vesselsLovedDelta = 0;
+    int m_vesselsFearful = 0;
+    int m_vesselsFearfulDelta = 0;
     const float m_starterDeviance = 0.25f;
     static float m_scaredSoul = 0.5f - m_starterDeviance;
     static float m_normalSoul = 0.5f;
@@ -94,8 +99,13 @@ public class BattleHandler : MonoBehaviour
     internal void SetBulletTimeFactor(float a_factor) { m_bulletTimeFactor = a_factor; } 
 
     internal float GetBuildingGap() { return m_buildingSize + m_streetSize; }
+    
+    int[] GetCentreInteresection()
+    {
+        return new int[2] { m_buildingColumns / 2, m_buildingRows / 2 };
+    }
 
-    internal bool IsCentreIntersection(int a_x, int a_y)
+    bool IsCentreIntersection(int a_x, int a_y)
     {
         return (a_x == m_buildingColumns / 2 && a_y == m_buildingRows / 2);
     }
@@ -118,6 +128,7 @@ public class BattleHandler : MonoBehaviour
         m_vesselList = new List<Vessel>();
         m_buildingColumns = m_buildingRows = GameHandler._mapSize * 2;
         m_miniMapCameraRef.GetComponent<Camera>().orthographicSize = GetMapSize().x;
+        ChangeScore(0);
     }
 
     void InitialiseUpgrades()
@@ -142,7 +153,7 @@ public class BattleHandler : MonoBehaviour
         InitialiseUpgrades();
         m_battleTimer = new vTimer(m_gameTime, true, true, false);
         m_secondPassedTimer = new vTimer(1f);
-        m_vesselCountText.text = "/" + m_vesselList.Count;
+        UpdateSpreadPercentageBar();
         m_tierText.text = "Tier " + GameHandler._mapSize;
         if (GameHandler._mapSize <= 3)
         {
@@ -151,14 +162,38 @@ public class BattleHandler : MonoBehaviour
         m_backgroundRef.size = GetMapSize() * new Vector2(2f/m_backgroundRef.transform.localScale.x,2f/ m_backgroundRef.transform.localScale.y);
     }
 
-    internal void CrementConvertedVessels(int a_change)
+    void ChangeScore(int a_change)
+    {
+        m_score += a_change;
+        m_scoreText.text = m_score.ToString();
+    }
+
+    internal void CrementLovedVessels(int a_change)
     { 
-        m_vesselsConverted += a_change; 
-        m_vesselsConvertedDelta += a_change;
-        if (m_vesselsConverted >= m_vesselList.Count)
+        m_vesselsLoved += a_change; 
+        m_vesselsLovedDelta += a_change;
+        if (m_vesselsLoved >= m_vesselList.Count)
         {
             Enlighten();
         }
+        UpdateSpreadPercentageBar();
+        if (a_change > 0)
+        {
+            ChangeScore(a_change);
+        }
+    }
+
+    internal void CrementFearfulVessels(int a_change)
+    {
+        m_vesselsFearful += a_change;
+        m_vesselsFearfulDelta += a_change;
+        UpdateSpreadPercentageBar();
+    }
+
+    void UpdateSpreadPercentageBar()
+    {
+        m_spreadPercentageBarRef.SetSegmentValues(m_vesselsLoved, m_vesselList.Count - m_vesselsLoved - m_vesselsFearful, m_vesselsFearful);
+        m_spreadPercentageBarRef.UpdateBar();
     }
 
     Vessel SpawnVessel(Vector3 a_position, int a_emotion = 0)
@@ -166,6 +201,14 @@ public class BattleHandler : MonoBehaviour
         Vessel vessel = Instantiate(m_vesselPrefab, a_position, Quaternion.identity, m_vesselContainer.transform).GetComponent<Vessel>();
         vessel.Init(this, m_playerHandlerRef, a_emotion, m_miniMapCameraRef);
         m_vesselList.Add(vessel);
+        if (a_emotion < 0)
+        {
+            CrementFearfulVessels(1);
+        }
+        else if (a_emotion > 0)
+        {
+            CrementLovedVessels(1);
+        }
         return vessel;
     }
 
@@ -180,12 +223,21 @@ public class BattleHandler : MonoBehaviour
                     continue;
                 }
 
+                int[] centreIntersection = GetCentreInteresection();
+
                 Vector3 spawnPos = GetIntersectionPos(i, j);
 
-                bool inACorner = (i == 0 || i == m_buildingColumns);
-                inACorner &= (j == 0 || j == m_buildingRows);
+                //bool inACorner = (i == 0 || i == m_buildingColumns);
+                //inACorner &= (j == 0 || j == m_buildingRows);
 
-                int vesselStrength = inACorner ? Mathf.Clamp(-GameHandler._mapSize, Soul.GetMinPossibleLove(), -1) : 0;
+                int xDist = Mathf.Abs(centreIntersection[0] - i);
+                int yDist = Mathf.Abs(centreIntersection[1] - j);
+
+                int vesselStrength = 0;
+                if (xDist == yDist)
+                {
+                    vesselStrength = Mathf.Clamp(-xDist, Soul.GetMinPossibleLove(), 0);
+                }
 
                 SpawnVessel(spawnPos, vesselStrength);
                 SpawnVessel(spawnPos, vesselStrength);
@@ -291,7 +343,6 @@ public class BattleHandler : MonoBehaviour
                 Instantiate(m_lootBagPrefab, GetIntersectionPos(spawnPositions[i][0], spawnPositions[i][1]), Quaternion.identity);
             }
         }
-
     }
 
     void SetupMap()
@@ -302,18 +353,9 @@ public class BattleHandler : MonoBehaviour
         SpawnEntities();
     }
 
-    void SecondPassedTimerUpdate()
-    {
-        if (m_secondPassedTimer.Update())
-        {
-            m_vesselsConvertedDeltaText.text = "+" + m_vesselsConvertedDelta.ToString() + "/s";
-            m_vesselsConvertedDelta = 0;
-        }
-    }
-
     void MoveToSamsara()
     {
-        GameHandler.ChangeScore(m_vesselsConverted);
+        GameHandler.ChangeScore(m_vesselsLoved + m_score);
         m_gameEnded = true;
         FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
         GameHandler.IncrementLivesLived();
@@ -321,9 +363,7 @@ public class BattleHandler : MonoBehaviour
 
     void UpdateUI()
     {
-        SecondPassedTimerUpdate();
         m_speedText.text = m_playerHandlerRef.GetSpeed().ToString("f1") + " m/s";
-        m_vesselsConvertedText.text = m_vesselsConverted.ToString();
         m_timeText.text = (m_gameTime - m_battleTimer.GetTimer()).ToString("f1");
         m_scrollingBackgroundRef.SetAdditionalOffset(m_mainCameraRef.transform.position);
     }

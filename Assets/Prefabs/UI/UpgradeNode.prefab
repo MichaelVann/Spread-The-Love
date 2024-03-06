@@ -934,7 +934,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9019608, g: 0.6313726, b: 0.09019604, a: 1}
+  m_Color: {r: 1, g: 0.8254717, b: 0.4764151, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1300,7 +1300,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: +
+  m_text: '!'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1528,8 +1528,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1473139481643914590}
+  - component: {fileID: 7012547542289579128}
   m_Layer: 0
-  m_Name: Available Upgrades
+  m_Name: Available Upgrade Notifier
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1556,6 +1557,18 @@ RectTransform:
   m_AnchoredPosition: {x: 50.1, y: 24.2}
   m_SizeDelta: {x: 17.5974, y: 15.7123}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &7012547542289579128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6708128867958266732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4a90762a6dab74387d438c2919ea4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6822055287702818218
 GameObject:
   m_ObjectHideFlags: 0
