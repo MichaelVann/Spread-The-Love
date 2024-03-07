@@ -26,7 +26,9 @@ public class UpgradeItem
     internal bool m_toggled = true;
     internal bool m_toggleable = false;
 
-    public float m_effectStrength;
+    internal float m_startingStrength;
+    bool m_upgradesAreMultiplicative;
+    public float m_strength;
 
     internal UpgradeItem m_precursorUpgrade;
     internal List<UpgradeItem> m_upgradeChildren;
@@ -76,8 +78,12 @@ public class UpgradeItem
 
     internal bool IsEnabled() { return m_toggled && m_owned; }
 
-    internal float GetLeveledStrength() { return m_effectStrength * m_level; }
-    internal float GetMaxLeveledStrength() { return m_effectStrength * m_maxLevel; }
+    internal void SetStartingStrengthAndIfMultiplicative(float a_startingStrength, bool a_isMultiplicative) { m_startingStrength = a_startingStrength; m_upgradesAreMultiplicative = a_isMultiplicative; }
+    internal float GetLeveledStrength() 
+    { 
+        return m_upgradesAreMultiplicative ? m_startingStrength * (1f + m_strength * m_level) : m_startingStrength + m_strength * m_level; 
+    }
+    internal float GetMaxLeveledStrength() { return m_startingStrength + m_strength * m_maxLevel; }
 
 
     internal bool IsReadyToUpgrade(float a_cash) { return m_unlocked && a_cash >= m_cost && (m_hasLevels ? (m_level < m_maxLevel) : true); }
@@ -109,7 +115,7 @@ public class UpgradeItem
             SetMaxLevel(a_maxLevel);
             m_hasLevels = true;
         }
-        m_effectStrength = a_effectStrength;
+        m_strength = a_effectStrength;
         m_toggleable = a_toggleable;
         m_costScaling = a_costScaling;
         Refresh();

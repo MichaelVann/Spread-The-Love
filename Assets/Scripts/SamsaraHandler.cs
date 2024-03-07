@@ -55,11 +55,11 @@ public class SamsaraHandler : MonoBehaviour
 
     void RefreshStats()
     {
-        m_turnRateText.text = "Turn Speed: " + PlayerHandler.GetRotateSpeed() + "°/s";
-        m_topSpeedText.text = "Top Speed: " + PlayerHandler.GetMaxSpeed() + "m/s";
-        m_accelerationText.text = "Acceleration: " + PlayerHandler.GetAcceleration() + "m/s²";
-        m_massText.text = "Mass: " + PlayerHandler.GetMass() *10f + "kg";
-        m_fireRateText.text = "Fire Rate: " + PlayerHandler.GetFireRate() + "/s";
+        m_turnRateText.text = "Turn Speed: " + PlayerHandler.GetUpgradeStrength(UpgradeItem.UpgradeId.TurnSpeed) + "°/s";
+        m_topSpeedText.text = "Top Speed: " + PlayerHandler.GetUpgradeStrength(UpgradeItem.UpgradeId.TopSpeed) + "m/s";
+        m_accelerationText.text = "Acceleration: " + PlayerHandler.GetUpgradeStrength(UpgradeItem.UpgradeId.Acceleration) + "m/s²";
+        m_massText.text = "Mass: " + PlayerHandler.GetUpgradeStrength(UpgradeItem.UpgradeId.Mass) *10f + "kg";
+        m_fireRateText.text = "Fire Rate: " + PlayerHandler.GetUpgradeStrength(UpgradeItem.UpgradeId.FireRate) + "/s";
     }
 
     void RefreshHintButton()

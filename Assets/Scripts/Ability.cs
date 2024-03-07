@@ -62,7 +62,7 @@ public class Ability
         return result;
     }
 
-    internal Ability(bool a_enabled, float a_cooldownTime, float a_effectStrength = 0f, float a_duration = 0f)
+    void Init(bool a_enabled, float a_cooldownTime, float a_effectStrength = 0f, float a_duration = 0f)
     {
         m_enabled = a_enabled;
         m_cooldownTimer = new vTimer(a_cooldownTime);
@@ -78,5 +78,10 @@ public class Ability
             m_duration.activeTimer = new vTimer(a_duration);
             m_duration.duration = a_duration;
         }
+    }
+
+    internal Ability(bool a_enabled, float a_cooldownTime, float a_effectStrength = 0f, float a_duration = 0f)
+    {
+        Init(a_enabled, a_cooldownTime, a_effectStrength, a_duration);
     }
 }

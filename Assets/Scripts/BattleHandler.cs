@@ -96,7 +96,7 @@ public class BattleHandler : MonoBehaviour
 
     internal void SetPaused(bool a_paused) { m_paused = a_paused; m_pauseTimeFactor = m_paused ? 0f : 1f; }
 
-    internal void SetBulletTimeFactor(float a_factor) { m_bulletTimeFactor = a_factor; } 
+    internal void SetBulletTimeFactor(float a_factor) { m_bulletTimeFactor = a_factor; Debug.Log(a_factor); } 
 
     internal float GetBuildingGap() { return m_buildingSize + m_streetSize; }
     

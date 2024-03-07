@@ -57,7 +57,6 @@ public class AbilityReadout : MonoBehaviour
         if (m_abilityRef != null && m_abilityRef.m_enabled)
         {
             float angle = m_abilityRef.m_cooldownTimer.GetCompletionPercentage() * 360f;
-            Debug.Log(gameObject.name + ": " + angle);
             m_cooldownMaterialRef.SetFloat("_Angle", angle);
             m_borderImageRef.color = m_abilityRef.m_ready ? m_abilityReadyBorderColor : Color.black;
         }

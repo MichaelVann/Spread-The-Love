@@ -27,12 +27,12 @@ public class PlayerHandler : Soul
 
     //Movement
     [SerializeField] UIRamp m_speedRampRef;
+    internal const float m_startingAcceleration = 1f;
+    float m_acceleration;
     internal const float m_startingMass = 25f;
     internal const float m_startingMaxSpeed = 10f;
     float m_maxSpeed;
-    internal const float m_startingAcceleration = 1f;
     internal const float m_startingGrip = 2f;
-    float m_acceleration;
     float m_grip;
     bool m_brakingEnabled = false;
     internal const float m_startingBrakingStrength = 1f;
@@ -60,12 +60,7 @@ public class PlayerHandler : Soul
 
     //Shoot
     internal const float m_startingFireRate = 1f;
-    //bool m_shootingEnabled = false;
-    //bool m_readyToShoot = true;
-    //float m_fireRate;
-    //vTimer m_shootTimer;
     Ability m_abilityShoot;
-
     int m_shootSpread = 1;
     float m_shootSpreadAngle = 5f;
     bool m_autoShootEnabled = false;
@@ -99,21 +94,11 @@ public class PlayerHandler : Soul
     [SerializeField] AudioClip m_fireSound;
 
     internal float GetSpeed() { return m_rigidBodyRef.velocity.magnitude; }
-    float GetSpeedPercentage() { return GetSpeed() / GetMaxSpeed(); }
+    float GetSpeedPercentage() { return GetSpeed() / GetUpgradeStrength(UpgradeItem.UpgradeId.TopSpeed); }
 
-    static internal float GetMass() { return m_startingMass * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Mass)); }
+    float GetMaxTheoreticalSpeed() { return GameHandler._upgradeTree.GetUpgradeMaxLeveledStrength(UpgradeItem.UpgradeId.TopSpeed); }
 
-    static internal float GetBraking() { return m_startingBrakingStrength * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Braking)); }
-    static internal float GetAcceleration() { return m_startingAcceleration * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Acceleration)); }
-
-    static internal float GetGrip() { return m_startingGrip * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.Grip)); }
-
-    static internal float GetMaxSpeed() { return m_startingMaxSpeed + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TopSpeed); }
-    static internal float GetMaxTheorheticalSpeed() { return m_startingMaxSpeed + GameHandler._upgradeTree.GetUpgradeMaxLeveledStrength(UpgradeItem.UpgradeId.TopSpeed); }
-
-    static internal float GetRotateSpeed() { return m_startingRotateSpeed * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.TurnSpeed)); }
-
-    static internal float GetFireRate() { return m_startingFireRate * (1f + GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.FireRate)); }
+    static internal float GetUpgradeStrength(UpgradeItem.UpgradeId a_upgrade) { return GameHandler._upgradeTree.GetUpgradeLeveledStrength(a_upgrade); }
 
     internal Ability GetAbility(UpgradeItem.UpgradeId a_id)
     {
@@ -162,31 +147,26 @@ public class PlayerHandler : Soul
         m_vesselRadarCaretRef.color = gameHandler.m_fearColors[0];
     }
 
-    void InitialiseBulletTime()
-    {
-        m_abilityBulletTime = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BulletTime), 10f, 0.5f, 1f);
-    }
-
     void InitialiseUpgrades()
     {
-        m_acceleration = GetAcceleration();
-        m_rigidBodyRef.mass = GetMass();
+        m_acceleration = GetUpgradeStrength(UpgradeItem.UpgradeId.Acceleration);
+        m_rigidBodyRef.mass = GetUpgradeStrength(UpgradeItem.UpgradeId.Mass);
         m_brakingEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Braking);
-        m_brakingStrength = GetBraking();
-        m_grip = GetGrip();
-        m_maxSpeed = GetMaxSpeed();
-        m_rotateSpeed = GetRotateSpeed();
+        m_brakingStrength = GetUpgradeStrength(UpgradeItem.UpgradeId.Braking);
+        m_grip = GetUpgradeStrength(UpgradeItem.UpgradeId.Grip);
+        m_maxSpeed = GetUpgradeStrength(UpgradeItem.UpgradeId.TopSpeed);
+        m_rotateSpeed = GetUpgradeStrength(UpgradeItem.UpgradeId.TurnSpeed);
         m_vesselRadarRef.SetActive(false);// GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Radar));
         m_vesselRadarEulers = Vector3.zero;
 
         //Shooting
-        m_abilityShoot = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Shooting), 1f/GetFireRate());
-        m_shootSpread = 1 + (int)GameHandler._upgradeTree.GetUpgradeLeveledStrength(UpgradeItem.UpgradeId.ShootSpread);
+        m_abilityShoot = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Shooting), 1f/ GetUpgradeStrength(UpgradeItem.UpgradeId.FireRate));
+        m_shootSpread = 1 + (int)GetUpgradeStrength(UpgradeItem.UpgradeId.ShootSpread);
         m_aquaplaningEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Aquaplane);
         m_autoShootEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.AutoShoot);
         m_mouseAiming = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
 
-        InitialiseBulletTime();
+        m_abilityBulletTime = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BulletTime), 10f, GetUpgradeStrength(UpgradeItem.UpgradeId.BulletTime), 1f);
     }
 
     // Start is called before the first frame update
@@ -222,23 +202,6 @@ public class PlayerHandler : Soul
                 }
 
                 GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
-            }
-        }
-
-        //////////////
-        if (m_abilityBulletTime.IsActive())
-        {
-            if (m_abilityBulletTime.DurationUpdate())
-            {
-                m_battleHandlerRef.SetBulletTimeFactor(1f);
-            }
-        }
-        else
-        {
-            m_abilityBulletTime.UpdateCooldown();
-            if (Input.GetKey(KeyCode.T) && m_abilityBulletTime.AttemptToActivate())
-            {
-                m_battleHandlerRef.SetBulletTimeFactor(m_abilityBulletTime.m_effectStrength);
             }
         }
     }
@@ -332,6 +295,7 @@ public class PlayerHandler : Soul
         float angleDrag = Mathf.Abs(Mathf.Sin(Mathf.PI * driftAngle / 180f));
         angleDrag *= m_rotateDrag;
         angleDrag *= Time.deltaTime;
+        angleDrag *= m_grip;
         angleDrag *= Mathf.Pow(m_rigidBodyRef.velocity.magnitude / 20f, 0.3f);
         float rotationSlowdownEffect = 1f - angleDrag;
         m_rigidBodyRef.velocity *= rotationSlowdownEffect;
@@ -413,7 +377,7 @@ public class PlayerHandler : Soul
         HandleBraking();
 
         float velocity = m_rigidBodyRef.velocity.magnitude;
-        float speedPercentage = velocity/ GetMaxTheorheticalSpeed();
+        float speedPercentage = velocity/ GetMaxTheoreticalSpeed();
         if (m_wakeEnabled)
         {
             m_wakeRef.transform.eulerAngles = VLib.Vector2ToEulerAngles(m_rigidBodyRef.velocity);
@@ -464,7 +428,7 @@ public class PlayerHandler : Soul
             m_abilityBulletTime.UpdateCooldown();
             if (Input.GetKey(KeyCode.T) && m_abilityBulletTime.AttemptToActivate())
             {
-                m_battleHandlerRef.SetBulletTimeFactor(m_abilityBulletTime.m_effectStrength);
+                m_battleHandlerRef.SetBulletTimeFactor(1f/m_abilityBulletTime.m_effectStrength);
             }
         }
     }
