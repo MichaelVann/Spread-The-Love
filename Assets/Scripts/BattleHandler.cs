@@ -88,17 +88,26 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] GameObject m_lootBagPrefab;
     int m_lootBagsToSpawn;
     int m_minimumLivesLivedToSpawnLootBags = 1;
-
+    float m_lootBagBonus = 0f;
+    const float m_lootBagBonusIncrease = 0.1f;
+    [SerializeField] TextMeshProUGUI m_lootBagBonusText;
 
     internal bool m_paused = false;
 
     internal Vector2 GetMapSize() { return new Vector2(m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingColumns / 2f, m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingRows / 2f); }
 
-    internal void SetPaused(bool a_paused) { m_paused = a_paused; m_pauseTimeFactor = m_paused ? 0f : 1f; }
+    internal void SetPaused(bool a_paused) { m_paused = a_paused; m_pauseTimeFactor = m_paused ? 0f : 1f; Cursor.visible = m_paused || GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim); }
 
-    internal void SetBulletTimeFactor(float a_factor) { m_bulletTimeFactor = a_factor; Debug.Log(a_factor); } 
+    internal void SetBulletTimeFactor(float a_factor) { m_bulletTimeFactor = a_factor; } 
 
     internal float GetBuildingGap() { return m_buildingSize + m_streetSize; }
+
+    internal void IncreaseLootBagBonus() { m_lootBagBonus += m_lootBagBonusIncrease; UpdateLootBagBonusText(); }
+
+    void UpdateLootBagBonusText()
+    {
+        m_lootBagBonusText.text = "+" + (m_lootBagBonus * 100f).ToString("f0") + "%";
+    }
     
     int[] GetCentreInteresection()
     {
@@ -129,6 +138,8 @@ public class BattleHandler : MonoBehaviour
         m_buildingColumns = m_buildingRows = GameHandler._mapSize * 2;
         m_miniMapCameraRef.GetComponent<Camera>().orthographicSize = GetMapSize().x;
         ChangeScore(0);
+        Cursor.visible = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
+        UpdateLootBagBonusText();
     }
 
     void InitialiseUpgrades()
@@ -340,7 +351,8 @@ public class BattleHandler : MonoBehaviour
                 } while (IsCentreIntersection(spawnPositions[i][0], spawnPositions[i][1]));
 
 
-                Instantiate(m_lootBagPrefab, GetIntersectionPos(spawnPositions[i][0], spawnPositions[i][1]), Quaternion.identity);
+                LootBag lootBag = Instantiate(m_lootBagPrefab, GetIntersectionPos(spawnPositions[i][0], spawnPositions[i][1]), Quaternion.identity).GetComponent<LootBag>();
+                lootBag.SetBattleHandlerRef(this);
             }
         }
     }
@@ -355,7 +367,7 @@ public class BattleHandler : MonoBehaviour
 
     void MoveToSamsara()
     {
-        GameHandler.ChangeScore(m_vesselsLoved + m_score);
+        GameHandler.ChangeScore(m_vesselsLoved + (int)(m_score* (1f + m_lootBagBonus)));
         m_gameEnded = true;
         FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
         GameHandler.IncrementLivesLived();
@@ -450,6 +462,8 @@ public class BattleHandler : MonoBehaviour
                 OpenPauseMenu();
             }
         }
+
+        Cursor.visible = m_paused || GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
     }
 
     void OpenPauseMenu()

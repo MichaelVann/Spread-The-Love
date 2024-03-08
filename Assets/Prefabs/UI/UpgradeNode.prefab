@@ -1879,6 +1879,7 @@ MonoBehaviour:
   m_availableUpgradeIndicatorRef: {fileID: 6708128867958266732}
   m_baseColor: {r: 0.7921569, g: 0.16635293, b: 0.35950255, a: 1}
   m_notPurchaseableColor: {r: 0.5566038, g: 0.2494215, b: 0.3429118, a: 1}
+  m_maxLevelColor: {r: 0.16589999, g: 0.4665337, b: 0.79, a: 1}
   m_keyIndicatorRef: {fileID: 779732981478411358}
   m_keyIndicatorText: {fileID: 2324235358029599571}
   m_selectionRing: {fileID: 7263803425729029589}

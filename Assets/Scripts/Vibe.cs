@@ -18,8 +18,6 @@ public class Vibe : MonoBehaviour
     const float m_absorptionTime = 0.4f;
     bool m_beingAbsorbed = false;
 
-    float m_startingSpeed = 5f;
-
     int m_emotion = 1;
 
     internal bool IsOriginSoul(Vessel a_soul) { return m_originSoul == a_soul; }
@@ -36,11 +34,11 @@ public class Vibe : MonoBehaviour
         //m_rigidBodyRef.velocity = VLib.Euler2dAngleToVector3(transform.eulerAngles.z).normalized * m_startingSpeed;
     }
 
-    internal void Init(Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_inheritedVelocity, int a_emotion = 1)
+    internal void Init(Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_inheritedVelocity, int a_emotion = 1, float a_speed = 5f)
     {
 
         m_originSoul = a_originSoul;
-        m_rigidBodyRef.velocity = a_travelDirection * m_startingSpeed;
+        m_rigidBodyRef.velocity = a_travelDirection * a_speed;
         m_emotion = a_emotion;
         UpdateColorFromEmotion();
         m_rigidBodyRef.velocity += a_inheritedVelocity;

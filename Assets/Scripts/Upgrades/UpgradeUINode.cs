@@ -31,6 +31,7 @@ public class UpgradeUINode : MonoBehaviour
 
     [SerializeField] Color m_baseColor;
     [SerializeField] Color m_notPurchaseableColor;
+    [SerializeField] Color m_maxLevelColor;
 
     //Key Indicator
     [SerializeField] GameObject m_keyIndicatorRef;
@@ -90,10 +91,17 @@ public class UpgradeUINode : MonoBehaviour
 
         if (m_upgradeItemRef.m_owned)
         {
-            bool purchaseable = GameHandler._score >= m_upgradeItemRef.m_cost;
-            purchaseable |= m_upgradeItemRef.m_level >= m_upgradeItemRef.m_maxLevel;
-            purchaseable |= !m_upgradeItemRef.m_hasLevels;
-            nodeColor = purchaseable ? m_baseColor : m_notPurchaseableColor;
+            if (m_upgradeItemRef.m_level < m_upgradeItemRef.m_maxLevel)
+            {
+                bool purchaseable = GameHandler._score >= m_upgradeItemRef.m_cost;
+                purchaseable &= m_upgradeItemRef.m_hasLevels;
+                nodeColor = purchaseable ? m_baseColor : m_notPurchaseableColor;
+            }
+            else
+            {
+                nodeColor = m_maxLevelColor;
+            }
+
 
             if (m_upgradeItemRef.m_toggleable)
             {

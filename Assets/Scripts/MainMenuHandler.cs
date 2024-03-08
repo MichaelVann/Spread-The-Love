@@ -9,7 +9,7 @@ public class MainMenuHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Cursor.visible = true;
     }
 
     public void OpenOptionsMenu()

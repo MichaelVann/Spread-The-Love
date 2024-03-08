@@ -69,6 +69,8 @@ public class UpgradeTreeUIHandler : MonoBehaviour
     public void CloseUpgradeNodePanel()
     {
         m_upgradeNodePanelRef.gameObject.SetActive(false);
+        m_selectedUpgradeNode = null;
+        RefreshNodesSelectedStatus();
     }
 
     public void AttemptToPurchaseUpgrade(UpgradeItem a_upgradeItemRef)
@@ -183,6 +185,13 @@ public class UpgradeTreeUIHandler : MonoBehaviour
         }
     }
 
+    static internal int UpgradeNodeComparison(UpgradeUINode a_first, UpgradeUINode a_second)
+    {
+        int returnVal = a_first.m_upgradeItemRef.m_ID - a_second.m_upgradeItemRef.m_ID;
+
+        return returnVal;
+    }
+
     void PositionUpgrades()
     {
         float totalWidth = m_contentTransform.GetComponent<RectTransform>().rect.width;
@@ -194,6 +203,7 @@ public class UpgradeTreeUIHandler : MonoBehaviour
             float yPos = m_firstNodeRowPadding + m_nodeVerticalPadding;
             SpawnNode(initialUpgrades[i], new Vector3(0f, yPos, 0f), i, totalWidth, itemWidth, true);
         }
+        m_upgradeNodes.Sort(UpgradeNodeComparison);
     }
 
     public void Refresh()

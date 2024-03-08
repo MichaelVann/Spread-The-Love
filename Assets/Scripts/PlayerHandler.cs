@@ -16,6 +16,7 @@ public class PlayerHandler : Soul
     [SerializeField] ParticleSystem m_driftParticlesLeftRef;
     [SerializeField] ParticleSystem m_driftParticlesRightRef;
     [SerializeField] TrailRenderer m_loveTrailRef;
+    [SerializeField] GameObject m_shootReadinessIndicatorRef;
 
     //Minimap
     [SerializeField] MiniMapIcon m_miniMapIconRef;
@@ -67,6 +68,7 @@ public class PlayerHandler : Soul
     bool m_mouseAiming = false;
 
     Ability m_abilityBulletTime;
+    bool m_bulletTimeButtonWasDownLastFrame = false;
 
     [SerializeField] GameObject m_collisionEffectPrefab;
 
@@ -99,6 +101,8 @@ public class PlayerHandler : Soul
     float GetMaxTheoreticalSpeed() { return GameHandler._upgradeTree.GetUpgradeMaxLeveledStrength(UpgradeItem.UpgradeId.TopSpeed); }
 
     static internal float GetUpgradeStrength(UpgradeItem.UpgradeId a_upgrade) { return GameHandler._upgradeTree.GetUpgradeLeveledStrength(a_upgrade); }
+
+    bool GetUpgradeButton(UpgradeItem.UpgradeId a_id) { return Input.GetButton(GameHandler._upgradeTree.GetUpgrade(a_id).m_key); }
 
     internal Ability GetAbility(UpgradeItem.UpgradeId a_id)
     {
@@ -134,6 +138,7 @@ public class PlayerHandler : Soul
         m_driftSoundAudioSource.pitch = 0.1f;
         m_driftSoundAudioSource.loop = true;
         m_driftSoundAudioSource.Play();
+        m_shootReadinessIndicatorRef.SetActive(m_abilityShoot.m_enabled && m_abilityShoot.m_ready);
     }
 
     void InitialiseColors()
@@ -160,13 +165,15 @@ public class PlayerHandler : Soul
         m_vesselRadarEulers = Vector3.zero;
 
         //Shooting
-        m_abilityShoot = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Shooting), 1f/ GetUpgradeStrength(UpgradeItem.UpgradeId.FireRate));
+        m_abilityShoot = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Shooting));
+        m_abilityShoot.SetUpCooldown(1f / GetUpgradeStrength(UpgradeItem.UpgradeId.FireRate));
         m_shootSpread = 1 + (int)GetUpgradeStrength(UpgradeItem.UpgradeId.ShootSpread);
         m_aquaplaningEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Aquaplane);
         m_autoShootEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.AutoShoot);
         m_mouseAiming = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
 
-        m_abilityBulletTime = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BulletTime), 10f, GetUpgradeStrength(UpgradeItem.UpgradeId.BulletTime), 1f);
+        m_abilityBulletTime = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BulletTime), GetUpgradeStrength(UpgradeItem.UpgradeId.BulletTime));
+        m_abilityBulletTime.SetUpResource(1f, 0.1f);
     }
 
     // Start is called before the first frame update
@@ -191,14 +198,16 @@ public class PlayerHandler : Soul
             }
             aimDirection = aimDirection.normalized;
 
+            m_shootReadinessIndicatorRef.SetActive(m_abilityShoot.m_ready);
+
             //deltaMousePos = new Vector2(1f,0f);
-            if ((m_autoShootEnabled || Input.GetKey(KeyCode.W)) && m_abilityShoot.AttemptToActivate())
+            if ((m_autoShootEnabled || GetUpgradeButton(UpgradeItem.UpgradeId.Shooting)) && m_abilityShoot.AttemptToActivate())
             {
                 for (int i = 0; i < m_shootSpread; i++)
                 {
                     float angle = i * (2 * m_shootSpreadAngle) - ((m_shootSpread - 1) * m_shootSpreadAngle);
                     Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
-                    loveVibe.Init(null, aimDirection.normalized.RotateVector2(angle), m_rigidBodyRef.velocity, m_emotion);
+                    loveVibe.Init(null, aimDirection.normalized.RotateVector2(angle), m_rigidBodyRef.velocity, m_emotion, GetUpgradeStrength(UpgradeItem.UpgradeId.ProjectileSpeed));
                 }
 
                 GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
@@ -305,7 +314,7 @@ public class PlayerHandler : Soul
     {
         if (m_aquaplaningEnabled)
         {
-            m_aquaplaning = Input.GetKey(KeyCode.Space);
+            m_aquaplaning = GetUpgradeButton(UpgradeItem.UpgradeId.Aquaplane);
         }
 
         if (m_rigidBodyRef.velocity.magnitude != 0f)
@@ -359,7 +368,7 @@ public class PlayerHandler : Soul
 
     void HandleBraking()
     {
-        m_braking = m_brakingEnabled && Input.GetKey(KeyCode.S);
+        m_braking = m_brakingEnabled && GetUpgradeButton(UpgradeItem.UpgradeId.Braking);
         if (m_braking)
         {
             m_rigidBodyRef.velocity *= 1f - m_brakingStrength*Time.deltaTime;
@@ -416,21 +425,50 @@ public class PlayerHandler : Soul
 
     void BulletTimeUpdate()
     {
-        if (m_abilityBulletTime.IsActive())
+        bool m_bulletTimeActive = m_abilityBulletTime.IsActive();
+        if (GetUpgradeButton(UpgradeItem.UpgradeId.BulletTime))
         {
-            if (m_abilityBulletTime.DurationUpdate())
+            m_bulletTimeButtonWasDownLastFrame = true;
+        }
+        else if(m_bulletTimeButtonWasDownLastFrame)
+        {
+            if (m_bulletTimeActive)
             {
-                m_battleHandlerRef.SetBulletTimeFactor(1f);
+                m_abilityBulletTime.SetActive(false);
             }
+            else
+            {
+                m_abilityBulletTime.AttemptToActivate();
+            }
+            m_bulletTimeButtonWasDownLastFrame = false;
+        }
+        m_abilityBulletTime.ResourceUpdate();
+
+        if (m_bulletTimeActive)
+        {
+            m_battleHandlerRef.SetBulletTimeFactor(1f / m_abilityBulletTime.m_effectStrength);
         }
         else
         {
-            m_abilityBulletTime.UpdateCooldown();
-            if (Input.GetKey(KeyCode.T) && m_abilityBulletTime.AttemptToActivate())
-            {
-                m_battleHandlerRef.SetBulletTimeFactor(1f/m_abilityBulletTime.m_effectStrength);
-            }
+            m_battleHandlerRef.SetBulletTimeFactor(1f);
         }
+
+
+        //if (m_abilityBulletTime.IsActive())
+        //{
+        //    if (m_abilityBulletTime.DurationUpdate())
+        //    {
+        //        m_battleHandlerRef.SetBulletTimeFactor(1f);
+        //    }
+        //}
+        //else
+        //{
+        //    m_abilityBulletTime.UpdateCooldown();
+        //    if (GetUpgradeButton(UpgradeItem.UpgradeId.BulletTime) && m_abilityBulletTime.AttemptToActivate())
+        //    {
+        //        m_battleHandlerRef.SetBulletTimeFactor(1f/m_abilityBulletTime.m_effectStrength);
+        //    }
+        //}
     }
 
     // Update is called once per frame

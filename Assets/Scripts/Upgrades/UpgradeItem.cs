@@ -20,7 +20,7 @@ public class UpgradeItem
     internal int m_maxLevel = 0;
 
     internal bool m_unlocked;
-    internal KeyCode m_key = KeyCode.None;
+    internal string m_key = string.Empty;
 
     //Toggle
     internal bool m_toggled = true;
@@ -44,8 +44,9 @@ public class UpgradeItem
         Aquaplane,
         //DriftSpread,
         Shooting,
-        FireRate,
+        ProjectileSpeed,
         ShootSpread,
+        FireRate,
         AutoShoot,
         MouseAim,
         //Radar,
@@ -74,7 +75,7 @@ public class UpgradeItem
 
     internal void SetToggleable(bool a_value) { m_toggleable = a_value; }
 
-    internal void SetKey(KeyCode a_key) { m_key = a_key; }
+    internal void SetKey(string a_key) { m_key = a_key; }
 
     internal bool IsEnabled() { return m_toggled && m_owned; }
 

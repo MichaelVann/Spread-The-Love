@@ -920,10 +920,6 @@ MonoBehaviour:
   - {r: 0.23137257, g: 0.30980393, b: 0.7058824, a: 1}
   - {r: 0.16470589, g: 0.4666667, b: 0.78823537, a: 1}
   - {r: 0.16470589, g: 0.78823537, b: 0.78823537, a: 1}
-  m_fearColor1: {r: 0.3366103, g: 0.2352941, b: 0.6784314, a: 1}
-  m_fearColor2: {r: 0.23028658, g: 0.3083292, b: 0.7075472, a: 1}
-  m_fearColor3: {r: 0.16589999, g: 0.4665337, b: 0.79, a: 1}
-  m_fearColor4: {r: 0.16470589, g: 0.788235, b: 0.7882353, a: 1}
   m_sceneFadeImageRef: {fileID: 8144021130190402943}
   m_sceneFadeCanvasRef: {fileID: 3369821462758880317}
   m_upgradeImages:
@@ -935,6 +931,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e407c79b1d92f2f418059659561c5219, type: 3}
   - {fileID: 21300000, guid: 224558554d2c4bd44a0be7b753d28baa, type: 3}
   - {fileID: 21300000, guid: 55f27787436dd3645ad06b40ad5d776c, type: 3}
+  - {fileID: 21300000, guid: b65f1e99e551f1e46af27a023ecc1cc6, type: 3}
   - {fileID: 21300000, guid: b65f1e99e551f1e46af27a023ecc1cc6, type: 3}
   - {fileID: 21300000, guid: 5cae8f1ef6d28df46bdafed5d0a30c89, type: 3}
   - {fileID: 21300000, guid: 4608b2a564e40074a87f74b2b781af5d, type: 3}

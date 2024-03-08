@@ -32,7 +32,7 @@ public class Vessel : Soul
     [SerializeField] Sprite[] m_eyeSprites;
 
     //Movement
-    const float m_defaultWanderSpeed = 1.0f;
+    const float m_defaultWanderSpeed = 0.8f;
     float m_loveWanderSpeedMult = 2f;
     float m_wanderSpeed = 1.0f;
     float m_wanderRotationSpeed = 5f;

@@ -5,6 +5,8 @@ using UnityEngine.UIElements;
 
 public class LootBag : MonoBehaviour
 {
+    BattleHandler m_battleHandlerRef;
+
     const int m_scoreAmount = 0;
     const int m_vibesDispensed = 6;
     const float m_startingSpeed = 20f;
@@ -13,6 +15,8 @@ public class LootBag : MonoBehaviour
     [SerializeField] AudioClip m_popSoundRef;
     [SerializeField] ParticleSystem m_popParticleSystemRef;
     const float m_acceleration = 200f;
+
+    internal void SetBattleHandlerRef(BattleHandler a_battleHandler) { m_battleHandlerRef = a_battleHandler; }
 
     // Start is called before the first frame update
     void Start()
@@ -39,6 +43,7 @@ public class LootBag : MonoBehaviour
 
     void Pop()
     {
+        m_battleHandlerRef.IncreaseLootBagBonus();
         GameHandler.ChangeScore(m_scoreAmount);
         for (int i = 0; i < m_vibesDispensed; i++) 
         {

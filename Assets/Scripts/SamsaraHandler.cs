@@ -17,6 +17,8 @@ public class SamsaraHandler : MonoBehaviour
     [SerializeField] GameObject m_optionsMenuPrefab;
     [SerializeField] Button m_nextHintButton;
 
+    GameObject m_optionsMenu;
+
     //Hints
     [SerializeField] TextMeshProUGUI m_hintText;
     [SerializeField] TextMeshProUGUI m_hintCostText;
@@ -37,6 +39,7 @@ public class SamsaraHandler : MonoBehaviour
         Time.timeScale = 1.0f;
         m_hintCostText.text = m_hintCost.ToString();
         RefreshUI();
+        Cursor.visible = true;
     }
 
     // Update is called once per frame
@@ -47,9 +50,9 @@ public class SamsaraHandler : MonoBehaviour
             GameHandler.ChangeScoreFromSamsara(1);
             RefreshUI();
         }
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && m_optionsMenu == null)
         {
-            Instantiate(m_optionsMenuPrefab);
+            m_optionsMenu = Instantiate(m_optionsMenuPrefab);
         }
     }
 
