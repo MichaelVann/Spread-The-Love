@@ -68,6 +68,7 @@ public class BattleHandler : MonoBehaviour
     float m_streetSize = 5f;
     [SerializeField] GameObject[] m_trashDecalPrefabs;
     [SerializeField] GameObject[] m_cornerDecals;
+    [SerializeField] GameObject[] m_roadDecals;
 
     //Background
     [SerializeField] SpriteRenderer m_backgroundRef;
@@ -94,7 +95,7 @@ public class BattleHandler : MonoBehaviour
 
     internal bool m_paused = false;
 
-    internal Vector2 GetMapSize() { return new Vector2(m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingColumns / 2f, m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingRows / 2f); }
+    internal Vector2 GetMapHalfSize() { return new Vector2(m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingColumns / 2f, m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingRows / 2f); }
 
     internal void SetPaused(bool a_paused) { m_paused = a_paused; m_pauseTimeFactor = m_paused ? 0f : 1f; Cursor.visible = m_paused || GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim); }
 
@@ -103,6 +104,19 @@ public class BattleHandler : MonoBehaviour
     internal float GetBuildingGap() { return m_buildingSize + m_streetSize; }
 
     internal void IncreaseLootBagBonus() { m_lootBagBonus += m_lootBagBonusIncrease; UpdateLootBagBonusText(); }
+
+    Vector3 GetBuildingPosition(int a_x, int a_y)
+    {
+        float buildingGap = GetBuildingGap();
+        float posX = a_x * buildingGap;
+        posX -= buildingGap * m_buildingColumns / 2f;
+        posX += buildingGap / 2f;
+        float posY = a_y * buildingGap;
+        posY -= buildingGap * m_buildingRows / 2f;
+        posY += buildingGap / 2f;
+
+        return new Vector3(posX, posY);
+    }
 
     void UpdateLootBagBonusText()
     {
@@ -136,7 +150,7 @@ public class BattleHandler : MonoBehaviour
         Time.timeScale = 1f;
         m_vesselList = new List<Vessel>();
         m_buildingColumns = m_buildingRows = GameHandler._mapSize * 2;
-        m_miniMapCameraRef.GetComponent<Camera>().orthographicSize = GetMapSize().x;
+        m_miniMapCameraRef.GetComponent<Camera>().orthographicSize = GetMapHalfSize().x;
         ChangeScore(0);
         Cursor.visible = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
         UpdateLootBagBonusText();
@@ -170,7 +184,7 @@ public class BattleHandler : MonoBehaviour
         {
             m_tierText.text += "/3";
         }
-        m_backgroundRef.size = GetMapSize() * new Vector2(2f/m_backgroundRef.transform.localScale.x,2f/ m_backgroundRef.transform.localScale.y);
+        m_backgroundRef.size = GetMapHalfSize() * new Vector2(2f/m_backgroundRef.transform.localScale.x,2f/ m_backgroundRef.transform.localScale.y);
     }
 
     void ChangeScore(int a_change)
@@ -314,21 +328,61 @@ public class BattleHandler : MonoBehaviour
 
     void SpawnBuildings()
     {
-        float buildingGap = m_buildingSize + m_streetSize;
+        float buildingGap = GetBuildingGap();
         for (int i = 0; i < m_buildingColumns; i++)
         {
             for (int j = 0; j < m_buildingRows; j++)
             {
-                float posX = i * buildingGap;
-                posX -= buildingGap * m_buildingColumns / 2f;
-                posX += buildingGap / 2f;
-                float posY = j * buildingGap;
-                posY -= buildingGap * m_buildingRows / 2f;
-                posY += buildingGap / 2f;
-
-                SpawnBuilding(new Vector3(posX, posY));
+                SpawnBuilding(GetBuildingPosition(i,j));
             }
         }
+    }
+
+    void SpawnLinesOfDecals(bool a_horizontal)
+    {
+        int lines = a_horizontal ? m_buildingRows : m_buildingColumns;
+        for (int i = 0; i < lines + 1; i++)
+        {
+            int decalsToSpawn = VLib.vRandom(2, 8);
+            for (int j = 0; j < decalsToSpawn; j++)
+            {
+                int decalRoll = VLib.vRandom(0, m_roadDecals.Length - 1);
+
+                float scale = GetMapHalfSize().x - 0.75f;
+                float posA =  VLib.vRandom(-scale, scale);
+
+                float buildingGap = GetBuildingGap();
+                float posB = i * buildingGap;
+                posB -= buildingGap * lines / 2f;
+                float posBDeviation = m_streetSize / 3.5f;
+                posB += VLib.vRandom(-posBDeviation, posBDeviation);
+
+                Vector3 spawnPos = a_horizontal ? new Vector3(posA, posB) : new Vector3(posB, posA);
+
+                Instantiate(m_roadDecals[decalRoll], spawnPos, Quaternion.identity);
+            }
+        }
+    }
+
+    void SpawnRoadDecals()
+    {
+        //for (int i = 0; i < m_buildingColumns+1; i++)
+        //{
+        //    int decalRoll = VLib.vRandom(0, m_roadDecals.Length-1);
+        //    float buildingGap = GetBuildingGap();
+        //    float posX = i * buildingGap;
+        //    posX -= buildingGap * m_buildingColumns / 2f;
+
+        //    float yScale = GetMapHalfSize().y;
+        //    float posY = VLib.vRandom(-yScale, yScale);
+
+        //    Vector3 spawnPos = new Vector3(posX, posY);
+
+        //    Instantiate(m_roadDecals[decalRoll], spawnPos, Quaternion.identity);
+        //}
+
+        SpawnLinesOfDecals(true);
+        SpawnLinesOfDecals(false);
     }
 
     void SpawnEntities()
@@ -360,6 +414,7 @@ public class BattleHandler : MonoBehaviour
     void SetupMap()
     {
         SpawnBuildings();
+        SpawnRoadDecals();
         SpawnOuterWalls();
         SpawnVessels();
         SpawnEntities();

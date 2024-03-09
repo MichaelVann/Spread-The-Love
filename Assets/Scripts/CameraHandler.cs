@@ -25,7 +25,7 @@ public class CameraHandler : MonoBehaviour
 
     void ClampToBounds()
     {
-        Vector2 mapSize = m_battleHandlerRef.GetMapSize();
+        Vector2 mapSize = m_battleHandlerRef.GetMapHalfSize();
         Vector3 cameraPos = transform.position;
 
         Vector2 cameraSize = new Vector2(m_cameraRef.orthographicSize * m_cameraRef.aspect, m_cameraRef.orthographicSize);

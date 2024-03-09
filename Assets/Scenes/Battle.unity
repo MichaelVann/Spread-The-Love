@@ -780,6 +780,73 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_height: 0
+--- !u!1 &258825162
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 258825163}
+  - component: {fileID: 258825164}
+  m_Layer: 6
+  m_Name: Enemy Awareness Circle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &258825163
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258825162}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4029502613970937371}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &258825164
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258825162}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 7671
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 7
 --- !u!1 &259326424
 GameObject:
   m_ObjectHideFlags: 0
@@ -1310,6 +1377,8 @@ MonoBehaviour:
   - {fileID: 1432675156737087731, guid: 251556077a2b6fd4fa7aa52bff8d67d4, type: 3}
   m_cornerDecals:
   - {fileID: 4869584457715346161, guid: fd1a557bcf6b19a41a1116e1865bcc6a, type: 3}
+  m_roadDecals:
+  - {fileID: 6370836106064638004, guid: e2b77d47b913dc742a00d9a06ceb1ade, type: 3}
   m_backgroundRef: {fileID: 1942700574}
   m_scrollingBackgroundRef: {fileID: 492764728}
   m_lootBagPrefab: {fileID: 1016008954366094287, guid: e2f4586334f6adb4c9efbafffeb1bace, type: 3}
@@ -20692,6 +20761,7 @@ Transform:
   - {fileID: 1733020869}
   - {fileID: 1119146723}
   - {fileID: 508745813}
+  - {fileID: 258825163}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
 --- !u!4 &4270613885886292984

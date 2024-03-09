@@ -64,9 +64,13 @@ public class PlayerHandler : Soul
     Ability m_abilityShoot;
     int m_shootSpread = 1;
     float m_shootSpreadAngle = 5f;
-    bool m_autoShootEnabled = false;
+    bool m_autoShootUnlocked = false;
+    bool m_autoShootEnabled = true;
     bool m_mouseAiming = false;
+    bool m_shootButtonWasDownLastFrame = false;
 
+
+    //Bullet Time
     Ability m_abilityBulletTime;
     bool m_bulletTimeButtonWasDownLastFrame = false;
 
@@ -169,7 +173,7 @@ public class PlayerHandler : Soul
         m_abilityShoot.SetUpCooldown(1f / GetUpgradeStrength(UpgradeItem.UpgradeId.FireRate));
         m_shootSpread = 1 + (int)GetUpgradeStrength(UpgradeItem.UpgradeId.ShootSpread);
         m_aquaplaningEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Aquaplane);
-        m_autoShootEnabled = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.AutoShoot);
+        m_autoShootUnlocked = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.AutoShoot);
         m_mouseAiming = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
 
         m_abilityBulletTime = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BulletTime), GetUpgradeStrength(UpgradeItem.UpgradeId.BulletTime));
@@ -200,8 +204,21 @@ public class PlayerHandler : Soul
 
             m_shootReadinessIndicatorRef.SetActive(m_abilityShoot.m_ready);
 
-            //deltaMousePos = new Vector2(1f,0f);
-            if ((m_autoShootEnabled || GetUpgradeButton(UpgradeItem.UpgradeId.Shooting)) && m_abilityShoot.AttemptToActivate())
+            bool shootButtonPressed = GetUpgradeButton(UpgradeItem.UpgradeId.Shooting);
+            bool shooting = m_autoShootEnabled;
+
+            if (m_autoShootUnlocked && shootButtonPressed && !m_shootButtonWasDownLastFrame)
+            {
+                m_shootButtonWasDownLastFrame = true;
+                m_autoShootEnabled = !m_autoShootEnabled;
+                shooting = m_autoShootEnabled;
+            }
+            else if (GetUpgradeButton(UpgradeItem.UpgradeId.Shooting))
+            {
+                shooting = true;
+            }
+
+            if (shooting && m_abilityShoot.AttemptToActivate())
             {
                 for (int i = 0; i < m_shootSpread; i++)
                 {
@@ -212,7 +229,9 @@ public class PlayerHandler : Soul
 
                 GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
             }
+            m_shootButtonWasDownLastFrame = shootButtonPressed;
         }
+        
     }
 
     float GetDriftAngle()
@@ -519,5 +538,11 @@ public class PlayerHandler : Soul
             m_driftSpread = 1f;
             GameHandler._audioManager.PlaySFX(m_wallHitSound);
         }
+    }
+
+    private void OnTriggerEnter2D(Collider2D a_collision)
+    {
+        Vessel m_enemyVessel = a_collision.GetComponent<Vessel>();
+        m_enemyVessel.SetPlayerAwareness(true);
     }
 }

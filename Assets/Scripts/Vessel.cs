@@ -38,6 +38,7 @@ public class Vessel : Soul
     float m_wanderRotationSpeed = 5f;
 
     //AI
+    bool m_awareOfPlayer = false;
     internal enum eFearType
     {
         Regular = -1,
@@ -50,11 +51,10 @@ public class Vessel : Soul
     {
         internal bool absorbingLove;
         internal bool rejectingLove;
+        internal bool awareOfPlayer;
     }
     FearTraits m_fearTraits;
 
-    //const int _cowardType = -2;
-    //internal const int _bullyType = -3;
     float m_playerSeenDistance = 9f;
     float m_neg2RotateRate = 4f;
 
@@ -100,11 +100,17 @@ public class Vessel : Soul
     Material m_spriteMaterialRef;
     vTimer m_damageFlashTimer;
 
+    const float m_demotionProtectionTime = 0.4f;
+    bool m_demotionProtectionActive = false;
+    vTimer m_demotionProtectionTimer;
+
     bool IsLoved() { return m_emotion > 0; }
 
     bool IsFearType(eFearType a_fearType) { return m_emotion == (int)a_fearType; }
 
     internal void SetEmotion(int a_emotion) { AddEmotion(a_emotion - m_emotion); }
+
+    internal void SetPlayerAwareness(bool a_aware) { m_awareOfPlayer = a_aware; }
 
     void Awake()
     {
@@ -116,6 +122,7 @@ public class Vessel : Soul
         m_spriteRendererRef.material = m_spriteMaterialRef;
 
         m_defaultSpriteScale = m_spriteRendererRef.transform.localScale;
+        m_demotionProtectionTimer = new vTimer(m_demotionProtectionTime);
     }
 
     // Start is called before the first frame update
@@ -243,27 +250,23 @@ public class Vessel : Soul
 
     void AIUpdate()
     {
-        if (IsFearType(eFearType.Coward) || IsFearType(eFearType.Bully))
+        if (m_fearTraits.awareOfPlayer)
         {
-            Vector3 deltaPlayerPos = m_playerHandlerRef.transform.position - transform.position;
-            float deltaPlayerMag = deltaPlayerPos.magnitude;
-            if (deltaPlayerMag < m_playerSeenDistance)
+            if (m_awareOfPlayer)
             {
+                Vector3 deltaPlayerPos = m_playerHandlerRef.transform.position - transform.position;
                 float deltaAngle = Vector2.SignedAngle(m_rigidBodyRef.velocity, deltaPlayerPos.ToVector2());
                 deltaAngle += m_emotion < (int)eFearType.Coward ? 0f: 180f;
                 deltaAngle = VLib.ClampRotation(deltaAngle);
                 m_rigidBodyRef.velocity = VLib.RotateVector2(m_rigidBodyRef.velocity, deltaAngle * m_neg2RotateRate * Time.deltaTime).normalized * m_wanderSpeed;
             }
-            else
-            {
-                MovementUpdate();
-            }
+
             //if (IsFearType(eFearType.Coward))
             //{
             //    AbsorbedEmotionUpdate();
             //}
         }
-        else if (m_fearTraits.absorbingLove)
+        if (m_fearTraits.absorbingLove)
         {
             //if (m_absorbedLoveTimers.Count < 0)
             //{
@@ -293,10 +296,7 @@ public class Vessel : Soul
     // Update is called once per frame
     void Update()
     {
-        if (m_emotion != (int)eFearType.Coward)
-        {
-            MovementUpdate();
-        }
+        MovementUpdate();
         AIUpdate();
         ShieldHitUpdate();
         if (m_damageFlashTimer.Update())
@@ -307,6 +307,11 @@ public class Vessel : Soul
         //ExchangeForceWithPlayer();
         //ProcessEmotions();
         UpdateDeltaEmotionScale();
+
+        if (m_demotionProtectionActive && m_demotionProtectionTimer.Update())
+        {
+            m_demotionProtectionActive = false;
+        }
     }
 
     void ReEmitEmotion()
@@ -319,6 +324,7 @@ public class Vessel : Soul
     {
         m_fearTraits.rejectingLove = false;
         m_fearTraits.absorbingLove = false;
+        m_fearTraits.awareOfPlayer = false;
 
         switch ((eFearType)m_emotion)
         {
@@ -326,11 +332,13 @@ public class Vessel : Soul
                 break;
             case eFearType.Coward:
                 m_fearTraits.rejectingLove = true;
+                m_fearTraits.awareOfPlayer = true;
                 break;
             case eFearType.Bully:
                 break;
             case eFearType.Jaded:
                 m_fearTraits.absorbingLove = true;
+                m_fearTraits.awareOfPlayer = true;
                 break;
             default:
                 break;
@@ -344,7 +352,6 @@ public class Vessel : Soul
         m_deltaEmotionSpriteScaleEffect = 1f + a_deltaEmotion / 10f;
         m_deltaEmotionSpriteScaleDirection = a_deltaEmotion > 0f ? 1 : -1;
         m_deltaEmotionSpriteScaling = true;
-
 
         //Change score
         bool isLoved = m_emotion > 0;
@@ -376,6 +383,11 @@ public class Vessel : Soul
 
     internal void AddEmotion(int a_emotion)
     {
+        if (m_demotionProtectionActive && a_emotion < 0)
+        {
+            return;
+        }
+
         bool wasLoved = m_emotion > 0;
         bool wasFearful = m_emotion < 0;
         int deltaEmotion = AffectEmotion(a_emotion);
@@ -390,6 +402,8 @@ public class Vessel : Soul
             var main = m_loveExplosionRef.main;
             main.startColor = textColor;
             m_loveExplosionRef.Play();
+            m_demotionProtectionActive = true;
+            m_demotionProtectionTimer.Reset();
         }
         else if (deltaEmotion < 0)
         {
@@ -464,6 +478,12 @@ public class Vessel : Soul
                     AddEmotion(Mathf.Clamp(oppEmotion - m_emotion, -1, 1));
                 }
             }
+        }
+        else if (a_collision.gameObject.tag == "Environment")
+        {
+            float collisionAngle = VLib.Vector2ToEulerAngle(-a_collision.contacts[0].normal);
+            m_rigidBodyRef.velocity = VLib.RotateVector3In2D(m_rigidBodyRef.velocity.magnitude * Vector3.up, VLib.vRandom(-45f, 45f) + collisionAngle);
+
         }
     }
 }

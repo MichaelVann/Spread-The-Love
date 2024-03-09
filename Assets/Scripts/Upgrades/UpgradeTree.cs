@@ -6,7 +6,7 @@ using static UpgradeItem;
 public class UpgradeTree
 {
     internal List<UpgradeItem> m_upgradeItemList;
-    const int m_baseUpgradePrice = 10;
+    const int m_baseUpgradePrice = 15;
     // Start is called before the first frame update
 
     internal UpgradeItem GetUpgrade(UpgradeId a_upgradeId) { return m_upgradeItemList[(int)a_upgradeId]; }
@@ -55,7 +55,7 @@ public class UpgradeTree
         UpgradeItem shootSpread = NewUpgrade(UpgradeId.ShootSpread, "Blast Spread", 5f, 10, 1f, projectileSpeed, "Increases amount of love sent with each spread of kindness by 1.", false, 1.5f);
         UpgradeItem fireRate = NewUpgrade(UpgradeId.FireRate, "Fire Rate", 1.5f, 10, 0.25f, shooting, "Increases fire rate by 25% each rank.", false, 1.5f);
         fireRate.SetStartingStrengthAndIfMultiplicative(1f, true);
-        UpgradeItem autoShoot = NewUpgrade(UpgradeId.AutoShoot, "Auto Shoot", 3.5f, 1, 1f, fireRate, "Now love blast repeats automatically.");
+        UpgradeItem autoShoot = NewUpgrade(UpgradeId.AutoShoot, "Auto Shoot", 3.5f, 1, 1f, fireRate, "Now love blast repeats automatically.", true);
         UpgradeItem mouseAim = NewUpgrade(UpgradeId.MouseAim, "Cursor Aim", 15f, 1, 1f, autoShoot, "Love blast heads towards the cursor.", true);
 
         //UpgradeItem vesselRadar = NewUpgrade(UpgradeItem.UpgradeId.Radar, "Radar", 30, 1, 1f, null, "Points towards the nearest lost soul.");
