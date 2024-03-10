@@ -33,6 +33,9 @@ public class DialogBox : MonoBehaviour
     internal delegate void OnCloseDelegate();
     internal OnCloseDelegate m_onCloseDelegate;
 
+    [SerializeField] TextMeshProUGUI m_pressToContinueTextRef;
+    bool m_showingPressToContinueText = false;
+
     internal void AddDialog(string a_string) { m_dialogList.Add(a_string); m_descriptionString = m_dialogList[0]; } 
 
     internal void SetPrintSpeed(float a_printSpeed) { m_printScreen = a_printSpeed; RefreshPrintTimer(); }
@@ -99,6 +102,8 @@ public class DialogBox : MonoBehaviour
         {
             m_printing = false;
         }
+
+        m_showingPressToContinueText = !m_printing;
         m_flashStrength *= m_flashDecayMultiplier;
     }
 
@@ -128,12 +133,27 @@ public class DialogBox : MonoBehaviour
             }
         }
     }
+    void PressToContinueTextUpdate()
+    {
+        if (m_showingPressToContinueText)
+        {
+            float sinT = Mathf.Abs(Mathf.Sin(Time.time * 2f)) * 0.5f + 0.5f;
+            m_pressToContinueTextRef.color = new Color(sinT, sinT, sinT, sinT);
+        }
+    }
+
+
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            DialogPressed();
+        }
         TextUpdate();
         ImageUpdate();
+        PressToContinueTextUpdate();
     }
 
     void AssignDescription()

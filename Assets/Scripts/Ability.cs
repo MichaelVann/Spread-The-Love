@@ -21,6 +21,7 @@ public class Ability
     internal float m_resourceDrain;
     internal float m_resourceRegen;
     internal float m_minResourceNeededToActivate;
+    bool m_wasActiveLastFrame;
 
     internal vTimer m_cooldownTimer;
     internal float m_cooldownTime;
@@ -56,6 +57,17 @@ public class Ability
         return result;
     }
 
+    internal bool SetResourceBasedActivateInput(bool a_input)
+    {
+        m_active = false;
+
+        if (a_input && m_ready)
+        {
+            m_active = true;
+        }
+        return m_active;
+    }
+
     internal bool UpdateCooldown()
     {
         bool result = false;
@@ -75,6 +87,8 @@ public class Ability
         if (m_active)
         {
             m_resource -= m_resourceDrain * Time.deltaTime;
+            //m_active = false;
+            m_ready = m_resource > 0;
             if (m_resource <= 0f)
             {
                 m_active = false;
@@ -85,6 +99,8 @@ public class Ability
             m_resource += m_resourceRegen * Time.deltaTime;
             m_ready = m_resource >= m_minResourceNeededToActivate;
         }
+
+        m_wasActiveLastFrame = m_active;
 
         m_resource = Mathf.Clamp(m_resource, 0f, 1f);
     }
@@ -97,6 +113,7 @@ public class Ability
         m_ready = true;
         m_hasDuration = a_duration != 0f;
         m_active = false;
+        m_wasActiveLastFrame = false;
 
         if (m_hasDuration)
         {

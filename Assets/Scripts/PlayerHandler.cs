@@ -72,7 +72,6 @@ public class PlayerHandler : Soul
 
     //Bullet Time
     Ability m_abilityBulletTime;
-    bool m_bulletTimeButtonWasDownLastFrame = false;
 
     [SerializeField] GameObject m_collisionEffectPrefab;
 
@@ -444,24 +443,18 @@ public class PlayerHandler : Soul
 
     void BulletTimeUpdate()
     {
-        bool m_bulletTimeActive = m_abilityBulletTime.IsActive();
-        if (GetUpgradeButton(UpgradeItem.UpgradeId.BulletTime))
-        {
-            m_bulletTimeButtonWasDownLastFrame = true;
-        }
-        else if(m_bulletTimeButtonWasDownLastFrame)
-        {
-            if (m_bulletTimeActive)
-            {
-                m_abilityBulletTime.SetActive(false);
-            }
-            else
-            {
-                m_abilityBulletTime.AttemptToActivate();
-            }
-            m_bulletTimeButtonWasDownLastFrame = false;
-        }
+        bool m_bulletTimeActive = m_abilityBulletTime.m_enabled && m_abilityBulletTime.SetResourceBasedActivateInput(GetUpgradeButton(UpgradeItem.UpgradeId.BulletTime));
         m_abilityBulletTime.ResourceUpdate();
+        //if (GetUpgradeButton(UpgradeItem.UpgradeId.BulletTime) && m_abilityBulletTime.AttemptToActivate())
+        //{
+        //    m_abilityBulletTime.SetResourceBasedActivateInput(GetUpgradeButton(UpgradeItem.UpgradeId.BulletTime));
+        //    m_battleHandlerRef.SetBulletTimeFactor(1f / m_abilityBulletTime.m_effectStrength);
+        //}
+        //else
+        //{
+        //    m_battleHandlerRef.SetBulletTimeFactor(1f);
+        //}
+        //m_abilityBulletTime.ResourceUpdate();
 
         if (m_bulletTimeActive)
         {

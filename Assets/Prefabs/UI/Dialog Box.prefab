@@ -223,7 +223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -281,6 +281,7 @@ MonoBehaviour:
   m_parentObject: {fileID: 1457810866133208450}
   m_descriptionTextRef: {fileID: 8465951544566214719}
   m_sceneImage: {fileID: 8057472919712446315}
+  m_pressToContinueTextRef: {fileID: 1952372286161885604}
 --- !u!1 &4565242220924930645
 GameObject:
   m_ObjectHideFlags: 0
@@ -390,8 +391,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -219.1, y: 34.500015}
-  m_SizeDelta: {x: 264.2, y: 42.799988}
+  m_AnchoredPosition: {x: -204.53, y: 34.500015}
+  m_SizeDelta: {x: 359.06, y: 42.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &554305035290444595
 CanvasRenderer:
@@ -421,7 +422,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press to continue...
+  m_text: Press space to continue...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a3496876239ceca4bb817730d8a49445, type: 2}
   m_sharedMaterial: {fileID: 8062898781783506685, guid: a3496876239ceca4bb817730d8a49445, type: 2}

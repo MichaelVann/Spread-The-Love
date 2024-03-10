@@ -13,9 +13,11 @@ public class AbilityReadout : MonoBehaviour
     [SerializeField] Image m_borderImageRef;
     [SerializeField] Color m_abilityReadyBorderColor;
     [SerializeField] Image m_resourceIndicatorRef;
+    [SerializeField] Image m_resourceMinLineRef;
     Material m_cooldownMaterialRef;
     UpgradeItem m_upgradeRef;
     [SerializeField] TextMeshProUGUI m_keyNameText;
+    RectTransform m_rectTransform;
     
     float m_cooldownAngle = 90f;
     Ability m_abilityRef;
@@ -46,6 +48,7 @@ public class AbilityReadout : MonoBehaviour
         {
             m_resourceIndicatorRef.gameObject.SetActive(false);
             m_cooldownRadialIndicator.gameObject.SetActive(false);
+            m_resourceMinLineRef.gameObject.SetActive(false);
         }
     }
 
@@ -68,12 +71,18 @@ public class AbilityReadout : MonoBehaviour
         }
         m_cooldownMaterialRef.SetFloat("_Angle", 0f);
         m_resourceIndicatorRef.gameObject.SetActive(false);
+        m_resourceMinLineRef.gameObject.SetActive(false);
     }
 
     void SetupResourceIndicator()
     {
+        m_rectTransform = GetComponent<RectTransform>();
+
         m_resourceIndicatorRef.gameObject.SetActive(true);
         m_cooldownRadialIndicator.gameObject.SetActive(false);
+        m_resourceMinLineRef.gameObject.SetActive(true);
+        float yPos = m_abilityRef.m_minResourceNeededToActivate * m_rectTransform.sizeDelta.y - m_rectTransform.sizeDelta.y / 2f;
+        m_resourceMinLineRef.transform.localPosition = new Vector3(0f, yPos);
     }
 
     // Update is called once per frame
