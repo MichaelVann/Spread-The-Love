@@ -69,9 +69,13 @@ public class PlayerHandler : Soul
     bool m_mouseAiming = false;
     bool m_shootButtonWasDownLastFrame = false;
 
-
     //Bullet Time
     Ability m_abilityBulletTime;
+
+    //Beserk Shot
+    Ability m_abilityBeserkShot;
+    const float m_beserkShotSpeed = 5f;
+    [SerializeField] GameObject m_beserkShotPrefab;
 
     [SerializeField] GameObject m_collisionEffectPrefab;
 
@@ -117,6 +121,9 @@ public class PlayerHandler : Soul
                 break;
             case UpgradeItem.UpgradeId.BulletTime:
                 ability = m_abilityBulletTime;
+                break;
+            case UpgradeItem.UpgradeId.BerserkShot:
+                ability = m_abilityBeserkShot;
                 break;
             default:
                 break;
@@ -177,6 +184,9 @@ public class PlayerHandler : Soul
 
         m_abilityBulletTime = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BulletTime), GetUpgradeStrength(UpgradeItem.UpgradeId.BulletTime));
         m_abilityBulletTime.SetUpResource(1f, 0.1f);
+
+        m_abilityBeserkShot = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BerserkShot));
+        m_abilityBeserkShot.SetUpCooldown(5f);
     }
 
     // Start is called before the first frame update
@@ -230,7 +240,6 @@ public class PlayerHandler : Soul
             }
             m_shootButtonWasDownLastFrame = shootButtonPressed;
         }
-        
     }
 
     float GetDriftAngle()
@@ -445,16 +454,6 @@ public class PlayerHandler : Soul
     {
         bool m_bulletTimeActive = m_abilityBulletTime.m_enabled && m_abilityBulletTime.SetResourceBasedActivateInput(GetUpgradeButton(UpgradeItem.UpgradeId.BulletTime));
         m_abilityBulletTime.ResourceUpdate();
-        //if (GetUpgradeButton(UpgradeItem.UpgradeId.BulletTime) && m_abilityBulletTime.AttemptToActivate())
-        //{
-        //    m_abilityBulletTime.SetResourceBasedActivateInput(GetUpgradeButton(UpgradeItem.UpgradeId.BulletTime));
-        //    m_battleHandlerRef.SetBulletTimeFactor(1f / m_abilityBulletTime.m_effectStrength);
-        //}
-        //else
-        //{
-        //    m_battleHandlerRef.SetBulletTimeFactor(1f);
-        //}
-        //m_abilityBulletTime.ResourceUpdate();
 
         if (m_bulletTimeActive)
         {
@@ -464,23 +463,29 @@ public class PlayerHandler : Soul
         {
             m_battleHandlerRef.SetBulletTimeFactor(1f);
         }
+    }
 
+    void BeserkShotUpdate()
+    {
+        if (m_abilityBeserkShot.m_enabled)
+        {
+            m_abilityBeserkShot.UpdateCooldown();
+            Vector2 aimDirection = VLib.EulerAngleToVector2(-m_rigidBodyRef.rotation);
 
-        //if (m_abilityBulletTime.IsActive())
-        //{
-        //    if (m_abilityBulletTime.DurationUpdate())
-        //    {
-        //        m_battleHandlerRef.SetBulletTimeFactor(1f);
-        //    }
-        //}
-        //else
-        //{
-        //    m_abilityBulletTime.UpdateCooldown();
-        //    if (GetUpgradeButton(UpgradeItem.UpgradeId.BulletTime) && m_abilityBulletTime.AttemptToActivate())
-        //    {
-        //        m_battleHandlerRef.SetBulletTimeFactor(1f/m_abilityBulletTime.m_effectStrength);
-        //    }
-        //}
+            //if (m_mouseAiming)
+            //{
+            //    Vector3 worldMousePoint = m_cameraRef.ScreenToWorldPoint(Input.mousePosition);
+            //    aimDirection = worldMousePoint - transform.position;
+            //}
+            aimDirection = aimDirection.normalized;
+            
+            if (GetUpgradeButton(UpgradeItem.UpgradeId.BerserkShot) && m_abilityBeserkShot.AttemptToActivate())
+            {
+                BeserkShot beserkShot = Instantiate(m_beserkShotPrefab, transform.position, Quaternion.identity).GetComponent<BeserkShot>();
+                beserkShot.Init(aimDirection * m_beserkShotSpeed + m_rigidBodyRef.velocity);
+                GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -493,6 +498,7 @@ public class PlayerHandler : Soul
             SpreadUpdate();
             VesselRadarUpdate();
             BulletTimeUpdate();
+            BeserkShotUpdate();
         }
     }
 
@@ -515,7 +521,7 @@ public class PlayerHandler : Soul
 
             SpawnCollisionEffect(a_collision.contacts[0].point, collisionDirection);
 
-            if (vessel.GetEmotion() == (int)Vessel.eFearType.Bully)
+            if (vessel.GetEmotion() == (int)Vessel.eEmotionType.Bully)
             {
                 m_rigidBodyRef.AddForce(collisionDirection * 10000f);
                 vessel.TriggerShieldEffect(collisionDirection);

@@ -84,7 +84,10 @@ public class UpgradeUINode : MonoBehaviour
 
     internal void Refresh()
     {
-        m_iconRef.sprite = GameHandler._autoRef.m_upgradeImages[(int)m_upgradeItemRef.m_ID];
+        if ((int)m_upgradeItemRef.m_ID < GameHandler._autoRef.m_upgradeImages.Length)
+        {
+            m_iconRef.sprite = GameHandler._autoRef.m_upgradeImages[(int)m_upgradeItemRef.m_ID];
+        }
 
         Color nodeColor = Color.white;
         bool interactable = true;

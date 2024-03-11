@@ -46,13 +46,14 @@ public class UpgradeItem
         Shooting,
         ProjectileSpeed,
         ShootSpread,
+        BerserkShot,
         FireRate,
         AutoShoot,
         MouseAim,
         //Radar,
         //Minimap,
         AdditionalTime,
-        BulletTime
+        BulletTime,
     }
     public UpgradeId m_ID;
 

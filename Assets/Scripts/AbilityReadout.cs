@@ -25,7 +25,10 @@ public class AbilityReadout : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_upgradeIconRef.sprite = GameHandler._autoRef.m_upgradeImages[(int)m_upgradeType];
+        if ((int)m_upgradeType < GameHandler._autoRef.m_upgradeImages.Length)
+        {
+            m_upgradeIconRef.sprite = GameHandler._autoRef.m_upgradeImages[(int)m_upgradeType];
+        }
         bool active = GameHandler._upgradeTree.HasUpgrade(m_upgradeType);
         m_upgradeIconRef.gameObject.SetActive(active);
         m_lockRef.SetActive(!active);

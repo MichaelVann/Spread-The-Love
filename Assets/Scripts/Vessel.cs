@@ -39,7 +39,7 @@ public class Vessel : Soul
 
     //AI
     bool m_awareOfPlayer = false;
-    internal enum eFearType
+    internal enum eEmotionType
     {
         Regular = -1,
         Coward = -2,
@@ -104,9 +104,19 @@ public class Vessel : Soul
     bool m_demotionProtectionActive = false;
     vTimer m_demotionProtectionTimer;
 
+    //Beserking
+    [SerializeField] GameObject m_beserkField;
+    struct Beserk
+    {
+        internal bool active;
+        internal List<Vessel> targetVessels;
+        internal const float speedBoost = 1.7f;
+    }
+    Beserk m_beserk;
+
     bool IsLoved() { return m_emotion > 0; }
 
-    bool IsFearType(eFearType a_fearType) { return m_emotion == (int)a_fearType; }
+    bool IsFearType(eEmotionType a_fearType) { return m_emotion == (int)a_fearType; }
 
     internal void SetEmotion(int a_emotion) { AddEmotion(a_emotion - m_emotion); }
 
@@ -165,7 +175,15 @@ public class Vessel : Soul
 
     void UpdateVisuals()
     {
-        Color emotionColor = CalculateEmotionColor();
+        Color emotionColor;
+        if (m_beserk.active)
+        {
+            emotionColor = GameHandler._autoRef.m_enlightenedColor;
+        }
+        else
+        {
+            emotionColor = CalculateEmotionColor();
+        }
         m_miniMapSpriteRendererRef.color = emotionColor;
         m_spriteMaterialRef.SetColor("_Color", emotionColor);
         m_mouthLineHandlerRef.Refresh(GetEmotionMappedFromMinToMax(m_emotion));
@@ -178,7 +196,6 @@ public class Vessel : Soul
         m_lovedTrailRef.endColor = new Color(emotionColor.r, emotionColor.g, emotionColor.b, 0f);
 
         m_eyesRef.sprite = IsLoved() ? m_eyeSprites[2] : (m_emotion < 0 ? m_eyeSprites[0] : m_eyeSprites[1]);
-
 
         //Hats
         const int hatStartPoint = -2;
@@ -238,6 +255,7 @@ public class Vessel : Soul
     void UpdateWanderSpeed()
     {
         m_wanderSpeed = m_defaultWanderSpeed * (Mathf.Abs(m_emotion) + 1);
+        m_wanderSpeed *= m_beserk.active ? Beserk.speedBoost : 1f;
     }
 
     void MovementUpdate()
@@ -248,31 +266,62 @@ public class Vessel : Soul
         }
     }
 
+    void BeserkUpdate()
+    {
+        float m_closestDistance = 100000f;
+        int m_closestTargetId = -1;
+        for (int i = 0; i < m_beserk.targetVessels.Count; i++)
+        {
+            if (m_beserk.targetVessels[i].GetEmotion() < 0)
+            {
+                float deltaMag = (m_beserk.targetVessels[i].transform.position - transform.position).magnitude;
+                if (deltaMag < m_closestDistance)
+                {
+                    m_closestDistance = deltaMag;
+                    m_closestTargetId = i;
+                }
+            }
+        }
+
+        if (m_closestTargetId != -1)
+        {
+            Vector2 targetDirection = (m_beserk.targetVessels[m_closestTargetId].transform.position - transform.position).normalized;
+            m_rigidBodyRef.AddForce(targetDirection * m_rigidBodyRef.mass * 1000f * Time.deltaTime);
+        }
+    }
+
     void AIUpdate()
     {
-        if (m_fearTraits.awareOfPlayer)
+        if (m_beserk.active)
         {
-            if (m_awareOfPlayer)
-            {
-                Vector3 deltaPlayerPos = m_playerHandlerRef.transform.position - transform.position;
-                float deltaAngle = Vector2.SignedAngle(m_rigidBodyRef.velocity, deltaPlayerPos.ToVector2());
-                deltaAngle += m_emotion < (int)eFearType.Coward ? 0f: 180f;
-                deltaAngle = VLib.ClampRotation(deltaAngle);
-                m_rigidBodyRef.velocity = VLib.RotateVector2(m_rigidBodyRef.velocity, deltaAngle * m_neg2RotateRate * Time.deltaTime).normalized * m_wanderSpeed;
-            }
-
-            //if (IsFearType(eFearType.Coward))
-            //{
-            //    AbsorbedEmotionUpdate();
-            //}
+            BeserkUpdate();
         }
-        if (m_fearTraits.absorbingLove)
+        else
         {
-            //if (m_absorbedLoveTimers.Count < 0)
-            //{
-            //    m_absorbedLoveTimers.Add(new vTimer(2f));
-            //}
-            AbsorbedEmotionUpdate();
+            if (m_fearTraits.awareOfPlayer)
+            {
+                if (m_awareOfPlayer)
+                {
+                    Vector3 deltaPlayerPos = m_playerHandlerRef.transform.position - transform.position;
+                    float deltaAngle = Vector2.SignedAngle(m_rigidBodyRef.velocity, deltaPlayerPos.ToVector2());
+                    deltaAngle += m_emotion < (int)eEmotionType.Coward ? 0f : 180f;
+                    deltaAngle = VLib.ClampRotation(deltaAngle);
+                    m_rigidBodyRef.velocity = VLib.RotateVector2(m_rigidBodyRef.velocity, deltaAngle * m_neg2RotateRate * Time.deltaTime).normalized * m_wanderSpeed;
+                }
+
+                //if (IsFearType(eFearType.Coward))
+                //{
+                //    AbsorbedEmotionUpdate();
+                //}
+            }
+            if (m_fearTraits.absorbingLove)
+            {
+                //if (m_absorbedLoveTimers.Count < 0)
+                //{
+                //    m_absorbedLoveTimers.Add(new vTimer(2f));
+                //}
+                AbsorbedEmotionUpdate();
+            }
         }
     }
 
@@ -326,17 +375,17 @@ public class Vessel : Soul
         m_fearTraits.absorbingLove = false;
         m_fearTraits.awareOfPlayer = false;
 
-        switch ((eFearType)m_emotion)
+        switch ((eEmotionType)m_emotion)
         {
-            case eFearType.Regular:
+            case eEmotionType.Regular:
                 break;
-            case eFearType.Coward:
+            case eEmotionType.Coward:
                 m_fearTraits.rejectingLove = true;
                 m_fearTraits.awareOfPlayer = true;
                 break;
-            case eFearType.Bully:
+            case eEmotionType.Bully:
                 break;
-            case eFearType.Jaded:
+            case eEmotionType.Jaded:
                 m_fearTraits.absorbingLove = true;
                 m_fearTraits.awareOfPlayer = true;
                 break;
@@ -383,7 +432,7 @@ public class Vessel : Soul
 
     internal void AddEmotion(int a_emotion)
     {
-        if (m_demotionProtectionActive && a_emotion < 0)
+        if (m_beserk.active || (m_demotionProtectionActive && a_emotion < 0))
         {
             return;
         }
@@ -443,6 +492,23 @@ public class Vessel : Soul
         m_rigidBodyRef.velocity += a_collisionNormal;
     }
 
+    internal void GoBeserk()
+    {
+        m_beserk.targetVessels = new List<Vessel>();
+        m_beserk.active = true;
+        m_beserkField.SetActive(true);
+        UpdateVisuals();
+        UpdateWanderSpeed();
+    }
+
+    internal void EndBeserk()
+    {
+        m_beserk.targetVessels = null;
+        m_beserk.active = false;
+        m_beserkField.SetActive(false);
+        UpdateWanderSpeed();
+    }
+
     private void OnCollisionEnter2D(Collision2D a_collision)
     {
         Vibe vibe = a_collision.gameObject.GetComponent<Vibe>();
@@ -484,6 +550,30 @@ public class Vessel : Soul
             float collisionAngle = VLib.Vector2ToEulerAngle(-a_collision.contacts[0].normal);
             m_rigidBodyRef.velocity = VLib.RotateVector3In2D(m_rigidBodyRef.velocity.magnitude * Vector3.up, VLib.vRandom(-45f, 45f) + collisionAngle);
 
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D a_collision)
+    {
+        if (m_beserk.targetVessels != null && a_collision.gameObject.tag == "Vessel")
+        {
+            Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
+            if (vessel.GetEmotion() < 0) 
+            {
+                m_beserk.targetVessels.Add(vessel);
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D a_collision)
+    {
+        if (m_beserk.targetVessels != null && a_collision.gameObject.tag == "Vessel")
+        {
+            Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
+            if (vessel.GetEmotion() < 0)
+            {
+                m_beserk.targetVessels.Remove(vessel);
+            }
         }
     }
 }

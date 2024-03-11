@@ -36,7 +36,6 @@ public class Vibe : MonoBehaviour
 
     internal void Init(Vessel a_originSoul, Vector2 a_travelDirection, Vector2 a_inheritedVelocity, int a_emotion = 1, float a_speed = 5f)
     {
-
         m_originSoul = a_originSoul;
         m_rigidBodyRef.velocity = a_travelDirection * a_speed;
         m_emotion = a_emotion;
@@ -53,11 +52,7 @@ public class Vibe : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!m_spriteRendererRef.isVisible)
-        {
-            //Destroy(gameObject);
-        }
-        else if (m_beingAbsorbed)
+        if (m_beingAbsorbed)
         {
             if (m_absorptionTimer.Update())
             {

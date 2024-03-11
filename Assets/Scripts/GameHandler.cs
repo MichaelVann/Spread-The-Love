@@ -16,6 +16,7 @@ public class GameHandler : MonoBehaviour
     internal static bool _firstTimeCutscenePlayed = false;
     internal static int _livesLived = 0;
 
+    [SerializeField] internal Color m_enlightenedColor;
     [SerializeField] internal Color m_loveColorMax;
     [SerializeField] internal Color m_loveColor1;
     [SerializeField] internal Color m_neutralColor;
