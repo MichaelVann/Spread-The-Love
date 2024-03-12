@@ -214,7 +214,7 @@ public class PlayerHandler : Soul
             m_shootReadinessIndicatorRef.SetActive(m_abilityShoot.m_ready);
 
             bool shootButtonPressed = GetUpgradeButton(UpgradeItem.UpgradeId.Shooting);
-            bool shooting = m_autoShootEnabled;
+            bool shooting = m_autoShootEnabled && m_autoShootUnlocked;
 
             if (m_autoShootUnlocked && shootButtonPressed && !m_shootButtonWasDownLastFrame)
             {

@@ -111,6 +111,8 @@ public class Vessel : Soul
         internal bool active;
         internal List<Vessel> targetVessels;
         internal const float speedBoost = 1.7f;
+        internal const int maximumEmotionTargeted = 1;
+        internal vTimer m_timer;
     }
     Beserk m_beserk;
 
@@ -272,7 +274,7 @@ public class Vessel : Soul
         int m_closestTargetId = -1;
         for (int i = 0; i < m_beserk.targetVessels.Count; i++)
         {
-            if (m_beserk.targetVessels[i].GetEmotion() < 0)
+            if (m_beserk.targetVessels[i].GetEmotion() < Beserk.maximumEmotionTargeted)
             {
                 float deltaMag = (m_beserk.targetVessels[i].transform.position - transform.position).magnitude;
                 if (deltaMag < m_closestDistance)
@@ -287,6 +289,11 @@ public class Vessel : Soul
         {
             Vector2 targetDirection = (m_beserk.targetVessels[m_closestTargetId].transform.position - transform.position).normalized;
             m_rigidBodyRef.AddForce(targetDirection * m_rigidBodyRef.mass * 1000f * Time.deltaTime);
+        }
+
+        if (m_beserk.m_timer.Update())
+        {
+            EndBeserk();
         }
     }
 
@@ -499,6 +506,7 @@ public class Vessel : Soul
         m_beserkField.SetActive(true);
         UpdateVisuals();
         UpdateWanderSpeed();
+        m_beserk.m_timer = new vTimer(PlayerHandler.GetUpgradeStrength(UpgradeItem.UpgradeId.BerserkShot));
     }
 
     internal void EndBeserk()
@@ -507,6 +515,7 @@ public class Vessel : Soul
         m_beserk.active = false;
         m_beserkField.SetActive(false);
         UpdateWanderSpeed();
+        UpdateVisuals();
     }
 
     private void OnCollisionEnter2D(Collision2D a_collision)
@@ -558,7 +567,7 @@ public class Vessel : Soul
         if (m_beserk.targetVessels != null && a_collision.gameObject.tag == "Vessel")
         {
             Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
-            if (vessel.GetEmotion() < 0) 
+            if (vessel.GetEmotion() < Beserk.maximumEmotionTargeted) 
             {
                 m_beserk.targetVessels.Add(vessel);
             }
@@ -570,7 +579,7 @@ public class Vessel : Soul
         if (m_beserk.targetVessels != null && a_collision.gameObject.tag == "Vessel")
         {
             Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
-            if (vessel.GetEmotion() < 0)
+            if (vessel.GetEmotion() < Beserk.maximumEmotionTargeted)
             {
                 m_beserk.targetVessels.Remove(vessel);
             }

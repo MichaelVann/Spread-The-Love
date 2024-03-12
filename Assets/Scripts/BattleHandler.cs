@@ -393,7 +393,6 @@ public class BattleHandler : MonoBehaviour
             {
                 m_lootBagsToSpawn++;
             }
-            Debug.Log(m_lootBagsToSpawn);
             int[][] spawnPositions = new int[m_lootBagsToSpawn][];
             for (int i = 0; i < m_lootBagsToSpawn; i++)
             {
