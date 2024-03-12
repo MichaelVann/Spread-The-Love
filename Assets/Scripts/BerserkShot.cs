@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BeserkShot : MonoBehaviour
 {
-    
+    const int m_minimumEmotionAffected = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,8 +27,9 @@ public class BeserkShot : MonoBehaviour
         if (a_collision.gameObject.tag == "Vessel") 
         {
             Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
-            if (vessel.GetEmotion() > 0)
+            if (vessel.GetEmotion() >= m_minimumEmotionAffected)
             {
+                vessel.AddEmotion(1000);
                 vessel.GoBeserk();
             }
             Destroy(gameObject);

@@ -102,6 +102,8 @@ public class PlayerHandler : Soul
     [SerializeField] AudioClip m_wallHitSound;
     [SerializeField] AudioClip m_fireSound;
 
+    bool m_touchingWall = false;
+
     internal float GetSpeed() { return m_rigidBodyRef.velocity.magnitude; }
     float GetSpeedPercentage() { return GetSpeed() / GetUpgradeStrength(UpgradeItem.UpgradeId.TopSpeed); }
 
@@ -155,7 +157,6 @@ public class PlayerHandler : Soul
     {
         GameHandler gameHandler = FindObjectOfType<GameHandler>();
         Color playerColor = gameHandler.m_loveColorMax;
-        //m_spriteRendererRef.color = playerColor;
         //m_loveTrailRef.startColor = m_spriteRendererRef.color;
         //m_loveTrailRef.endColor = new Color(playerColor.r, playerColor.g, playerColor.b, 0f);
         //m_miniMapIconRef.GetComponent<SpriteRenderer>().color = m_spriteRendererRef.color;
@@ -322,17 +323,24 @@ public class PlayerHandler : Soul
     {
         float driftAngle = GetDriftAngle();
 
-        float windCorrectionForce = driftAngle;
-        windCorrectionForce += driftAngle * 10f * Mathf.Clamp(Mathf.Abs(driftAngle) - 90f, 0f, 90f) / 90f;
-        m_rigidBodyRef.AddTorque(-windCorrectionForce * Time.deltaTime * m_rigidBodyRef.mass * GetSpeedPercentage());
+        if (!m_touchingWall)
+        {
+            float windCorrectionForce = driftAngle;
+            windCorrectionForce += driftAngle * 10f * Mathf.Clamp(Mathf.Abs(driftAngle) - 90f, 0f, 90f) / 90f;
+            m_rigidBodyRef.AddTorque(-windCorrectionForce * Time.deltaTime * m_rigidBodyRef.mass * GetSpeedPercentage());
+        }
         float maxRotation = driftAngle < 0 ? 0f : driftAngle;
         float minRotation = driftAngle < 0 ? driftAngle : 0f;
         m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.RotateVector2(Mathf.Clamp(driftAngle * m_grip * Time.deltaTime, minRotation, maxRotation));
+
+        //Angle Drag
         float angleDrag = Mathf.Abs(Mathf.Sin(Mathf.PI * driftAngle / 180f));
         angleDrag *= m_rotateDrag;
         angleDrag *= Time.deltaTime;
         angleDrag *= m_grip;
         angleDrag *= Mathf.Pow(m_rigidBodyRef.velocity.magnitude / 20f, 0.3f);
+
+
         float rotationSlowdownEffect = 1f - angleDrag;
         m_rigidBodyRef.velocity *= rotationSlowdownEffect;
     }
@@ -385,7 +393,6 @@ public class PlayerHandler : Soul
             if (m_speedChimeTimer.Update())
             {
                 float volume = (velocity - m_speedChimeCutoffSpeed) / (20f - m_speedChimeCutoffSpeed);
-                Debug.Log(volume);
                 volume = Mathf.Clamp(volume, 0f, 1f);
                 //volume = Mathf.Pow(volume, 3f);
                 GameHandler._audioManager.PlaySFX(m_speedChimeAudioClip, volume);
@@ -502,6 +509,12 @@ public class PlayerHandler : Soul
         }
     }
 
+    void FixedUpdate()
+    {
+        m_touchingWall = false;
+        m_spriteRendererRef.color = Color.red;
+    }
+
     void SpawnCollisionEffect(Vector2 a_collisionPos, Vector2 a_normal)
     {
         GameObject m_collisionEffect = Instantiate(m_collisionEffectPrefab, a_collisionPos, VLib.Vector2DirectionToQuaternion(VLib.RotateVector2(a_normal, 90f)), transform);
@@ -536,6 +549,17 @@ public class PlayerHandler : Soul
         {
             m_driftSpread = 1f;
             GameHandler._audioManager.PlaySFX(m_wallHitSound);
+            m_touchingWall = true;
+            //m_spriteRendererRef.color = Color.green;
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D a_collision)
+    {
+        if (a_collision.gameObject.tag == "Environment")
+        {
+            m_touchingWall = true;
+            //m_spriteRendererRef.color = Color.green;
         }
     }
 

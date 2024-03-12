@@ -56,7 +56,8 @@ public class Vessel : Soul
     FearTraits m_fearTraits;
 
     float m_playerSeenDistance = 9f;
-    float m_neg2RotateRate = 4f;
+    float m_cowardRotateRate = 2f;
+    float m_defaultRotateRate = 4f;
 
     //Soul Attraction
     const float m_soulAttractionConstant = 1.3f;
@@ -287,8 +288,13 @@ public class Vessel : Soul
 
         if (m_closestTargetId != -1)
         {
-            Vector2 targetDirection = (m_beserk.targetVessels[m_closestTargetId].transform.position - transform.position).normalized;
-            m_rigidBodyRef.AddForce(targetDirection * m_rigidBodyRef.mass * 1000f * Time.deltaTime);
+            //Vector2 targetDirection = (m_beserk.targetVessels[m_closestTargetId].transform.position - transform.position).normalized;
+            //m_rigidBodyRef.AddForce(targetDirection * m_rigidBodyRef.mass * 1000f * Time.deltaTime);
+
+            Vector3 deltaPos = m_beserk.targetVessels[m_closestTargetId].transform.position - transform.position;
+            float deltaAngle = Vector2.SignedAngle(m_rigidBodyRef.velocity, deltaPos.ToVector2());
+            deltaAngle = VLib.ClampRotation(deltaAngle);
+            m_rigidBodyRef.velocity = VLib.RotateVector2(m_rigidBodyRef.velocity, deltaAngle * m_defaultRotateRate * Beserk.speedBoost * Time.deltaTime).normalized * Beserk.speedBoost * m_wanderSpeed;
         }
 
         if (m_beserk.m_timer.Update())
@@ -313,7 +319,8 @@ public class Vessel : Soul
                     float deltaAngle = Vector2.SignedAngle(m_rigidBodyRef.velocity, deltaPlayerPos.ToVector2());
                     deltaAngle += m_emotion < (int)eEmotionType.Coward ? 0f : 180f;
                     deltaAngle = VLib.ClampRotation(deltaAngle);
-                    m_rigidBodyRef.velocity = VLib.RotateVector2(m_rigidBodyRef.velocity, deltaAngle * m_neg2RotateRate * Time.deltaTime).normalized * m_wanderSpeed;
+                    float rotateRate = IsFearType(eEmotionType.Coward) ? m_cowardRotateRate : m_defaultRotateRate;
+                    m_rigidBodyRef.velocity = VLib.RotateVector2(m_rigidBodyRef.velocity, deltaAngle * rotateRate * Time.deltaTime).normalized * m_wanderSpeed;
                 }
 
                 //if (IsFearType(eFearType.Coward))
