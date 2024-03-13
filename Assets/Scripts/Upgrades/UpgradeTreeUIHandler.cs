@@ -12,14 +12,21 @@ public class UpgradeTreeUIHandler : MonoBehaviour
     [SerializeField] private GameObject m_lineContainer;
     [SerializeField] private UpgradeNodeReadout m_upgradeNodePanelRef;
     [SerializeField] private RectTransform m_viewportTransform;
+    [SerializeField] private UpgradeTreeUISelector m_upgradeTreeUISelectorRef;
 
     UpgradeTree m_upgradeTreeRef;
+    List<UpgradeItem> m_initialUpgrades;
+    int m_viewedInitialUpgradeIndex = 0;
+    //UpgradeItem m_viewedIntitalUpgrade;
     List<UpgradeUINode> m_upgradeNodes;
 
     //Nodes
     UpgradeUINode m_selectedUpgradeNode = null;
-    const float m_firstNodeRowPadding = -145f;
-    const float m_nodeVerticalPadding = 145f;
+    const float m_firstNodeRowPadding = -0;
+    const float m_nodeRowPadding = 145f;
+
+    //Lines
+    List<GameObject> m_lines;
 
     //Zoom
     float m_zoom = 1f;
@@ -35,11 +42,11 @@ public class UpgradeTreeUIHandler : MonoBehaviour
     {
         m_upgradeTreeRef = GameHandler._upgradeTree;
         m_upgradeNodes = new List<UpgradeUINode>();
+        m_lines = new List<GameObject>();
 
         PositionUpgrades();
         SetUpgradeNodePanelStatus(false);
         m_inited = true;
-        Refresh();
     }
 
     private void OnEnable()
@@ -80,7 +87,7 @@ public class UpgradeTreeUIHandler : MonoBehaviour
         Refresh();
     }
 
-    void SpawnNode(UpgradeItem a_upgrade, Vector3 a_parentPos, int a_index, float a_parentWidth, float a_width, bool a_drawingConnection)
+    void SpawnNode(UpgradeItem a_upgrade, Vector3 a_parentPos, int a_index, float a_parentHeight, float a_height, bool a_drawingConnection)
     {
         UpgradeUINode node = Instantiate(m_upgradeNodePrefab, m_contentTransform).GetComponent<UpgradeUINode>();
 
@@ -93,17 +100,17 @@ public class UpgradeTreeUIHandler : MonoBehaviour
         m_upgradeNodes.Add(node);
         node.SetUp(a_upgrade, this);
         node.SetNameText(a_upgrade.m_name);
-        node.SetAvailableSpace(a_width);
-        Vector3 pos = new Vector3((a_index + 0.5f) * a_width, m_nodeVerticalPadding, 0);
+        node.SetAvailableSpace(a_height);
+        Vector3 pos = new Vector3(m_nodeRowPadding, (a_index + 0.5f) * a_height, 0);
         pos += a_parentPos;
         //Account for 0,0 being in the middle
-        pos -= new Vector3(a_parentWidth / 2f, 0f, 0f);
+        pos -= new Vector3(0f, a_parentHeight / 2f, 0f);
         //node.GetComponent<RectTransform>().sizeDelta = new Vector2(a_width, 250f);
 
         node.transform.localPosition = pos;
         for (int i = 0; i < a_upgrade.m_upgradeChildren.Count; i++)
         {
-            SpawnNode(a_upgrade.m_upgradeChildren[i], pos, i, a_width, a_width/ (a_upgrade.m_upgradeChildren.Count), true);
+            SpawnNode(a_upgrade.m_upgradeChildren[i], pos, i, a_height, a_height/ (a_upgrade.m_upgradeChildren.Count), true);
         }
 
         if (a_drawingConnection)
@@ -113,11 +120,12 @@ public class UpgradeTreeUIHandler : MonoBehaviour
             {
                 lines[i] = Instantiate(m_linePrefab, m_lineContainer.transform).GetComponent<UILine>();
                 lines[i].gameObject.name = "Line " + i;
+                m_lines.Add(lines[i].gameObject);
             }
 
-            float yGap = (pos.y - a_parentPos.y);
+            float xGap = (pos.x - a_parentPos.x);
             float lineWidth = 10f;
-            Vector3 offsetVector = new Vector3(0f, yGap / 2f);
+            Vector3 offsetVector = new Vector3(xGap / 2f, 0f);
 
             Vector3 positionA = a_parentPos;
             Vector3 positionB = a_parentPos + offsetVector;
@@ -162,16 +170,20 @@ public class UpgradeTreeUIHandler : MonoBehaviour
 
     void PositionUpgrades()
     {
-        float totalWidth = m_contentTransform.GetComponent<RectTransform>().rect.width;
-        List<UpgradeItem> initialUpgrades = m_upgradeTreeRef.GetInitialUpgradeItems();
-        float itemWidth = totalWidth / (initialUpgrades.Count);
+        float totalHeight = m_contentTransform.GetComponent<RectTransform>().rect.height;
+        m_initialUpgrades = m_upgradeTreeRef.GetInitialUpgradeItems();
+        UpgradeItem viewedIntitalUpgrade = m_initialUpgrades[m_viewedInitialUpgradeIndex];
 
-        for (int i = 0; i < initialUpgrades.Count; i++)
-        {
-            float yPos = m_firstNodeRowPadding + m_nodeVerticalPadding;
-            SpawnNode(initialUpgrades[i], new Vector3(0f, yPos, 0f), i, totalWidth, itemWidth, true);
-        }
+        float xPos = m_firstNodeRowPadding;// + m_nodeRowPadding;
+        SpawnNode(viewedIntitalUpgrade, new Vector3(xPos, 0f, 0f), 0, totalHeight, totalHeight, true);
+
+        //for (int i = 0; i < m_initialUpgrades.Count; i++)
+        //{
+        //    float yPos = m_firstNodeRowPadding + m_nodeVerticalPadding;
+        //    SpawnNode(m_initialUpgrades[i], new Vector3(0f, yPos, 0f), i, totalWidth, totalWidth, true);
+        //}
         m_upgradeNodes.Sort(UpgradeNodeComparison);
+        Refresh();
     }
 
     public void Refresh()
@@ -183,10 +195,41 @@ public class UpgradeTreeUIHandler : MonoBehaviour
         RefreshNodesSelectedStatus();
     }
 
+    void ClearTree()
+    {
+        for (int i = 0; i < m_lines.Count; i++)
+        {
+            Destroy(m_lines[i]);
+        }
+        m_lines.Clear();
+        for (int i = 0; i < m_upgradeNodes.Count; i++)
+        {
+            Destroy(m_upgradeNodes[i].gameObject);
+        }
+        m_upgradeNodes.Clear();
+    }
+
+    void RotateTreeSelection(bool a_up)
+    {
+        m_viewedInitialUpgradeIndex += a_up ? 1 : -1;
+        m_viewedInitialUpgradeIndex = Mathf.Clamp(m_viewedInitialUpgradeIndex, 0, m_initialUpgrades.Count - 1);
+        m_upgradeTreeUISelectorRef.SetSelected(m_viewedInitialUpgradeIndex);
+        ClearTree();
+        PositionUpgrades();
+    }
+
     // Update is called once per frame
     void Update()
     {
-        RescaleContentContainer();
+        //RescaleContentContainer();
+        if (Input.GetKeyUp(KeyCode.W))
+        {
+            RotateTreeSelection(true);
+        }
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            RotateTreeSelection(false);
+        }
     }
 
     void RescaleContentContainer()
