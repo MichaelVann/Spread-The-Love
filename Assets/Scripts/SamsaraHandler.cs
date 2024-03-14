@@ -13,6 +13,7 @@ public class SamsaraHandler : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_accelerationText;
     [SerializeField] TextMeshProUGUI m_massText;
     [SerializeField] TextMeshProUGUI m_fireRateText;
+    [SerializeField] TextMeshProUGUI m_livesLivedText;
     [SerializeField] LoveReadout m_loveReadoutRef;
     [SerializeField] GameObject m_optionsMenuPrefab;
     [SerializeField] Button m_nextHintButton;
@@ -38,6 +39,7 @@ public class SamsaraHandler : MonoBehaviour
     {
         Time.timeScale = 1.0f;
         m_hintCostText.text = m_hintCost.ToString();
+        m_livesLivedText.text = GameHandler._livesLived.ToString();
         RefreshUI();
         Cursor.visible = true;
     }
@@ -74,7 +76,10 @@ public class SamsaraHandler : MonoBehaviour
     {
         RefreshStats();
         RefreshHintButton();
-        m_loveReadoutRef.RefreshRollingText();
+        if (GameHandler._lastSeenScore != GameHandler._score)
+        {
+            m_loveReadoutRef.RefreshRollingText();
+        }
     }
 
     public void Reincarnate()

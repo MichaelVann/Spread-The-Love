@@ -105,7 +105,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_vibePrefab: {fileID: 5519909977801287951, guid: b56912027e6427f44b43be0e61695d52, type: 3}
   m_rigidBodyRef: {fileID: 5555430745628526058}
-  m_popSoundRef: {fileID: 8300000, guid: 4562ddab40311604189bd12c79cf5455, type: 3}
+  m_popSoundRef: {fileID: 8300000, guid: 6a6099a0943e9aa459bdd3281b869a49, type: 3}
   m_popParticleSystemRef: {fileID: 8772603470572319832}
 --- !u!70 &5920749435197827878
 CapsuleCollider2D:

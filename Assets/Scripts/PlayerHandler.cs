@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static UnityEngine.GridBrushBase;
 
 public class PlayerHandler : Soul
@@ -17,6 +18,7 @@ public class PlayerHandler : Soul
     [SerializeField] ParticleSystem m_driftParticlesRightRef;
     [SerializeField] TrailRenderer m_loveTrailRef;
     [SerializeField] GameObject m_shootReadinessIndicatorRef;
+    [SerializeField] Transform m_vibeSpawnPoint;
 
     //Minimap
     [SerializeField] MiniMapIcon m_miniMapIconRef;
@@ -121,7 +123,7 @@ public class PlayerHandler : Soul
             case UpgradeItem.UpgradeId.Shooting:
                 ability = m_abilityShoot;
                 break;
-            case UpgradeItem.UpgradeId.BulletTime:
+            case UpgradeItem.UpgradeId.Mindfulness:
                 ability = m_abilityBulletTime;
                 break;
             case UpgradeItem.UpgradeId.BerserkShot:
@@ -183,7 +185,7 @@ public class PlayerHandler : Soul
         m_autoShootUnlocked = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.AutoShoot);
         m_mouseAiming = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
 
-        m_abilityBulletTime = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BulletTime), GetUpgradeStrength(UpgradeItem.UpgradeId.BulletTime));
+        m_abilityBulletTime = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Mindfulness), GetUpgradeStrength(UpgradeItem.UpgradeId.Mindfulness));
         m_abilityBulletTime.SetUpResource(1f, 0.1f);
 
         m_abilityBeserkShot = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BerserkShot));
@@ -196,6 +198,18 @@ public class PlayerHandler : Soul
         m_emotion = 1;
         m_battleHandlerRef = FindObjectOfType<BattleHandler>();
         m_gameHandlerRef =  FindObjectOfType<GameHandler>();
+    }
+
+    void ShootVibe(Vector2 a_aimDirection)
+    {
+        for (int i = 0; i < m_shootSpread; i++)
+        {
+            float angle = i * (2 * m_shootSpreadAngle) - ((m_shootSpread - 1) * m_shootSpreadAngle);
+            Vibe loveVibe = Instantiate(m_loveVibePrefab, m_vibeSpawnPoint.position, Quaternion.identity).GetComponent<Vibe>();
+            loveVibe.Init(null, a_aimDirection.normalized.RotateVector2(angle), m_rigidBodyRef.velocity, m_emotion, GetUpgradeStrength(UpgradeItem.UpgradeId.ProjectileSpeed));
+        }
+
+        GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
     }
 
     void ShootUpdate()
@@ -230,14 +244,7 @@ public class PlayerHandler : Soul
 
             if (shooting && m_abilityShoot.AttemptToActivate())
             {
-                for (int i = 0; i < m_shootSpread; i++)
-                {
-                    float angle = i * (2 * m_shootSpreadAngle) - ((m_shootSpread - 1) * m_shootSpreadAngle);
-                    Vibe loveVibe = Instantiate(m_loveVibePrefab, transform.position, Quaternion.identity).GetComponent<Vibe>();
-                    loveVibe.Init(null, aimDirection.normalized.RotateVector2(angle), m_rigidBodyRef.velocity, m_emotion, GetUpgradeStrength(UpgradeItem.UpgradeId.ProjectileSpeed));
-                }
-
-                GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
+                ShootVibe(aimDirection);
             }
             m_shootButtonWasDownLastFrame = shootButtonPressed;
         }
@@ -459,7 +466,7 @@ public class PlayerHandler : Soul
 
     void BulletTimeUpdate()
     {
-        bool m_bulletTimeActive = m_abilityBulletTime.m_enabled && m_abilityBulletTime.SetResourceBasedActivateInput(GetUpgradeButton(UpgradeItem.UpgradeId.BulletTime));
+        bool m_bulletTimeActive = m_abilityBulletTime.m_enabled && m_abilityBulletTime.SetResourceBasedActivateInput(GetUpgradeButton(UpgradeItem.UpgradeId.Mindfulness));
         m_abilityBulletTime.ResourceUpdate();
 
         if (m_bulletTimeActive)
@@ -534,7 +541,7 @@ public class PlayerHandler : Soul
 
             SpawnCollisionEffect(a_collision.contacts[0].point, collisionDirection);
 
-            if (vessel.GetEmotion() == (int)Vessel.eEmotionType.Bully)
+            if (vessel.GetEmotion() == (int)Vessel.eEmotionType.Bully || vessel.GetEmotion() == (int) Vessel.eEmotionType.Jaded)
             {
                 m_rigidBodyRef.AddForce(collisionDirection * 10000f);
                 vessel.TriggerShieldEffect(collisionDirection);
@@ -542,8 +549,12 @@ public class PlayerHandler : Soul
             else
             {
                 vessel.CollideWithPlayer(m_meleeLoveStrength, -collisionDirection);
-                GameHandler._audioManager.PlaySFX(m_vesselHitSound);
+                GameHandler._audioManager.PlaySFX(m_vesselHitSound,1.4f);
             }
+        }
+        else if (a_collision.gameObject.tag == "LoveVibe" && a_collision.gameObject.GetComponent<Vibe>().GetEmotionalAffect() < 0)
+        {
+            Destroy(a_collision.gameObject);
         }
         else if (a_collision.gameObject.tag == "Environment")
         {

@@ -32,7 +32,7 @@ public class AbilityReadout : MonoBehaviour
         bool active = GameHandler._upgradeTree.HasUpgrade(m_upgradeType);
         m_upgradeIconRef.gameObject.SetActive(active);
         m_lockRef.SetActive(!active);
-        m_keyNameText.gameObject.SetActive(active);
+        //m_keyNameText.gameObject.SetActive(active);
         m_upgradeRef = GameHandler._upgradeTree.GetUpgrade(m_upgradeType);
         m_keyNameText.text = m_upgradeRef.m_key;
         m_abilityRef = FindObjectOfType<PlayerHandler>().GetAbility(m_upgradeType);

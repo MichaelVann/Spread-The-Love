@@ -47,6 +47,9 @@ public class GameHandler : MonoBehaviour
 
     internal static void SetFirstTimeCutscenePlayed(bool a_value) { _firstTimeCutscenePlayed = true; }
 
+    internal static Sprite GetUpgradeSprite(int a_id) { return _autoRef.m_upgradeImages[a_id]; }
+    internal static Sprite GetUpgradeSprite(UpgradeItem.UpgradeId a_id) { return GetUpgradeSprite((int)a_id); }
+
     void Awake()
     {
         if (_autoRef == null)
@@ -66,7 +69,7 @@ public class GameHandler : MonoBehaviour
         _audioManager = GetComponent<AudioManager>();
         _upgradeTree = new UpgradeTree();
         _score = 0;
-        _lastSeenScore = -1;
+        _lastSeenScore = 0;
         _mapSize = 1;
     }
 

@@ -86,7 +86,7 @@ public class UpgradeUINode : MonoBehaviour
     {
         if ((int)m_upgradeItemRef.m_ID < GameHandler._autoRef.m_upgradeImages.Length)
         {
-            m_iconRef.sprite = GameHandler._autoRef.m_upgradeImages[(int)m_upgradeItemRef.m_ID];
+            m_iconRef.sprite = GameHandler.GetUpgradeSprite(m_upgradeItemRef.m_ID);
         }
 
         Color nodeColor = Color.white;

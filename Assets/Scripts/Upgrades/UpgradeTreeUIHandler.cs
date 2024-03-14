@@ -83,7 +83,7 @@ public class UpgradeTreeUIHandler : MonoBehaviour
     public void AttemptToPurchaseUpgrade(UpgradeItem a_upgradeItemRef)
     {
         m_upgradeTreeRef.AttemptToBuyUpgrade(a_upgradeItemRef);
-        m_upgradeNodes[(int)a_upgradeItemRef.m_ID].RunUpgradeEffect();
+        m_selectedUpgradeNode.RunUpgradeEffect();
         Refresh();
     }
 
@@ -214,6 +214,7 @@ public class UpgradeTreeUIHandler : MonoBehaviour
         m_viewedInitialUpgradeIndex += a_up ? 1 : -1;
         m_viewedInitialUpgradeIndex = Mathf.Clamp(m_viewedInitialUpgradeIndex, 0, m_initialUpgrades.Count - 1);
         m_upgradeTreeUISelectorRef.SetSelected(m_viewedInitialUpgradeIndex);
+        CloseUpgradeNodePanel();
         ClearTree();
         PositionUpgrades();
     }

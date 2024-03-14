@@ -53,7 +53,7 @@ public class UpgradeItem
         //Radar,
         //Minimap,
         AdditionalTime,
-        BulletTime,
+        Mindfulness,
     }
     public UpgradeId m_ID;
 
