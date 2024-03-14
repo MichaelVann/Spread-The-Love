@@ -1379,6 +1379,12 @@ MonoBehaviour:
   - {fileID: 4869584457715346161, guid: fd1a557bcf6b19a41a1116e1865bcc6a, type: 3}
   m_roadDecals:
   - {fileID: 6370836106064638004, guid: e2b77d47b913dc742a00d9a06ceb1ade, type: 3}
+  - {fileID: 6845287398923696792, guid: c3d2f0af9cd1ae34caf2561ce2d0bb97, type: 3}
+  - {fileID: 8061542359559749650, guid: ef8bb8d5a6b71f34da2a94caa68cbd28, type: 3}
+  - {fileID: 6391001345883998910, guid: 44a32e8e5ebccbf4a83a286b5df5d681, type: 3}
+  - {fileID: 515467622134522968, guid: 6f6d2f19529d00c4681817e78974df85, type: 3}
+  - {fileID: 5204559910890697876, guid: cde21f404391a0e4a8df7464506cde92, type: 3}
+  - {fileID: 5967097899914024767, guid: 4080ef8137d1029499d62da07cc3c4b2, type: 3}
   m_backgroundRef: {fileID: 1942700574}
   m_scrollingBackgroundRef: {fileID: 492764728}
   m_lootBagPrefab: {fileID: 1016008954366094287, guid: e2f4586334f6adb4c9efbafffeb1bace, type: 3}
@@ -14478,7 +14484,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1615444700}
   m_Layer: 7
-  m_Name: Vibe Spawn Point
+  m_Name: Shoot Spawn Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21137,7 +21143,7 @@ MonoBehaviour:
   m_driftParticlesRightRef: {fileID: 566022411}
   m_loveTrailRef: {fileID: 8076406466062565016}
   m_shootReadinessIndicatorRef: {fileID: 1638332290}
-  m_vibeSpawnPoint: {fileID: 1615444700}
+  m_shootSpawnPoint: {fileID: 1615444700}
   m_miniMapIconRef: {fileID: 7206128285689361185}
   m_miniMapCameraRef: {fileID: 905535228}
   m_speedRampRef: {fileID: 259326426}

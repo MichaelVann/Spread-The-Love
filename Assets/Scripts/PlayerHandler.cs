@@ -18,7 +18,7 @@ public class PlayerHandler : Soul
     [SerializeField] ParticleSystem m_driftParticlesRightRef;
     [SerializeField] TrailRenderer m_loveTrailRef;
     [SerializeField] GameObject m_shootReadinessIndicatorRef;
-    [SerializeField] Transform m_vibeSpawnPoint;
+    [SerializeField] Transform m_shootSpawnPoint;
 
     //Minimap
     [SerializeField] MiniMapIcon m_miniMapIconRef;
@@ -205,7 +205,7 @@ public class PlayerHandler : Soul
         for (int i = 0; i < m_shootSpread; i++)
         {
             float angle = i * (2 * m_shootSpreadAngle) - ((m_shootSpread - 1) * m_shootSpreadAngle);
-            Vibe loveVibe = Instantiate(m_loveVibePrefab, m_vibeSpawnPoint.position, Quaternion.identity).GetComponent<Vibe>();
+            Vibe loveVibe = Instantiate(m_loveVibePrefab, m_shootSpawnPoint.position, Quaternion.identity).GetComponent<Vibe>();
             loveVibe.Init(null, a_aimDirection.normalized.RotateVector2(angle), m_rigidBodyRef.velocity, m_emotion, GetUpgradeStrength(UpgradeItem.UpgradeId.ProjectileSpeed));
         }
 
@@ -338,7 +338,9 @@ public class PlayerHandler : Soul
         }
         float maxRotation = driftAngle < 0 ? 0f : driftAngle;
         float minRotation = driftAngle < 0 ? driftAngle : 0f;
-        m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.RotateVector2(Mathf.Clamp(driftAngle * m_grip * Time.deltaTime, minRotation, maxRotation));
+        float rotation = driftAngle * m_grip * Time.deltaTime;
+        //rotation = !m_touchingWall ? rotation : driftAngle;
+        m_rigidBodyRef.velocity = m_rigidBodyRef.velocity.RotateVector2(Mathf.Clamp(rotation, minRotation, maxRotation));
 
         //Angle Drag
         float angleDrag = Mathf.Abs(Mathf.Sin(Mathf.PI * driftAngle / 180f));
@@ -495,7 +497,7 @@ public class PlayerHandler : Soul
             
             if (GetUpgradeButton(UpgradeItem.UpgradeId.BerserkShot) && m_abilityBeserkShot.AttemptToActivate())
             {
-                BeserkShot beserkShot = Instantiate(m_beserkShotPrefab, transform.position, Quaternion.identity).GetComponent<BeserkShot>();
+                BeserkShot beserkShot = Instantiate(m_beserkShotPrefab, m_shootSpawnPoint.position, Quaternion.identity).GetComponent<BeserkShot>();
                 beserkShot.Init(aimDirection * m_beserkShotSpeed + m_rigidBodyRef.velocity);
                 GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
             }

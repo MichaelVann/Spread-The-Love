@@ -14,9 +14,11 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField] Slider m_masterAudioSlider;
     [SerializeField] Slider m_SFXAudioSlider;
     [SerializeField] Slider m_ambienceAudioSlider;
+    [SerializeField] Slider m_musicAudioSlider;
     [SerializeField] UICheckBox m_masterCheckBox;
     [SerializeField] UICheckBox m_SFXCheckBox;
     [SerializeField] UICheckBox m_ambienceCheckBox;
+    [SerializeField] UICheckBox m_musicCheckBox;
 
     // Start is called before the first frame update
     void Awake()
@@ -25,9 +27,10 @@ public class OptionsMenu : MonoBehaviour
         m_masterAudioSlider.value = GameHandler._audioManager.GetChannelVolume(AudioManager.eSoundChannel.Master);
         m_SFXAudioSlider.value = GameHandler._audioManager.GetChannelVolume(AudioManager.eSoundChannel.SFX);
         m_ambienceAudioSlider.value = GameHandler._audioManager.GetChannelVolume(AudioManager.eSoundChannel.Ambience);
+        m_musicAudioSlider.value = GameHandler._audioManager.GetChannelVolume(AudioManager.eSoundChannel.Music);
         m_masterCheckBox.SetToggled(GameHandler._audioManager.GetChannelEnabled(AudioManager.eSoundChannel.Master));
         m_SFXCheckBox.SetToggled(GameHandler._audioManager.GetChannelEnabled(AudioManager.eSoundChannel.SFX));
-        m_ambienceCheckBox.SetToggled(GameHandler._audioManager.GetChannelEnabled(AudioManager.eSoundChannel.Ambience));
+        m_musicCheckBox.SetToggled(GameHandler._audioManager.GetChannelEnabled(AudioManager.eSoundChannel.Music));
     }
 
     // Update is called once per frame
@@ -80,6 +83,11 @@ public class OptionsMenu : MonoBehaviour
         GameHandler._audioManager.SetChannelVolume(AudioManager.eSoundChannel.Ambience, m_ambienceAudioSlider.value);
     }
 
+    public void ChangeMusicVolume()
+    {
+        GameHandler._audioManager.SetChannelVolume(AudioManager.eSoundChannel.Music, m_musicAudioSlider.value);
+
+    }
     public void ToggleMaster()
     {
         m_SFXCheckBox.Toggle();
@@ -96,5 +104,11 @@ public class OptionsMenu : MonoBehaviour
     {
         m_ambienceCheckBox.Toggle();
         GameHandler._audioManager.SetChannelEnabled(AudioManager.eSoundChannel.Ambience, m_ambienceCheckBox.GetToggled());
+    }
+
+    public void ToggleMusic()
+    {
+        m_musicCheckBox.Toggle();
+        GameHandler._audioManager.SetChannelEnabled(AudioManager.eSoundChannel.Music, m_musicCheckBox.GetToggled());
     }
 }
