@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CutsceneHandler : MonoBehaviour
+public class IntroCutsceneHandler : MonoBehaviour
 {
-    [SerializeField] DialogBox m_dialogBoxRef;
+    [SerializeField] Cutscene m_cutsceneRef;
     [SerializeField] Sprite[] m_sprites;
 
     // Start is called before the first frame update
@@ -23,9 +23,9 @@ public class CutsceneHandler : MonoBehaviour
         dialogs.Add("(Attempt to cherish as many of the grief stricken and fearful souls wandering these streets as possible, before the end draws near. As you get to higher tiers, they may be more <color=blue>resistant</color>)");
         sprites.Add(enlightenedSprite);
 
-        m_dialogBoxRef.Init(MoveToNextScene);
-        m_dialogBoxRef.AddDialogs(dialogs);
-        m_dialogBoxRef.AddImages(sprites);
+        m_cutsceneRef.Init(true, MoveToNextScene);
+        m_cutsceneRef.AddDialogs(dialogs);
+        m_cutsceneRef.AddImages(sprites);
     }
 
     // Update is called once per frame

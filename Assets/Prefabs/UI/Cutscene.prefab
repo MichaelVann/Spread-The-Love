@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1539043825637898946}
+  - component: {fileID: 8631454178217227388}
   m_Layer: 5
-  m_Name: Dialog Box
+  m_Name: Cutscene
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38,6 +39,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &8631454178217227388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457810866133208450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d8a685ad165b6848aa6dda16c39ec6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_parentObject: {fileID: 1457810866133208450}
+  m_panelRef: {fileID: 2572277415158205162}
+  m_descriptionTextRef: {fileID: 8465951544566214719}
+  m_sceneImage: {fileID: 8057472919712446315}
+  m_pressToContinueTextRef: {fileID: 1952372286161885604}
 --- !u!1 &2537608460169174439
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,7 +200,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5953299702573965363}
   - component: {fileID: 3052566257613963245}
-  - component: {fileID: 5259003815052696899}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -254,8 +271,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5259003815052696899}
-        m_TargetAssemblyTypeName: DialogBox, Assembly-CSharp
+      - m_Target: {fileID: 8631454178217227388}
+        m_TargetAssemblyTypeName: Cutscene, Assembly-CSharp
         m_MethodName: DialogPressed
         m_Mode: 1
         m_Arguments:
@@ -266,22 +283,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &5259003815052696899
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2572277415158205162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d8a685ad165b6848aa6dda16c39ec6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_parentObject: {fileID: 1457810866133208450}
-  m_descriptionTextRef: {fileID: 8465951544566214719}
-  m_sceneImage: {fileID: 8057472919712446315}
-  m_pressToContinueTextRef: {fileID: 1952372286161885604}
 --- !u!1 &4565242220924930645
 GameObject:
   m_ObjectHideFlags: 0

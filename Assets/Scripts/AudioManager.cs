@@ -43,7 +43,7 @@ public class AudioManager : MonoBehaviour
     internal bool GetChannelEnabled(eSoundChannel a_channel) { return m_soundChannels[(int)a_channel].enabled; }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         m_soundChannels = new SoundChannel[4];
         for (int i = 0; i < m_soundChannels.Length; i++)

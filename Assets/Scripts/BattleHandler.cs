@@ -15,6 +15,7 @@ public class BattleHandler : MonoBehaviour
     internal GameHandler m_gameHandlerRef;
 
     [SerializeField] Camera m_mainCameraRef;
+    [SerializeField] CameraHandler m_mainCameraHandlerRef;
     [SerializeField] GameObject m_vesselPrefab;
     [SerializeField] PlayerHandler m_playerHandlerRef;
     [SerializeField] GameObject m_buildingPrefab;
@@ -32,6 +33,7 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] Image m_whiteOutImageRef;
     [SerializeField] internal GameObject m_worldTextCanvasRef;
     [SerializeField] ClockRadialCircle m_clockRadialCircle;
+
     //Abilities UI
     [SerializeField] AbilityReadout[] m_abilityReadouts;
     [SerializeField] AbilityReadout m_shootAbilityReadout;
@@ -44,6 +46,7 @@ public class BattleHandler : MonoBehaviour
 
     //Score
     [SerializeField] TextMeshProUGUI m_scoreText;
+    [SerializeField] ParticleSystem m_lootBagPoppedParticleSystem;
     int m_score = 0;
 
     //Vessels
@@ -70,11 +73,18 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] GameObject[] m_cornerDecals;
     [SerializeField] GameObject[] m_roadDecals;
 
+    //Cutscenes
+    [SerializeField] GameObject m_cutscenePrefab;
+    [SerializeField] Transform m_cutsceneCanvasTransformRef;
+    bool cutsceneActive = false;
+    bool m_startingCutsceneseChecked = false;
+    float m_newEnemyTypeCameraZoom = 3f;
+
     //Background
     [SerializeField] SpriteRenderer m_backgroundRef;
     [SerializeField] ScrollingRawImage m_scrollingBackgroundRef;
 
-    //Timer
+    //Time
     float m_gameTime = 45f;
     vTimer m_battleTimer;
     vTimer m_battleExplosionTimer;
@@ -84,6 +94,7 @@ public class BattleHandler : MonoBehaviour
     float m_bulletTimeFactor = 1f;
     float m_pauseTimeFactor = 1f;
     float m_gameEndingTimeFactor = 1f;
+    float m_cutsceneTimeFactor = 1f;
 
     //Entities
     [SerializeField] GameObject m_lootBagPrefab;
@@ -103,7 +114,9 @@ public class BattleHandler : MonoBehaviour
 
     internal float GetBuildingGap() { return m_buildingSize + m_streetSize; }
 
-    internal void IncreaseLootBagBonus() { m_lootBagBonus += m_lootBagBonusIncrease; UpdateLootBagBonusText(); }
+    internal void IncreaseLootBagBonus() { m_lootBagBonus += m_lootBagBonusIncrease; UpdateLootBagBonusText(); m_lootBagPoppedParticleSystem.Play(); }
+
+    void CutsceneEndedCallback() { m_cutsceneTimeFactor = 1f; m_mainCameraHandlerRef.EndTargetedZoom(); }
 
     Vector3 GetBuildingPosition(int a_x, int a_y)
     {
@@ -154,6 +167,35 @@ public class BattleHandler : MonoBehaviour
         ChangeScore(0);
         Cursor.visible = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
         UpdateLootBagBonusText();
+    }
+
+    void CheckForStartingCutscenes()
+    {
+        if (GameHandler._highestMapSizeSeen < GameHandler._mapSize)
+        {
+            switch (GameHandler._mapSize)
+            {
+                case 2:
+                    Cutscene cutscene = Instantiate(m_cutscenePrefab, m_cutsceneCanvasTransformRef).GetComponent<Cutscene>();
+                    cutscene.Init(false, CutsceneEndedCallback);
+                    cutscene.AddDialog("This is a <color=#FFFF00>Coward</color> type, they will flee from you if you get too close. They are also immune to your vibes, the little fuckers.");
+                    Vector3 zoomPoint =  Vector3.zero;
+                    for (int i = 0; i < m_vesselList.Count; i++)
+                    {
+                        if (m_vesselList[i].GetEmotion() == -2)
+                        {
+                            zoomPoint = m_vesselList[i].transform.position;
+                            i = m_vesselList.Count;
+                        }
+                    }
+                    m_mainCameraHandlerRef.SetTargetedZoom(zoomPoint, m_newEnemyTypeCameraZoom);
+                    m_cutsceneTimeFactor = 0f;
+                    break;
+                default:
+                    break;
+            }
+        }
+        m_startingCutsceneseChecked = true;
     }
 
     void InitialiseUpgrades()
@@ -473,7 +515,7 @@ public class BattleHandler : MonoBehaviour
 
     void UpdateTimeScale()
     {
-        Time.timeScale = Mathf.Min(m_bulletTimeFactor, m_gameEndingTimeFactor) * m_pauseTimeFactor;
+        Time.timeScale = Mathf.Min(m_bulletTimeFactor, m_gameEndingTimeFactor, m_cutsceneTimeFactor) * m_pauseTimeFactor;
     }
 
     // Update is called once per frame
@@ -515,6 +557,11 @@ public class BattleHandler : MonoBehaviour
             {
                 OpenPauseMenu();
             }
+        }
+
+        if (!m_startingCutsceneseChecked && GameHandler._autoRef.IsSceneFadeFinished())
+        {
+            CheckForStartingCutscenes();
         }
 
         Cursor.visible = m_paused || GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);

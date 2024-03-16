@@ -193,6 +193,7 @@ public class UpgradeTreeUIHandler : MonoBehaviour
             m_upgradeNodes[i].Refresh();
         }
         RefreshNodesSelectedStatus();
+        m_upgradeTreeUISelectorRef.RefreshUpgradeAvailabilities();
     }
 
     void ClearTree()

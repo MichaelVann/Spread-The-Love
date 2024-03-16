@@ -104,7 +104,7 @@ public class UpgradeTree
             GameHandler.UpdateLastSeenScore(); 
             GameHandler.ChangeScore(-a_upgrade.m_cost);
             a_upgrade.m_level++;
-            a_upgrade.m_cost = (int)(a_upgrade.m_cost * a_upgrade.m_costScaling);
+            a_upgrade.m_cost = a_upgrade.GetCostAtLevel(a_upgrade.m_level + 1);
             if (!a_upgrade.m_owned)
             {
                 a_upgrade.SetOwned(true);

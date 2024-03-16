@@ -101,6 +101,7 @@ public class PlayerHandler : Soul
     [SerializeField] AudioSource m_driftSoundAudioSource;
     [SerializeField] AudioClip m_driftSound;
     [SerializeField] AudioClip m_vesselHitSound;
+    const float m_vesselHitSoundVolume = 1.2f;
     [SerializeField] AudioClip m_wallHitSound;
     [SerializeField] AudioClip m_fireSound;
 
@@ -551,7 +552,7 @@ public class PlayerHandler : Soul
             else
             {
                 vessel.CollideWithPlayer(m_meleeLoveStrength, -collisionDirection);
-                GameHandler._audioManager.PlaySFX(m_vesselHitSound,1.4f);
+                GameHandler._audioManager.PlaySFX(m_vesselHitSound,m_vesselHitSoundVolume);
             }
         }
         else if (a_collision.gameObject.tag == "LoveVibe" && a_collision.gameObject.GetComponent<Vibe>().GetEmotionalAffect() < 0)

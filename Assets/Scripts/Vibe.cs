@@ -39,6 +39,10 @@ public class Vibe : MonoBehaviour
         m_originSoul = a_originSoul;
         m_rigidBodyRef.velocity = a_travelDirection * a_speed;
         m_emotion = a_emotion;
+        if (m_emotion <= 0)
+        {
+            GetComponent<CircleCollider2D>().includeLayers = LayerMask.GetMask("Player");
+        }
         UpdateColorFromEmotion();
         m_rigidBodyRef.velocity += a_inheritedVelocity;
         //transform.rotation = VLib.Vector3ToQuaternion(a_travelDirection);

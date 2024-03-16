@@ -28,6 +28,7 @@ public class UpgradeUINode : MonoBehaviour
     [SerializeField] ParticleSystem m_upgradeEffectParticleSystemRef;
 
     [SerializeField] GameObject m_availableUpgradeIndicatorRef;
+    [SerializeField] TextMeshProUGUI m_availableUpgradeIndicatorText;
 
     [SerializeField] Color m_baseColor;
     [SerializeField] Color m_notPurchaseableColor;
@@ -80,6 +81,7 @@ public class UpgradeUINode : MonoBehaviour
     void RefreshAvailableUpgradeIndicator()
     {
         m_availableUpgradeIndicatorRef.SetActive(m_upgradeItemRef.IsReadyToUpgrade(GameHandler._score));
+        m_availableUpgradeIndicatorText.text = m_upgradeItemRef.GetBuyableLevels(GameHandler._score).ToString();
     }
 
     internal void Refresh()
@@ -104,7 +106,6 @@ public class UpgradeUINode : MonoBehaviour
             {
                 nodeColor = m_maxLevelColor;
             }
-
 
             if (m_upgradeItemRef.m_toggleable)
             {

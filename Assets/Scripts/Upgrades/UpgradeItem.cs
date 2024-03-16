@@ -87,8 +87,55 @@ public class UpgradeItem
     }
     internal float GetMaxLeveledStrength() { return m_startingStrength + m_strength * m_maxLevel; }
 
+    internal int GetCostAtLevel(int a_level)
+    {
+        int cost = m_cost;
+        int deltaLevel = a_level - m_level;
+        for (int i = 0; i < deltaLevel; i++)
+        {
+            cost = (int)(cost * m_costScaling);
+        }
+        return cost;
+    }
 
-    internal bool IsReadyToUpgrade(float a_cash) { return m_unlocked && a_cash >= m_cost && (m_hasLevels ? (m_level < m_maxLevel) : true); }
+    internal bool IsReadyToUpgrade(int a_cash) { return m_unlocked && a_cash >= m_cost && (m_hasLevels ? (m_level < m_maxLevel) : true); }
+
+    internal int GetBuyableLevels(int a_cash) 
+    {
+        int buyableLevels = 0;
+
+        bool buyableNextLevel = false;
+
+        int relativeLevel = 0;
+        int netCost = 0;
+
+        do
+        {
+            buyableNextLevel = false;
+            int levelCost = GetCostAtLevel(m_level + relativeLevel);
+            if (a_cash >= netCost + levelCost)
+            {
+                buyableLevels++;
+                buyableNextLevel = true;
+                relativeLevel++;
+                netCost += levelCost;
+            }
+        } while (buyableNextLevel);
+
+        return buyableLevels;
+    }
+
+    internal int GetRecursiveReadyToUpgradeCount(int a_cash) 
+    {
+        int readyToUpgradeCount = IsReadyToUpgrade(a_cash) ? 1 : 0;
+
+        for (int i = 0; i < m_upgradeChildren.Count; i++)
+        {
+            readyToUpgradeCount += m_upgradeChildren[i].GetRecursiveReadyToUpgradeCount(a_cash);
+        }
+
+        return readyToUpgradeCount;
+    }
 
     internal void AddChildUpgrade(UpgradeItem a_child)
     {

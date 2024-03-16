@@ -9,6 +9,7 @@ using static Unity.Collections.AllocatorManager;
 public class SaveDataUtility
 {
     internal const string m_saveFileName = "DataToo.txt";
+    const int m_saveVersion = 1;
 
     [Serializable]
     struct UpgradeTreeData
@@ -49,6 +50,7 @@ public class SaveDataUtility
         public int lastSeenScore;
         public int mapSize;
         public bool firstTimeCutscenePlayed;
+        public int highestMapSizeSeen;
     }
     [SerializeField]
     SaveData m_saveData;
@@ -119,10 +121,11 @@ public class SaveDataUtility
         SaveUpgradeTree();
         SaveAudioData();
 
-        m_saveData.version = VLib.StringToInt(Application.version);
+        m_saveData.version = m_saveVersion;
         m_saveData.score = GameHandler._score;
         m_saveData.lastSeenScore = GameHandler._lastSeenScore;
         m_saveData.firstTimeCutscenePlayed = GameHandler._firstTimeCutscenePlayed;
+        m_saveData.highestMapSizeSeen = GameHandler._highestMapSizeSeen;
         m_saveData.mapSize = GameHandler._mapSize;
 
         string path = GetSaveDataPath();
@@ -132,7 +135,7 @@ public class SaveDataUtility
 
     bool SaveFileVersionCheck()
     {
-        bool result = m_saveData.version >= VLib.StringToInt(Application.version);
+        bool result = m_saveData.version >= m_saveVersion;
         //result &= m_saveData.subVersion >= GameHandler.SUB_VERSION_NUMBER;
 
         return result;
@@ -145,6 +148,7 @@ public class SaveDataUtility
         GameHandler._score = m_saveData.score;
         GameHandler._lastSeenScore = m_saveData.lastSeenScore;
         GameHandler._firstTimeCutscenePlayed = m_saveData.firstTimeCutscenePlayed;
+        GameHandler._highestMapSizeSeen = m_saveData.highestMapSizeSeen;
         GameHandler._mapSize = m_saveData.mapSize;
     }
 

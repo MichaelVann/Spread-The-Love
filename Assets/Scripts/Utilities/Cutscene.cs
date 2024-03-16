@@ -4,19 +4,22 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DialogBox : MonoBehaviour
+public class Cutscene : MonoBehaviour
 {
-    [SerializeField] GameObject m_parentObject;
+    [SerializeField] GameObject m_panelRef;
     [SerializeField] TextMeshProUGUI m_descriptionTextRef;
-    [SerializeField] Image m_sceneImage;
-    vTimer m_imageFadeTimer;
-    bool m_fadingOut = false;
-    bool m_fadingIn = true;
 
     string m_descriptionString;
     int m_charactersShown = 0;
     vTimer m_printTimer;
     bool m_printing = false;
+
+    //Images
+    bool m_usingImages = false;
+    [SerializeField] Image m_sceneImage;
+    vTimer m_imageFadeTimer;
+    bool m_imageFadingIn = true;
+    bool m_imageFadingOut = false;
 
     bool m_writingText = false;
 
@@ -36,22 +39,24 @@ public class DialogBox : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_pressToContinueTextRef;
     bool m_showingPressToContinueText = false;
 
-    internal void AddDialog(string a_string) { m_dialogList.Add(a_string); m_descriptionString = m_dialogList[0]; } 
+    internal void AddDialog(string a_string) { m_dialogList.Add(a_string); AssignDescription(); } 
 
     internal void SetPrintSpeed(float a_printSpeed) { m_printScreen = a_printSpeed; RefreshPrintTimer(); }
 
     // Start is called before the first frame update
     void Start()
     {
-        ZoomExpandComponent closingZoom = gameObject.AddComponent<ZoomExpandComponent>();
+        ZoomExpandComponent closingZoom = m_panelRef.AddComponent<ZoomExpandComponent>();
         closingZoom.Init();
         closingZoom.SetFinishDelegate(Open);
         m_imageFadeTimer = new vTimer(0.5f);
         m_imageFadeTimer.SetClampingTimer(true);
     }
 
-    internal void Init(OnCloseDelegate a_onCloseDelegate = null)
+    internal void Init(bool a_usingImages, OnCloseDelegate a_onCloseDelegate = null)
     {
+        m_usingImages = a_usingImages;
+        m_sceneImage.gameObject.SetActive(m_usingImages);
         m_onCloseDelegate = a_onCloseDelegate;
         m_dialogList = new List<string>();
         m_sceneSprites = new List<Sprite>();
@@ -109,22 +114,22 @@ public class DialogBox : MonoBehaviour
 
     void ImageUpdate()
     {
-        if (m_fadingOut)
+        if (m_imageFadingOut)
         {
             if (m_imageFadeTimer.Update())
             {
-                m_fadingOut = false;
-                m_fadingIn = true;
+                m_imageFadingOut = false;
+                m_imageFadingIn = true;
                 AssignSceneSprite();
             }
             float compPercentage = m_imageFadeTimer.GetCompletionPercentage();
             m_sceneImage.color = Color.white.WithAlpha(1f-compPercentage);
         }
-        else if (m_fadingIn)
+        else if (m_imageFadingIn)
         {
             if (m_imageFadeTimer.Update())
             {
-                m_fadingIn = false;
+                m_imageFadingIn = false;
             }
             else
             {
@@ -142,8 +147,6 @@ public class DialogBox : MonoBehaviour
         }
     }
 
-
-
     // Update is called once per frame
     void Update()
     {
@@ -152,7 +155,10 @@ public class DialogBox : MonoBehaviour
             DialogPressed();
         }
         TextUpdate();
-        ImageUpdate();
+        if (m_usingImages)
+        {
+            ImageUpdate();
+        }
         PressToContinueTextUpdate();
     }
 
@@ -179,7 +185,7 @@ public class DialogBox : MonoBehaviour
             m_sceneSprites.RemoveAt(0);
             if (m_sceneImage.sprite != m_sceneSprites[0])
             {
-                m_fadingOut = true;
+                m_imageFadingOut = true;
             }
         }
 
@@ -190,7 +196,7 @@ public class DialogBox : MonoBehaviour
         }
         else if (m_closingZoom == null)
         {
-            m_closingZoom = gameObject.AddComponent<ZoomExpandComponent>();
+            m_closingZoom = m_panelRef.AddComponent<ZoomExpandComponent>();
             m_closingZoom.Init(1f,0f,0.3f,2f, Close);
         }
     }
@@ -218,6 +224,6 @@ public class DialogBox : MonoBehaviour
         {
             m_onCloseDelegate.Invoke();
         }
-        Destroy(m_parentObject);
+        Destroy(gameObject);
     }
 }

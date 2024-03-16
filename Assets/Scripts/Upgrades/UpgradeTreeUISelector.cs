@@ -17,7 +17,7 @@ public class UpgradeTreeUISelector : MonoBehaviour
     float m_selectorPosition = 0;
     [SerializeField] float m_selectorSpeed = 7f;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         UpgradeTree upgradeTreeRef = GameHandler._upgradeTree;
         List<UpgradeItem> initialUpgrades = upgradeTreeRef.GetInitialUpgradeItems();
@@ -25,7 +25,7 @@ public class UpgradeTreeUISelector : MonoBehaviour
         for (int i = 0; i < initialUpgrades.Count; i++)
         {
             m_selections.Add(Instantiate(m_selectionPrefab, m_selectionContainer.transform));
-            m_selections[i].GetComponent<UpgradeTreeSelection>().SetIconSprite(GameHandler.GetUpgradeSprite(initialUpgrades[i].m_ID));
+            m_selections[i].GetComponent<UpgradeTreeSelection>().Init(SetSelected, i, GameHandler.GetUpgradeSprite(initialUpgrades[i].m_ID), initialUpgrades[i]);
             m_selections[i].gameObject.name = i.ToString();
         }
     }
@@ -83,6 +83,15 @@ public class UpgradeTreeUISelector : MonoBehaviour
             size *= segmentHeight * totalHeight;
             RectTransform rectTransform = m_selections[i].GetComponent<RectTransform>();
             rectTransform.localScale = new Vector2(size, size) / rectTransform.sizeDelta;
+        }
+    }
+
+    internal void RefreshUpgradeAvailabilities()
+    {
+        int cash = GameHandler._score;
+        for (int i = 0; i < m_selections.Count; i++)
+        {
+            m_selections[i].GetComponent<UpgradeTreeSelection>().Refresh(cash);
         }
     }
 

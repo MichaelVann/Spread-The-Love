@@ -14,6 +14,7 @@ public class GameHandler : MonoBehaviour
     internal static int _lastSeenScore;
     internal static int _mapSize;
     internal static bool _firstTimeCutscenePlayed = false;
+    internal static int _highestMapSizeSeen = 0; 
     internal static int _livesLived = 0;
 
     [SerializeField] internal Color m_enlightenedColor;
@@ -47,6 +48,8 @@ public class GameHandler : MonoBehaviour
 
     internal static void SetFirstTimeCutscenePlayed(bool a_value) { _firstTimeCutscenePlayed = true; }
 
+    internal bool IsSceneFadeFinished() { return  m_sceneFadeTimer != null ? m_sceneFadeTimer.m_finished : true; }
+
     internal static Sprite GetUpgradeSprite(int a_id) { return _autoRef.m_upgradeImages[a_id]; }
     internal static Sprite GetUpgradeSprite(UpgradeItem.UpgradeId a_id) { return GetUpgradeSprite((int)a_id); }
 
@@ -71,6 +74,11 @@ public class GameHandler : MonoBehaviour
         _score = 0;
         _lastSeenScore = 0;
         _mapSize = 1;
+    }
+
+    void Start()
+    {
+        _audioManager.SetChannelVolume(AudioManager.eSoundChannel.Master, 0.5f);
     }
 
     // Update is called once per frame

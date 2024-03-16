@@ -16,11 +16,42 @@ public class CameraHandler : MonoBehaviour
     const float m_zoomChangeSpeed = 1f;
     float m_cameraZoomInertia = 0f;
 
+    //TargetedZoom
+    bool m_targetZoomTransitionActive = false;
+    bool m_targetZoomTransitioningIn = true;
+    Vector3 m_targetZoomTransitioningInStartPos;
+    Vector3 m_targetedZoomPosition;
+    float m_targetedZoomMagnification = 1f;
+    float m_targetedZoomStartingMagnification = 1f;
+    const float m_targetedZoomTransitionTime = 1.7f;
+    vTimer m_targetToRegularZoomTransitionTimer;
+
     bool m_initialZooming = true;
     // Start is called before the first frame update
     void Start()
     {
         m_zoomTimer = new vTimer(m_zoomTime, true, true, false, false, true);
+    }
+
+    internal void SetTargetedZoom(Vector3 a_position, float a_magnification)
+    {
+        m_targetZoomTransitioningIn = true;
+        m_targetToRegularZoomTransitionTimer = new vTimer(m_targetedZoomTransitionTime, true, true, false);
+        m_targetedZoomPosition = a_position;
+        m_targetedZoomMagnification = a_magnification;
+        m_initialZooming = false;
+        m_targetToRegularZoomTransitionTimer.SetUsingUnscaledDeltaTime(true);
+        m_targetZoomTransitioningInStartPos = m_cameraRef.transform.position;
+        m_targetedZoomStartingMagnification = m_cameraRef.orthographicSize;
+    }
+
+    internal void EndTargetedZoom()
+    {
+        m_targetZoomTransitioningIn = false;
+        m_targetToRegularZoomTransitionTimer = new vTimer(m_targetedZoomTransitionTime, true, true, false);
+        m_targetedZoomPosition = m_cameraRef.transform.position;
+        m_targetedZoomMagnification = m_cameraRef.orthographicSize;
+        m_targetToRegularZoomTransitionTimer.SetUsingUnscaledDeltaTime(true);
     }
 
     void ClampToBounds()
@@ -40,8 +71,31 @@ public class CameraHandler : MonoBehaviour
     void UpdateOffset()
     {
         Vector3 desiredPosition = Vector3.zero;
-        desiredPosition += m_playerRef.GetComponent<Rigidbody2D>().velocity.ToVector3() * 0.1f;
-        m_offset = Vector3.Lerp(m_offset, desiredPosition, Time.deltaTime);
+        if (m_targetZoomTransitioningIn)
+        {
+            desiredPosition = m_targetedZoomPosition;
+        }
+        //else if (m_targetToRegularZoomTransitionTimer != null)
+        //{
+
+        //    float desiredZoom = Mathf.Lerp(m_defaultZoom, m_maxSpeedZoom, m_playerRef.GetSpeed() / 20f);
+        //    m_cameraRef.orthographicSize = Mathf.Lerp(m_cameraRef.orthographicSize, desiredZoom, Time.unscaledDeltaTime);
+        //}
+        else
+        {
+            desiredPosition += m_playerRef.GetComponent<Rigidbody2D>().velocity.ToVector3() * 0.1f;
+        }
+
+        float lerp = Time.unscaledDeltaTime;
+        Vector3 startingLerpPos = m_offset;
+        if (m_targetToRegularZoomTransitionTimer != null)
+        {
+            lerp = m_targetToRegularZoomTransitionTimer.GetCompletionPercentage();
+            Debug.Log(lerp);
+            startingLerpPos = m_targetZoomTransitioningIn ? m_targetZoomTransitioningInStartPos : m_targetedZoomPosition;
+        }
+
+        m_offset = Vector3.Lerp(startingLerpPos, desiredPosition, lerp);
         transform.position = m_playerRef.transform.position + new Vector3(0f, 0f, -10f);
         transform.position += m_offset;
         //ClampToBounds();
@@ -57,16 +111,36 @@ public class CameraHandler : MonoBehaviour
                 m_initialZooming = false;
             }
         }
+        //else if (m_targetToRegularZoomTransitionTimer != null)
+        //{
+        //    float desiredZoom = Mathf.Lerp(m_defaultZoom, m_maxSpeedZoom, m_playerRef.GetSpeed() / 20f);
+        //    m_cameraRef.orthographicSize = Mathf.Lerp(m_cameraRef.orthographicSize, desiredZoom, Time.unscaledDeltaTime);
+        //}
         else
         {
+            float lerp = Time.unscaledDeltaTime;
+            float startingLerpZoom = m_cameraRef.orthographicSize;
             float desiredZoom = Mathf.Lerp( m_defaultZoom, m_maxSpeedZoom , m_playerRef.GetSpeed() / 20f);
-            m_cameraRef.orthographicSize = Mathf.Lerp(m_cameraRef.orthographicSize, desiredZoom, Time.deltaTime); ;
+            if (m_targetToRegularZoomTransitionTimer != null)
+            {
+                lerp = m_targetToRegularZoomTransitionTimer.GetCompletionPercentage();
+                startingLerpZoom = m_targetZoomTransitioningIn ? m_targetedZoomStartingMagnification : m_targetedZoomMagnification;
+                desiredZoom = m_targetZoomTransitioningIn ? m_targetedZoomMagnification : Mathf.Lerp(m_defaultZoom, m_maxSpeedZoom, m_playerRef.GetSpeed() / 20f);
+            }
+            m_cameraRef.orthographicSize = Mathf.Lerp(startingLerpZoom, desiredZoom, lerp);
         }
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (m_targetToRegularZoomTransitionTimer != null && m_targetToRegularZoomTransitionTimer.Update())
+        {
+            if (m_targetZoomTransitioningIn == false)
+            {
+                m_targetToRegularZoomTransitionTimer = null;
+            }
+        }
         UpdateOffset();
         UpdateZoom();
     }
