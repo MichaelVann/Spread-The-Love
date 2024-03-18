@@ -54,6 +54,8 @@ public class UpgradeItem
         //Minimap,
         AdditionalTime,
         Mindfulness,
+        SnowPlough,
+        SnowPloughSize
     }
     public UpgradeId m_ID;
 
@@ -113,12 +115,15 @@ public class UpgradeItem
         {
             buyableNextLevel = false;
             int levelCost = GetCostAtLevel(m_level + relativeLevel);
-            if (a_cash >= netCost + levelCost)
+            if (buyableLevels < m_maxLevel - m_level)
             {
-                buyableLevels++;
-                buyableNextLevel = true;
-                relativeLevel++;
-                netCost += levelCost;
+                if (a_cash >= netCost + levelCost)
+                {
+                    buyableLevels++;
+                    buyableNextLevel = true;
+                    relativeLevel++;
+                    netCost += levelCost;
+                }
             }
         } while (buyableNextLevel);
 

@@ -22,10 +22,11 @@ public class UpgradeTreeUISelector : MonoBehaviour
         UpgradeTree upgradeTreeRef = GameHandler._upgradeTree;
         List<UpgradeItem> initialUpgrades = upgradeTreeRef.GetInitialUpgradeItems();
         m_selections = new List<GameObject>();
+        UpgradeTreeUIHandler upgradeTreeUIHandler =  FindObjectOfType<UpgradeTreeUIHandler>();
         for (int i = 0; i < initialUpgrades.Count; i++)
         {
             m_selections.Add(Instantiate(m_selectionPrefab, m_selectionContainer.transform));
-            m_selections[i].GetComponent<UpgradeTreeSelection>().Init(SetSelected, i, GameHandler.GetUpgradeSprite(initialUpgrades[i].m_ID), initialUpgrades[i]);
+            m_selections[i].GetComponent<UpgradeTreeSelection>().Init(upgradeTreeUIHandler.SetTreeSelection, i, GameHandler.GetUpgradeSprite(initialUpgrades[i].m_ID), initialUpgrades[i]);
             m_selections[i].gameObject.name = i.ToString();
         }
     }

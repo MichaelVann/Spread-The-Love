@@ -113,6 +113,16 @@ public static class VLib
         return retVal;
     }
 
+    public static float SinTimeZeroToOne(float a_hertz = 1f)
+    {
+        return (Mathf.Sin(Time.time * a_hertz *2f * Mathf.PI) + 1) / 2f;
+    }
+
+    public static float ModulateRatio(float a_original, float a_multiplier, float a_originalRatio)
+    {
+        return a_original * a_originalRatio + (1f- a_originalRatio) * a_original * a_multiplier;
+    }
+
     public static float ClampRotation(float a_rotation)
     {
         float result = a_rotation;

@@ -99,10 +99,17 @@ public class AbilityReadout : MonoBehaviour
             }
             else
             {
-                float angle = m_abilityRef.m_cooldownTimer.GetCompletionPercentage() * 360f;
-                m_cooldownMaterialRef.SetFloat("_Angle", angle);
+                if (m_abilityRef.IsActive())
+                {
+                    m_borderImageRef.color = Color.yellow;;
+                }
+                else
+                {
+                    float angle = m_abilityRef.m_cooldownTimer.GetCompletionPercentage() * 360f;
+                    m_cooldownMaterialRef.SetFloat("_Angle", angle);
+                    m_borderImageRef.color = m_abilityRef.m_ready ? m_abilityReadyBorderColor : Color.black;
+                }
             }
-            m_borderImageRef.color = m_abilityRef.m_ready ? m_abilityReadyBorderColor : Color.black;
         }
     }
 

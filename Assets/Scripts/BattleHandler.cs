@@ -53,6 +53,7 @@ public class BattleHandler : MonoBehaviour
     int starterSouls = 20;
     float m_spawnDistance = 2f;
     internal List<Vessel> m_vesselList;
+    int m_vesselsPerIntersection = 6;
     int m_vesselsLoved = 0;
     int m_vesselsLovedDelta = 0;
     int m_vesselsFearful = 0;
@@ -195,6 +196,8 @@ public class BattleHandler : MonoBehaviour
                     break;
             }
         }
+        GameHandler.UpdateHighestMapSeen();
+
         m_startingCutsceneseChecked = true;
     }
 
@@ -306,9 +309,10 @@ public class BattleHandler : MonoBehaviour
                     vesselStrength = Mathf.Clamp(-xDist, Soul.GetMinPossibleLove(), 0);
                 }
 
-                SpawnVessel(spawnPos, vesselStrength);
-                SpawnVessel(spawnPos, vesselStrength);
-                SpawnVessel(spawnPos, vesselStrength);
+                for (int k = 0; k < m_vesselsPerIntersection; k++)
+                {
+                    SpawnVessel(spawnPos, vesselStrength);
+                }
             }
         }
     }

@@ -53,6 +53,8 @@ public class GameHandler : MonoBehaviour
     internal static Sprite GetUpgradeSprite(int a_id) { return _autoRef.m_upgradeImages[a_id]; }
     internal static Sprite GetUpgradeSprite(UpgradeItem.UpgradeId a_id) { return GetUpgradeSprite((int)a_id); }
 
+    internal static void UpdateHighestMapSeen() { _highestMapSizeSeen = _mapSize; }
+
     void Awake()
     {
         if (_autoRef == null)

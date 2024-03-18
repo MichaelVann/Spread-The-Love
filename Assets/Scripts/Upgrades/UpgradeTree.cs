@@ -53,7 +53,7 @@ public class UpgradeTree
         UpgradeItem projectileSpeed = NewUpgrade(UpgradeId.ProjectileSpeed, "Projectile Speed", 1.5f, 10, 0.25f, shooting, "Increases projectile speed.", false);
         projectileSpeed.SetStartingStrengthAndIfMultiplicative(5f, true);
         UpgradeItem shootSpread = NewUpgrade(UpgradeId.ShootSpread, "Blast Spread", 5f, 10, 1f, projectileSpeed, "Increases amount of love sent with each spread of kindness by 1.", false, 1.5f);
-        UpgradeItem berserkShot = NewUpgrade(UpgradeItem.UpgradeId.BerserkShot, "Berserk Shot", 6f, 10, 1, shootSpread, "Gives the ability to send a vibe that sends a loved vessel into a love beserk. Each Rank increases beserk time by 1 second starting at 5 seconds.");
+        UpgradeItem berserkShot = NewUpgrade(UpgradeId.BerserkShot, "Berserk Shot", 6f, 10, 1, shootSpread, "Gives the ability to send a vibe that sends a loved vessel into a love beserk. Each Rank increases beserk time by 1 second starting at 5 seconds.");
         berserkShot.SetStartingStrengthAndIfMultiplicative(5f, false);
         UpgradeItem fireRate = NewUpgrade(UpgradeId.FireRate, "Fire Rate", 1.5f, 10, 0.25f, shooting, "Increases fire rate by 25% each rank.", false, 1.5f);
         fireRate.SetStartingStrengthAndIfMultiplicative(1f, true);
@@ -62,17 +62,20 @@ public class UpgradeTree
 
         //UpgradeItem vesselRadar = NewUpgrade(UpgradeItem.UpgradeId.Radar, "Radar", 30, 1, 1f, null, "Points towards the nearest lost soul.");
         //UpgradeItem minimap = NewUpgrade(UpgradeItem.UpgradeId.Minimap, "Minimap", 60, 1, 1f, vesselRadar, "Gives you an overview of the world.");
-        UpgradeItem additionalTime = NewUpgrade(UpgradeItem.UpgradeId.AdditionalTime, "Time Extension", 3f, 10, 10f, null, "Gives you an additional 10 seconds of time before rebirth per rank.");
-        UpgradeItem mindfulness = NewUpgrade(UpgradeItem.UpgradeId.Mindfulness, "Mindfulness", 3f, 10, 0.08f, additionalTime, "Slows time, allowing increased reaction time. Each rank further increases the amount time is slowed.");
+        UpgradeItem additionalTime = NewUpgrade(UpgradeId.AdditionalTime, "Time Extension", 3f, 10, 10f, null, "Gives you an additional 10 seconds of time before rebirth per rank.");
+        UpgradeItem mindfulness = NewUpgrade(UpgradeId.Mindfulness, "Mindfulness", 3f, 10, 0.08f, additionalTime, "Slows time, allowing increased reaction time. Each rank further increases the amount time is slowed.");
         mindfulness.SetStartingStrengthAndIfMultiplicative(2f, true);
 
-
+        UpgradeItem snowPlough = NewUpgrade(UpgradeId.SnowPlough, "Snow Plough", 3f, 1, 1f, null, "Gives the ability to spawn a directional forcefield in the direction of travel.");
+        UpgradeItem snowPloughSize = NewUpgrade(UpgradeId.SnowPlough, "Size", 3f, 10, 0.25f, snowPlough, "Increases the size of the Snow Plough.");
+        snowPloughSize.SetStartingStrengthAndIfMultiplicative(1f, true);
         //Keys
         braking.SetKey("S");
         shooting.SetKey("LMB");
         aquaplane.SetKey("Space");
         mindfulness.SetKey("L Shift");
         berserkShot.SetKey("Q");
+        snowPlough.SetKey("W");
     }
 
     internal List<UpgradeItem> GetInitialUpgradeItems()

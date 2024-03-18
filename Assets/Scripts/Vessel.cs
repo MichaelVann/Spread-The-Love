@@ -37,6 +37,10 @@ public class Vessel : Soul
     float m_wanderSpeed = 1.0f;
     float m_wanderRotationSpeed = 5f;
 
+    //Audio
+    [SerializeField] AudioClip m_vesselHitSound;
+    const float m_vesselHitSoundVolume = 1.2f;
+
     //AI
     bool m_awareOfPlayer = false;
     internal enum eEmotionType
@@ -121,7 +125,7 @@ public class Vessel : Soul
 
     bool IsFearType(eEmotionType a_fearType) { return m_emotion == (int)a_fearType; }
 
-    internal void SetEmotion(int a_emotion) { AddEmotion(a_emotion - m_emotion); }
+    internal int SetEmotion(int a_emotion) { return AddEmotion(a_emotion - m_emotion); }
 
     internal void SetPlayerAwareness(bool a_aware) { m_awareOfPlayer = a_aware; }
 
@@ -444,11 +448,11 @@ public class Vessel : Soul
         UpdateVisuals();
     }
 
-    internal void AddEmotion(int a_emotion)
+    internal int AddEmotion(int a_emotion)
     {
         if (m_beserk.active || (m_demotionProtectionActive && a_emotion < 0))
         {
-            return;
+            return 0;
         }
 
         bool wasLoved = m_emotion > 0;
@@ -487,6 +491,8 @@ public class Vessel : Soul
         {
             FearTypeChanged(deltaEmotion, wasLoved, wasFearful);
         }
+
+        return deltaEmotion;
     }
 
     void AbsorbVibe(Vibe a_vibe)
@@ -500,9 +506,13 @@ public class Vessel : Soul
         AddEmotion(affect);
     }
 
-    internal void CollideWithPlayer(int a_meleeStrength, Vector2 a_collisionNormal)
+    internal void CollideWithPlayer(Vector2 a_collisionNormal)
     {
-        SetEmotion(a_meleeStrength);
+        int deltaEmotion = SetEmotion(m_maxLove);
+        if (deltaEmotion > 0)
+        {
+            GameHandler._audioManager.PlaySFX(m_vesselHitSound, m_vesselHitSoundVolume);
+        }
         m_rigidBodyRef.velocity += a_collisionNormal;
     }
 

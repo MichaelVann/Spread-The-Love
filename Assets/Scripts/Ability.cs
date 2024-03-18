@@ -32,14 +32,12 @@ public class Ability
 
     internal void SetActive(bool a_active) { m_active = a_active; }
 
-    internal bool DurationUpdate()
+    internal void DurationUpdate()
     {
-        bool result = m_duration.activeTimer.Update();
-        if (result)
+        if (m_active && m_duration.activeTimer.Update())
         {
             m_active = false;
         }
-        return result;
     }
 
     internal bool AttemptToActivate()

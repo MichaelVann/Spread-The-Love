@@ -19,6 +19,7 @@ public class PlayerHandler : Soul
     [SerializeField] TrailRenderer m_loveTrailRef;
     [SerializeField] GameObject m_shootReadinessIndicatorRef;
     [SerializeField] Transform m_shootSpawnPoint;
+    [SerializeField] GameObject m_collisionEffectPrefab;
 
     //Minimap
     [SerializeField] MiniMapIcon m_miniMapIconRef;
@@ -58,9 +59,6 @@ public class PlayerHandler : Soul
     [SerializeField] GameObject m_wakeRef;
     bool m_wakeEnabled = false;
 
-    //Love Combat
-    int m_meleeLoveStrength = m_maxLove;
-
     //Shoot
     internal const float m_startingFireRate = 1f;
     Ability m_abilityShoot;
@@ -79,7 +77,9 @@ public class PlayerHandler : Soul
     const float m_beserkShotSpeed = 5f;
     [SerializeField] GameObject m_beserkShotPrefab;
 
-    [SerializeField] GameObject m_collisionEffectPrefab;
+    //Snowplough
+    Ability m_abilitySnowPlough;
+    [SerializeField] GameObject m_snowPloughRef;
 
     //Speed Chime
     [SerializeField] AudioClip m_speedChimeAudioClip;
@@ -100,8 +100,7 @@ public class PlayerHandler : Soul
     //Audio
     [SerializeField] AudioSource m_driftSoundAudioSource;
     [SerializeField] AudioClip m_driftSound;
-    [SerializeField] AudioClip m_vesselHitSound;
-    const float m_vesselHitSoundVolume = 1.2f;
+
     [SerializeField] AudioClip m_wallHitSound;
     [SerializeField] AudioClip m_fireSound;
 
@@ -130,6 +129,9 @@ public class PlayerHandler : Soul
             case UpgradeItem.UpgradeId.BerserkShot:
                 ability = m_abilityBeserkShot;
                 break;
+            case UpgradeItem.UpgradeId.SnowPlough:
+                ability = m_abilitySnowPlough;
+                break;
             default:
                 break;
         }
@@ -140,6 +142,7 @@ public class PlayerHandler : Soul
     {
         m_rigidBodyRef = GetComponent<Rigidbody2D>();
         m_rigidBodyRef.velocity = new Vector2(0f, -1f);
+        m_rigidBodyRef.centerOfMass = new Vector2(0f, 0f);
         InitialiseUpgrades();
         m_speedChimeTimer = new vTimer(m_speedChimeTimerRepeatTime);
         InitialiseAudio();
@@ -191,6 +194,10 @@ public class PlayerHandler : Soul
 
         m_abilityBeserkShot = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BerserkShot));
         m_abilityBeserkShot.SetUpCooldown(5f);
+
+        m_abilitySnowPlough = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.SnowPlough), 0f, 1.5f);
+        m_abilitySnowPlough.SetUpCooldown(3f);
+        m_snowPloughRef.GetComponent<SnowPlough>().SetScale(GetUpgradeStrength(UpgradeItem.UpgradeId.SnowPloughSize));
     }
 
     // Start is called before the first frame update
@@ -199,6 +206,7 @@ public class PlayerHandler : Soul
         m_emotion = 1;
         m_battleHandlerRef = FindObjectOfType<BattleHandler>();
         m_gameHandlerRef =  FindObjectOfType<GameHandler>();
+        m_rigidBodyRef.inertia = 1f;
     }
 
     void ShootVibe(Vector2 a_aimDirection)
@@ -364,14 +372,15 @@ public class PlayerHandler : Soul
 
         if (m_rigidBodyRef.velocity.magnitude != 0f)
         {
-            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-            {
-                m_rigidBodyRef.AddTorque(m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);
-            }
-            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-            {
-                m_rigidBodyRef.AddTorque(-m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);
-            }
+             m_rigidBodyRef.AddTorque(-Input.GetAxis("Horizontal") * m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);
+            //if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+            //{
+            //    m_rigidBodyRef.AddTorque(m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);
+            //}
+            //if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+            //{
+            //    m_rigidBodyRef.AddTorque(-m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);
+            //}
             if (!m_aquaplaning)
             {
                 ApplyDrift();
@@ -505,6 +514,28 @@ public class PlayerHandler : Soul
         }
     }
 
+    void SnowPloughUpdate()
+    {
+        if (m_abilitySnowPlough.m_enabled)
+        {
+            if (m_abilitySnowPlough.IsActive())
+            {
+                m_abilitySnowPlough.DurationUpdate();
+            }
+            else
+            {
+                m_abilitySnowPlough.UpdateCooldown();
+            }
+
+            if (GetUpgradeButton(UpgradeItem.UpgradeId.SnowPlough) )
+            {
+                m_abilitySnowPlough.AttemptToActivate();
+            }
+
+            m_snowPloughRef.gameObject.SetActive(m_abilitySnowPlough.IsActive());
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -516,6 +547,7 @@ public class PlayerHandler : Soul
             VesselRadarUpdate();
             BulletTimeUpdate();
             BeserkShotUpdate();
+            SnowPloughUpdate();
         }
     }
 
@@ -551,8 +583,7 @@ public class PlayerHandler : Soul
             }
             else
             {
-                vessel.CollideWithPlayer(m_meleeLoveStrength, -collisionDirection);
-                GameHandler._audioManager.PlaySFX(m_vesselHitSound,m_vesselHitSoundVolume);
+                vessel.CollideWithPlayer(-collisionDirection);
             }
         }
         else if (a_collision.gameObject.tag == "LoveVibe" && a_collision.gameObject.GetComponent<Vibe>().GetEmotionalAffect() < 0)

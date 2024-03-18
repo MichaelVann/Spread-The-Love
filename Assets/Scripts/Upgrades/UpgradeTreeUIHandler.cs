@@ -212,7 +212,12 @@ public class UpgradeTreeUIHandler : MonoBehaviour
 
     void RotateTreeSelection(bool a_up)
     {
-        m_viewedInitialUpgradeIndex += a_up ? 1 : -1;
+        SetTreeSelection(m_viewedInitialUpgradeIndex + (a_up ? 1 : -1));
+    }
+
+    internal void SetTreeSelection(int a_id)
+    {
+        m_viewedInitialUpgradeIndex = a_id;
         m_viewedInitialUpgradeIndex = Mathf.Clamp(m_viewedInitialUpgradeIndex, 0, m_initialUpgrades.Count - 1);
         m_upgradeTreeUISelectorRef.SetSelected(m_viewedInitialUpgradeIndex);
         CloseUpgradeNodePanel();
