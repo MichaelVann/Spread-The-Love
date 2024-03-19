@@ -44,6 +44,7 @@ public class PlayerHandler : Soul
     bool m_braking = false;
     internal const float m_startingRotateSpeed = 70f;
     float m_rotateSpeed;
+    const float m_torqueConstant = 25f;
     const float m_rotateDrag = 0.6f;
     float m_velocityAlignmentRotForce = 200f;
 
@@ -195,8 +196,8 @@ public class PlayerHandler : Soul
         m_abilityBeserkShot = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BerserkShot));
         m_abilityBeserkShot.SetUpCooldown(5f);
 
-        m_abilitySnowPlough = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.SnowPlough), 0f, 1.5f);
-        m_abilitySnowPlough.SetUpCooldown(3f);
+        m_abilitySnowPlough = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.SnowPlough), 0f, GetUpgradeStrength(UpgradeItem.UpgradeId.SnowPloughDuration));
+        m_abilitySnowPlough.SetUpCooldown(GetUpgradeStrength(UpgradeItem.UpgradeId.SnowPloughCooldown));
         m_snowPloughRef.GetComponent<SnowPlough>().SetScale(GetUpgradeStrength(UpgradeItem.UpgradeId.SnowPloughSize));
     }
 
@@ -343,7 +344,7 @@ public class PlayerHandler : Soul
         {
             float windCorrectionForce = driftAngle;
             windCorrectionForce += driftAngle * 10f * Mathf.Clamp(Mathf.Abs(driftAngle) - 90f, 0f, 90f) / 90f;
-            m_rigidBodyRef.AddTorque(-windCorrectionForce * Time.deltaTime * m_rigidBodyRef.mass * GetSpeedPercentage());
+            m_rigidBodyRef.AddTorque(-windCorrectionForce * Time.deltaTime * m_torqueConstant * GetSpeedPercentage());
         }
         float maxRotation = driftAngle < 0 ? 0f : driftAngle;
         float minRotation = driftAngle < 0 ? driftAngle : 0f;
@@ -372,7 +373,7 @@ public class PlayerHandler : Soul
 
         if (m_rigidBodyRef.velocity.magnitude != 0f)
         {
-             m_rigidBodyRef.AddTorque(-Input.GetAxis("Horizontal") * m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);
+             m_rigidBodyRef.AddTorque(-Input.GetAxis("Horizontal") * m_rotateSpeed * Time.deltaTime * m_torqueConstant);
             //if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             //{
             //    m_rigidBodyRef.AddTorque(m_rotateSpeed * Time.deltaTime * m_rigidBodyRef.mass);

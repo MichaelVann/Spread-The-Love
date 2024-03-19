@@ -912,14 +912,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d10de9ac308a9146ac4ec55c4c108ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_enlightenedColor: {r: 0.9019608, g: 0.6313726, b: 0.09019604, a: 1}
-  m_loveColorMax: {r: 0.794, g: 0.15800601, b: 0.3511598, a: 1}
+  m_enlightenedColor: {r: 0.83137256, g: 0.14117646, b: 0.14117646, a: 1}
+  m_berserkColor: {r: 1, g: 0.38318607, b: 0.2117647, a: 1}
+  m_loveColorMax: {r: 0.7921569, g: 0.16635293, b: 0.35950255, a: 1}
   m_loveColor1: {r: 0.64, g: 0.23040001, b: 0.35543594, a: 1}
   m_neutralColor: {r: 0.3759345, g: 0.32698467, b: 0.41509432, a: 1}
   m_fearColors:
-  - {r: 0.3372549, g: 0.23529413, b: 0.6784314, a: 1}
-  - {r: 0.23137257, g: 0.30980393, b: 0.7058824, a: 1}
-  - {r: 0.16470589, g: 0.4666667, b: 0.78823537, a: 1}
+  - {r: 0.2352941, g: 0.30346406, b: 0.6784314, a: 1}
+  - {r: 0.23137254, g: 0.42897606, b: 0.7058824, a: 1}
+  - {r: 0.16470589, g: 0.6319602, b: 0.7882353, a: 1}
   - {r: 0.16470589, g: 0.78823537, b: 0.78823537, a: 1}
   m_sceneFadeImageRef: {fileID: 8144021130190402943}
   m_sceneFadeCanvasRef: {fileID: 3369821462758880317}
@@ -942,6 +943,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 29de992ee36a5db4d8bd753a339088ae, type: 3}
   - {fileID: 21300000, guid: d6aabc72b137719479433e46e515d51a, type: 3}
   - {fileID: 21300000, guid: f9fe17f539beda84b9320a3a41d6e695, type: 3}
+  - {fileID: 21300000, guid: b65f1e99e551f1e46af27a023ecc1cc6, type: 3}
+  - {fileID: 21300000, guid: d99bbe4c69d037e4b830a956881aacbd, type: 3}
 --- !u!114 &997729844799139810
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -43,7 +43,7 @@ public class UpgradeTree
         grip.SetStartingStrengthAndIfMultiplicative(1f, true);
         UpgradeItem topSpeed = NewUpgrade(UpgradeId.TopSpeed, "Top Speed", 1.5f, 10, 1f, acceleration, "Increases top speed by 1 m/s each rank.");
         topSpeed.SetStartingStrengthAndIfMultiplicative(10f, false);
-        UpgradeItem turnSpeed = NewUpgrade(UpgradeId.TurnSpeed, "Turn Speed", 1f, 10, 0.05f, acceleration, "Increases turn speed by 5% each rank.");
+        UpgradeItem turnSpeed = NewUpgrade(UpgradeId.TurnSpeed, "Turn Speed", 1f, 10, 0.03f, acceleration, "Increases turn speed by 5% each rank.");
         turnSpeed.SetStartingStrengthAndIfMultiplicative(70f, true);
         UpgradeItem aquaplane = NewUpgrade(UpgradeId.Aquaplane, "Aquaplane", 3f, 1, 1f, grip, "Allows you to aquaplane, removing all friction against the ground.");
         //UpgradeItem driftSpread = NewUpgrade(UpgradeId.DriftSpread, "Drift Spread", 20f, 1, 0.25f, aquaplane, "Spreads you out when drifting. This is a gimmick ability I wouldn't recommend actually buying this.", true);
@@ -67,8 +67,14 @@ public class UpgradeTree
         mindfulness.SetStartingStrengthAndIfMultiplicative(2f, true);
 
         UpgradeItem snowPlough = NewUpgrade(UpgradeId.SnowPlough, "Snow Plough", 3f, 1, 1f, null, "Gives the ability to spawn a directional forcefield in the direction of travel.");
-        UpgradeItem snowPloughSize = NewUpgrade(UpgradeId.SnowPlough, "Size", 3f, 10, 0.25f, snowPlough, "Increases the size of the Snow Plough.");
+        UpgradeItem snowPloughSize = NewUpgrade(UpgradeId.SnowPloughSize, "Size", 3f, 10, 0.1f, snowPlough, "Increases the size of the Snow Plough.");
         snowPloughSize.SetStartingStrengthAndIfMultiplicative(1f, true);
+        UpgradeItem snowPloughCooldown = NewUpgrade(UpgradeId.SnowPloughCooldown, "Cooldown", 3f, 10, 0.05f, snowPlough, "Reduces the cooldown of the Snow Plough.");
+        snowPloughCooldown.SetStartingStrengthAndIfMultiplicative(6f, true);
+        snowPloughCooldown.SetReductive(true);
+        UpgradeItem snowPloughDuration = NewUpgrade(UpgradeId.SnowPloughDuration, "Duration", 3f, 10, 0.05f, snowPlough, "Increases the duration of the Snow Plough.");
+        snowPloughDuration.SetStartingStrengthAndIfMultiplicative(1.5f, true);
+
         //Keys
         braking.SetKey("S");
         shooting.SetKey("LMB");

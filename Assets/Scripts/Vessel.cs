@@ -121,6 +121,9 @@ public class Vessel : Soul
     }
     Beserk m_beserk;
 
+    //Enlightened
+    bool m_enlightened = false;
+
     bool IsLoved() { return m_emotion > 0; }
 
     bool IsFearType(eEmotionType a_fearType) { return m_emotion == (int)a_fearType; }
@@ -180,10 +183,30 @@ public class Vessel : Soul
         }
     }
 
+    void UpdateEyesSprite()
+    {
+        if (m_enlightened)
+        {
+            m_eyesRef.sprite = m_eyeSprites[3];
+        }
+        else if (m_beserk.active)
+        {
+            m_eyesRef.sprite = m_eyeSprites[4];
+        }
+        else
+        {
+            m_eyesRef.sprite = IsLoved() ? m_eyeSprites[2] : (m_emotion < 0 ? m_eyeSprites[0] : m_eyeSprites[1]);
+        }
+    }
+
     void UpdateVisuals()
     {
         Color emotionColor;
         if (m_beserk.active)
+        {
+            emotionColor = GameHandler._autoRef.m_berserkColor;
+        }
+        else if (m_enlightened)
         {
             emotionColor = GameHandler._autoRef.m_enlightenedColor;
         }
@@ -202,7 +225,7 @@ public class Vessel : Soul
         m_lovedTrailRef.startColor = emotionColor;
         m_lovedTrailRef.endColor = new Color(emotionColor.r, emotionColor.g, emotionColor.b, 0f);
 
-        m_eyesRef.sprite = IsLoved() ? m_eyeSprites[2] : (m_emotion < 0 ? m_eyeSprites[0] : m_eyeSprites[1]);
+        UpdateEyesSprite();
 
         //Hats
         const int hatStartPoint = -2;
@@ -450,7 +473,7 @@ public class Vessel : Soul
 
     internal int AddEmotion(int a_emotion)
     {
-        if (m_beserk.active || (m_demotionProtectionActive && a_emotion < 0))
+        if (m_enlightened || m_beserk.active || (m_demotionProtectionActive && a_emotion < 0))
         {
             return 0;
         }
@@ -506,7 +529,7 @@ public class Vessel : Soul
         AddEmotion(affect);
     }
 
-    internal void CollideWithPlayer(Vector2 a_collisionNormal)
+    internal void HitToFullEmotion(Vector2 a_collisionNormal)
     {
         int deltaEmotion = SetEmotion(m_maxLove);
         if (deltaEmotion > 0)
@@ -516,14 +539,34 @@ public class Vessel : Soul
         m_rigidBodyRef.velocity += a_collisionNormal;
     }
 
+    void Enlighten()
+    {
+        m_enlightened = true;
+        UpdateVisuals();
+    }
+
+    internal void CollideWithPlayer(Vector2 a_collisionNormal)
+    {
+        int deltaEmotion = SetEmotion(m_maxLove);
+        if (!m_enlightened)
+        {
+            GameHandler._audioManager.PlaySFX(m_vesselHitSound, m_vesselHitSoundVolume);
+        }
+        m_rigidBodyRef.velocity += a_collisionNormal;
+        Enlighten();
+    }
+
     internal void GoBeserk()
     {
-        m_beserk.targetVessels = new List<Vessel>();
-        m_beserk.active = true;
-        m_beserkField.SetActive(true);
-        UpdateVisuals();
-        UpdateWanderSpeed();
-        m_beserk.m_timer = new vTimer(PlayerHandler.GetUpgradeStrength(UpgradeItem.UpgradeId.BerserkShot));
+        if (!m_enlightened)
+        {
+            m_beserk.targetVessels = new List<Vessel>();
+            m_beserk.active = true;
+            m_beserkField.SetActive(true);
+            UpdateVisuals();
+            UpdateWanderSpeed();
+            m_beserk.m_timer = new vTimer(PlayerHandler.GetUpgradeStrength(UpgradeItem.UpgradeId.BerserkShot));
+        }
     }
 
     internal void EndBeserk()

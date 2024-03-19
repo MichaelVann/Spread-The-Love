@@ -63,7 +63,7 @@ public class SnowPlough : MonoBehaviour
 
 
             //collisionVector = VLib.Euler2dAngleToVector3(transform.parent.transform.eulerAngles.z + 180f);
-            vessel.CollideWithPlayer(collisionVector);
+            vessel.HitToFullEmotion(collisionVector);
         }
     }
 }

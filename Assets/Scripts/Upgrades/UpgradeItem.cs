@@ -28,6 +28,7 @@ public class UpgradeItem
 
     internal float m_startingStrength;
     bool m_upgradesAreMultiplicative;
+    bool m_reductive;
     public float m_strength;
 
     internal UpgradeItem m_precursorUpgrade;
@@ -55,7 +56,9 @@ public class UpgradeItem
         AdditionalTime,
         Mindfulness,
         SnowPlough,
-        SnowPloughSize
+        SnowPloughSize,
+        SnowPloughCooldown,
+        SnowPloughDuration
     }
     public UpgradeId m_ID;
 
@@ -80,12 +83,26 @@ public class UpgradeItem
 
     internal void SetKey(string a_key) { m_key = a_key; }
 
+    internal void SetReductive(bool a_value)
+    {
+        m_reductive = a_value;
+    }
+
     internal bool IsEnabled() { return m_toggled && m_owned; }
 
     internal void SetStartingStrengthAndIfMultiplicative(float a_startingStrength, bool a_isMultiplicative) { m_startingStrength = a_startingStrength; m_upgradesAreMultiplicative = a_isMultiplicative; }
     internal float GetLeveledStrength() 
-    { 
-        return m_upgradesAreMultiplicative ? m_startingStrength * (1f + m_strength * m_level) : m_startingStrength + m_strength * m_level; 
+    {
+        float result = 0f;
+        if (m_upgradesAreMultiplicative)
+        {
+            result = m_reductive ? m_startingStrength / (1f + m_strength * m_level) : m_startingStrength * (1f + m_strength * m_level);
+        }
+        else
+        {
+            result = m_startingStrength + m_strength * m_level;
+        }
+        return result; 
     }
     internal float GetMaxLeveledStrength() { return m_startingStrength + m_strength * m_maxLevel; }
 
@@ -172,6 +189,7 @@ public class UpgradeItem
         m_strength = a_effectStrength;
         m_toggleable = a_toggleable;
         m_costScaling = a_costScaling;
+        m_reductive = false;
         Refresh();
     }
 

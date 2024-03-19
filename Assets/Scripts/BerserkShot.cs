@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +30,7 @@ public class BeserkShot : MonoBehaviour
             Vessel vessel = a_collision.gameObject.GetComponent<Vessel>();
             if (vessel.GetEmotion() >= m_minimumEmotionAffected)
             {
-                vessel.AddEmotion(1000);
+                vessel.SetEmotion(Soul.GetMaxPossibleLove());
                 vessel.GoBeserk();
             }
             Destroy(gameObject);
