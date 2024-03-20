@@ -577,7 +577,7 @@ public class PlayerHandler : Soul
 
             SpawnCollisionEffect(a_collision.contacts[0].point, collisionDirection);
 
-            if (vessel.GetEmotion() == (int)Vessel.eEmotionType.Bully || vessel.GetEmotion() == (int) Vessel.eEmotionType.Jaded)
+            if (vessel.GetEmotion() == (int)Vessel.eEmotionType.Bully)
             {
                 m_rigidBodyRef.AddForce(collisionDirection * 10000f);
                 vessel.TriggerShieldEffect(collisionDirection);

@@ -52,7 +52,7 @@ public class SamsaraHandler : MonoBehaviour
             GameHandler.ChangeScoreFromSamsara(1);
             RefreshUI();
         }
-        if (Input.GetKeyDown(KeyCode.Escape) && m_optionsMenu == null)
+        if (Input.GetButtonDown("Start") && m_optionsMenu == null)
         {
             m_optionsMenu = Instantiate(m_optionsMenuPrefab);
         }

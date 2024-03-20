@@ -326,14 +326,29 @@ public class BattleHandler : MonoBehaviour
         {
             float posX = i < 2 ? (i % 2 == 0 ? -xOffset : xOffset) : 0f;
             float posY = i >= 2 ? (i % 2 == 0 ? -yOffset : yOffset) : 0f;
-            SpriteRenderer spriteRenderer = Instantiate(m_outerWallPrefab, new Vector3(posX, posY, 0f), Quaternion.identity).GetComponent<SpriteRenderer>();
-            if (i < 2)
+
+            bool isVerticalWall = i < 2;
+
+            int wallCount = 6 * (isVerticalWall ? m_buildingRows / 2 : m_buildingColumns / 2);
+
+            float wallSize = 4.22f; // Pulled from editor
+
+            for (int j = 0; j < wallCount; j++)
             {
-                spriteRenderer.size = spriteRenderer.GetComponent<BoxCollider2D>().size = new Vector2(1f, Mathf.Abs(posX) * 2f);
-            }
-            else
-            {
-                spriteRenderer.size = spriteRenderer.GetComponent<BoxCollider2D>().size = new Vector2(Mathf.Abs(posY) * 2f, 1f);
+                Vector3 spawnPos = Vector3.zero;
+                float offset = (2f * (isVerticalWall ? yOffset : xOffset)) * j / wallCount;
+                offset -= isVerticalWall ? yOffset : xOffset;
+                offset += wallSize / 2f;
+                if (isVerticalWall)
+                {
+                    spawnPos = new Vector3(posX, posY + offset, 0f);
+                }
+                else
+                {
+                    spawnPos = new Vector3(posX + offset, posY, 0f);
+                }
+                GameObject outerWall = Instantiate(m_outerWallPrefab, spawnPos, Quaternion.identity);
+                outerWall.transform.localEulerAngles = new Vector3(0f, 0f, VLib.Vector2ToEulerAngle(new Vector2(posX, posY)) - 90f);
             }
         }
     }
@@ -557,7 +572,7 @@ public class BattleHandler : MonoBehaviour
                 Enlighten();
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetButtonDown("Start"))
             {
                 OpenPauseMenu();
             }

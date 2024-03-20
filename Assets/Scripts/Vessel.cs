@@ -616,9 +616,8 @@ public class Vessel : Soul
         }
         else if (a_collision.gameObject.tag == "Environment")
         {
-            float collisionAngle = VLib.Vector2ToEulerAngle(-a_collision.contacts[0].normal);
-            m_rigidBodyRef.velocity = VLib.RotateVector3In2D(m_rigidBodyRef.velocity.magnitude * Vector3.up, VLib.vRandom(-45f, 45f) + collisionAngle);
-
+            //float collisionAngle = VLib.Vector2ToEulerAngle(-a_collision.contacts[0].normal);
+            //m_rigidBodyRef.velocity = VLib.RotateVector3In2D(m_rigidBodyRef.velocity.magnitude * Vector3.up, VLib.vRandom(-45f, 45f) + collisionAngle);
         }
     }
 
