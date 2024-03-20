@@ -96,6 +96,7 @@ public class BattleHandler : MonoBehaviour
     float m_pauseTimeFactor = 1f;
     float m_gameEndingTimeFactor = 1f;
     float m_cutsceneTimeFactor = 1f;
+    [SerializeField] Material m_slowMoFXMat;
 
     //Entities
     [SerializeField] GameObject m_lootBagPrefab;
@@ -111,7 +112,12 @@ public class BattleHandler : MonoBehaviour
 
     internal void SetPaused(bool a_paused) { m_paused = a_paused; m_pauseTimeFactor = m_paused ? 0f : 1f; Cursor.visible = m_paused || GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim); }
 
-    internal void SetBulletTimeFactor(float a_factor) { m_bulletTimeFactor = a_factor; } 
+    internal void SetBulletTimeFactor(float a_factor) { 
+        m_bulletTimeFactor = a_factor;
+        //List<Material> materialList = new List<Material>();
+        //m_2dRendererRef.GetMaterials(materialList);
+        m_slowMoFXMat.SetFloat("_Distortion_Amount", 1f - m_bulletTimeFactor);
+        } 
 
     internal float GetBuildingGap() { return m_buildingSize + m_streetSize; }
 

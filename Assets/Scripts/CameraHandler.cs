@@ -5,6 +5,7 @@ using UnityEngine;
 public class CameraHandler : MonoBehaviour
 {
     [SerializeField] Camera m_cameraRef;
+    [SerializeField] Material m_cameraMaterial;
     [SerializeField] PlayerHandler m_playerRef;
     [SerializeField] BattleHandler m_battleHandlerRef;
     [SerializeField] float m_defaultZoom;
@@ -32,6 +33,11 @@ public class CameraHandler : MonoBehaviour
     {
         m_zoomTimer = new vTimer(m_zoomTime, true, true, false, false, true);
     }
+
+    //private void OnRenderImage(RenderTexture a_source, RenderTexture a_destination)
+    //{
+    //    Graphics.Blit(a_source, a_destination, m_cameraMaterial);
+    //}
 
     internal void SetTargetedZoom(Vector3 a_position, float a_magnification)
     {
