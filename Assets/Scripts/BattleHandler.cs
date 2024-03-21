@@ -65,6 +65,7 @@ public class BattleHandler : MonoBehaviour
 
     //Building Grid
     [SerializeField] GameObject m_outerWallPrefab;
+    [SerializeField] GameObject m_cornerPillarPrefab;
     [SerializeField] GameObject[] m_buildingPrefabs;
     int m_buildingColumns = 2;
     int m_buildingRows = 2;
@@ -85,6 +86,9 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] SpriteRenderer m_backgroundRef;
     [SerializeField] ScrollingRawImage m_scrollingBackgroundRef;
 
+    //Foreground
+    [SerializeField] ParticleSystem m_rainParticleSystemRef; 
+
     //Time
     float m_gameTime = 45f;
     vTimer m_battleTimer;
@@ -92,11 +96,15 @@ public class BattleHandler : MonoBehaviour
     vTimer m_secondPassedTimer;
     bool m_gameEnding = false;
     bool m_gameEnded = false;
-    float m_bulletTimeFactor = 1f;
     float m_pauseTimeFactor = 1f;
     float m_gameEndingTimeFactor = 1f;
     float m_cutsceneTimeFactor = 1f;
+
+    //Bullet Time
     [SerializeField] Material m_slowMoFXMat;
+    float m_bulletTimeFactor = 1f;
+    float m_bulletTimeLerpStrength = 10f;
+    float m_desiredBulletTimeFactor = 1f;
 
     //Entities
     [SerializeField] GameObject m_lootBagPrefab;
@@ -112,14 +120,11 @@ public class BattleHandler : MonoBehaviour
 
     internal void SetPaused(bool a_paused) { m_paused = a_paused; m_pauseTimeFactor = m_paused ? 0f : 1f; Cursor.visible = m_paused || GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim); }
 
-    internal void SetBulletTimeFactor(float a_factor) { 
-        m_bulletTimeFactor = a_factor;
-        //List<Material> materialList = new List<Material>();
-        //m_2dRendererRef.GetMaterials(materialList);
-        m_slowMoFXMat.SetFloat("_Distortion_Amount", 1f - m_bulletTimeFactor);
-        } 
+    internal void SetBulletTimeFactor(float a_factor) { m_desiredBulletTimeFactor = a_factor; } 
 
     internal float GetBuildingGap() { return m_buildingSize + m_streetSize; }
+
+    internal Vector2 GetOuterWallOffset() { return new Vector2(m_streetSize / 2f + GetBuildingGap() * m_buildingColumns / 2f, m_streetSize / 2f + GetBuildingGap() * m_buildingRows / 2f); }
 
     internal void IncreaseLootBagBonus() { m_lootBagBonus += m_lootBagBonusIncrease; UpdateLootBagBonusText(); m_lootBagPoppedParticleSystem.Play(); }
 
@@ -236,12 +241,19 @@ public class BattleHandler : MonoBehaviour
             m_tierText.text += "/3";
         }
         m_backgroundRef.size = GetMapHalfSize() * new Vector2(2f/m_backgroundRef.transform.localScale.x,2f/ m_backgroundRef.transform.localScale.y);
+        UpdateRain();
     }
 
     void ChangeScore(int a_change)
     {
         m_score += a_change;
         m_scoreText.text = m_score.ToString();
+    }
+
+    void UpdateRain()
+    {
+        ParticleSystem.EmissionModule emission = m_rainParticleSystemRef.emission;
+        emission.rateOverTime = 2000f * (m_vesselsFearful/(float)m_vesselList.Count);
     }
 
     internal void CrementLovedVessels(int a_change)
@@ -263,7 +275,7 @@ public class BattleHandler : MonoBehaviour
     {
         m_vesselsFearful += a_change;
         m_vesselsFearfulDelta += a_change;
-        UpdateSpreadPercentageBar();
+        UpdateRain();
     }
 
     void UpdateSpreadPercentageBar()
@@ -326,12 +338,12 @@ public class BattleHandler : MonoBehaviour
     void SpawnOuterWalls()
     {
         float buildingGap = GetBuildingGap();
-        float xOffset = m_streetSize / 2f + buildingGap * m_buildingColumns / 2f;
-        float yOffset = m_streetSize / 2f + buildingGap * m_buildingRows / 2f;
+        Vector2 wallOffset = GetOuterWallOffset();
+
         for (int i = 0; i < 4; i++)
         {
-            float posX = i < 2 ? (i % 2 == 0 ? -xOffset : xOffset) : 0f;
-            float posY = i >= 2 ? (i % 2 == 0 ? -yOffset : yOffset) : 0f;
+            float posX = i < 2 ? (i % 2 == 0 ? -wallOffset.x : wallOffset.x) : 0f;
+            float posY = i >= 2 ? (i % 2 == 0 ? -wallOffset.y : wallOffset.y) : 0f;
 
             bool isVerticalWall = i < 2;
 
@@ -342,8 +354,8 @@ public class BattleHandler : MonoBehaviour
             for (int j = 0; j < wallCount; j++)
             {
                 Vector3 spawnPos = Vector3.zero;
-                float offset = (2f * (isVerticalWall ? yOffset : xOffset)) * j / wallCount;
-                offset -= isVerticalWall ? yOffset : xOffset;
+                float offset = (2f * (isVerticalWall ? wallOffset.y : wallOffset.x)) * j / wallCount;
+                offset -= isVerticalWall ? wallOffset.y : wallOffset.x;
                 offset += wallSize / 2f;
                 if (isVerticalWall)
                 {
@@ -356,6 +368,19 @@ public class BattleHandler : MonoBehaviour
                 GameObject outerWall = Instantiate(m_outerWallPrefab, spawnPos, Quaternion.identity);
                 outerWall.transform.localEulerAngles = new Vector3(0f, 0f, VLib.Vector2ToEulerAngle(new Vector2(posX, posY)) - 90f);
             }
+        }
+    }
+
+    void SpawnOuterCornerPillars()
+    {
+        Vector2 wallOffset = GetOuterWallOffset();
+        wallOffset += new Vector2(0.5f, 0.5f);
+        for (int i = 0; i < 4; i++)
+        {
+            float posX = i % 2 == 0 ? -wallOffset.x : wallOffset.x;
+            float posY = i >= 2 ? -wallOffset.y : wallOffset.y;
+
+            Instantiate(m_cornerPillarPrefab, new Vector3(posX, posY, 0f), Quaternion.identity);
         }
     }
 
@@ -433,21 +458,6 @@ public class BattleHandler : MonoBehaviour
 
     void SpawnRoadDecals()
     {
-        //for (int i = 0; i < m_buildingColumns+1; i++)
-        //{
-        //    int decalRoll = VLib.vRandom(0, m_roadDecals.Length-1);
-        //    float buildingGap = GetBuildingGap();
-        //    float posX = i * buildingGap;
-        //    posX -= buildingGap * m_buildingColumns / 2f;
-
-        //    float yScale = GetMapHalfSize().y;
-        //    float posY = VLib.vRandom(-yScale, yScale);
-
-        //    Vector3 spawnPos = new Vector3(posX, posY);
-
-        //    Instantiate(m_roadDecals[decalRoll], spawnPos, Quaternion.identity);
-        //}
-
         SpawnLinesOfDecals(true);
         SpawnLinesOfDecals(false);
     }
@@ -482,6 +492,7 @@ public class BattleHandler : MonoBehaviour
         SpawnBuildings();
         SpawnRoadDecals();
         SpawnOuterWalls();
+        SpawnOuterCornerPillars();
         SpawnVessels();
         SpawnEntities();
     }
@@ -543,6 +554,12 @@ public class BattleHandler : MonoBehaviour
         Time.timeScale = Mathf.Min(m_bulletTimeFactor, m_gameEndingTimeFactor, m_cutsceneTimeFactor) * m_pauseTimeFactor;
     }
 
+    void UpdateBulletTime()
+    {
+        m_bulletTimeFactor = Mathf.Lerp(m_bulletTimeFactor, m_desiredBulletTimeFactor, Time.unscaledDeltaTime * m_bulletTimeLerpStrength);
+        m_slowMoFXMat.SetFloat("_Distortion_Amount", 1f - m_bulletTimeFactor);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -582,6 +599,8 @@ public class BattleHandler : MonoBehaviour
             {
                 OpenPauseMenu();
             }
+
+            UpdateBulletTime();
         }
 
         if (!m_startingCutsceneseChecked && GameHandler._autoRef.IsSceneFadeFinished())

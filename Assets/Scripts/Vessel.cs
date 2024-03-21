@@ -518,7 +518,7 @@ public class Vessel : Soul
         return deltaEmotion;
     }
 
-    void AbsorbVibe(Vibe a_vibe)
+    int AbsorbVibe(Vibe a_vibe)
     {
         int affect = a_vibe.GetEmotionalAffect();
         if (affect < 0)
@@ -526,7 +526,7 @@ public class Vessel : Soul
             affect = Mathf.Clamp(m_emotion + affect, affect, 0) - m_emotion;
         }
         affect = Mathf.Clamp(affect, -1, 1);
-        AddEmotion(affect);
+        return AddEmotion(affect);
     }
 
     internal void HitToFullEmotion(Vector2 a_collisionNormal)
@@ -536,7 +536,7 @@ public class Vessel : Soul
         {
             GameHandler._audioManager.PlaySFX(m_vesselHitSound, m_vesselHitSoundVolume);
         }
-        m_rigidBodyRef.velocity += a_collisionNormal;
+        //m_rigidBodyRef.velocity += a_collisionNormal;
     }
 
     void Enlighten()
@@ -558,15 +558,12 @@ public class Vessel : Soul
 
     internal void GoBeserk()
     {
-        if (!m_enlightened)
-        {
-            m_beserk.targetVessels = new List<Vessel>();
-            m_beserk.active = true;
-            m_beserkField.SetActive(true);
-            UpdateVisuals();
-            UpdateWanderSpeed();
-            m_beserk.m_timer = new vTimer(PlayerHandler.GetUpgradeStrength(UpgradeItem.UpgradeId.BerserkShot));
-        }
+        m_beserk.targetVessels = new List<Vessel>();
+        m_beserk.active = true;
+        m_beserkField.SetActive(true);
+        UpdateVisuals();
+        UpdateWanderSpeed();
+        m_beserk.m_timer = new vTimer(PlayerHandler.GetUpgradeStrength(UpgradeItem.UpgradeId.BerserkShot));
     }
 
     internal void EndBeserk()
@@ -585,8 +582,7 @@ public class Vessel : Soul
         {
             if ((!m_fearTraits.absorbingLove && !m_fearTraits.rejectingLove) || vibe.GetEmotionalAffect() < 0)
             {
-                AbsorbVibe(vibe);
-                if (m_spriteRendererRef.isVisible)
+                if (AbsorbVibe(vibe) > 0 && m_spriteRendererRef.isVisible)
                 {
                     GameHandler._audioManager.PlaySFX(m_vibeHitSound, 0.2f);
                 }

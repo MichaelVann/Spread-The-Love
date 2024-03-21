@@ -914,11 +914,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_enlightenedColor: {r: 0.83137256, g: 0.14117646, b: 0.14117646, a: 1}
   m_berserkColor: {r: 1, g: 0.38318607, b: 0.2117647, a: 1}
-  m_loveColorMax: {r: 0.7921569, g: 0.16635293, b: 0.35950255, a: 1}
-  m_loveColor1: {r: 0.64, g: 0.23040001, b: 0.35543594, a: 1}
+  m_loveColorMax: {r: 0.8584906, g: 0.14983091, b: 0.2937666, a: 1}
+  m_loveColor2: {r: 0.7254902, g: 0.1960784, b: 0.41894034, a: 1}
+  m_loveColor1: {r: 0.6392157, g: 0.23137254, b: 0.54368114, a: 1}
   m_neutralColor: {r: 0.3759345, g: 0.32698467, b: 0.41509432, a: 1}
   m_fearColors:
-  - {r: 0.2352941, g: 0.30346406, b: 0.6784314, a: 1}
+  - {r: 0.27055892, g: 0.3206886, b: 0.6037736, a: 1}
   - {r: 0.23137254, g: 0.42897606, b: 0.7058824, a: 1}
   - {r: 0.16470589, g: 0.6319602, b: 0.7882353, a: 1}
   - {r: 0.16470589, g: 0.78823537, b: 0.78823537, a: 1}
@@ -936,6 +937,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 42edab165c1d8fc42adaa5cfcdea441c, type: 3}
   - {fileID: 21300000, guid: 5cae8f1ef6d28df46bdafed5d0a30c89, type: 3}
   - {fileID: 21300000, guid: f7e7f7a2dd6c861409c09ee51f4501c1, type: 3}
+  - {fileID: 21300000, guid: 5cae8f1ef6d28df46bdafed5d0a30c89, type: 3}
   - {fileID: 21300000, guid: b65f1e99e551f1e46af27a023ecc1cc6, type: 3}
   - {fileID: 21300000, guid: 4608b2a564e40074a87f74b2b781af5d, type: 3}
   - {fileID: 21300000, guid: cee1f618595d78843803f1ebe2bf7a84, type: 3}

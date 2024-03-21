@@ -5757,7 +5757,7 @@ Canvas:
   m_GameObject: {fileID: 239740189}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 1749459936}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -6349,6 +6349,7 @@ MonoBehaviour:
   m_scoreText: {fileID: 1484066686}
   m_lootBagPoppedParticleSystem: {fileID: 91462917}
   m_outerWallPrefab: {fileID: 7301994271561646457, guid: ab8e5ea7397592d48b2080dfd68c0e35, type: 3}
+  m_cornerPillarPrefab: {fileID: 1928333312088791383, guid: 858fe16945a6f2f4ca4c9e9f4abf2095, type: 3}
   m_buildingPrefabs:
   - {fileID: 2753874526810083808, guid: 05f084dc93b56204bbd3bb9fcc8e7145, type: 3}
   - {fileID: 4479421558199640764, guid: 7e5a0fbe44f5e494c9db5668b883dd9e, type: 3}
@@ -6382,6 +6383,7 @@ MonoBehaviour:
   m_cutsceneCanvasTransformRef: {fileID: 239740190}
   m_backgroundRef: {fileID: 1942700574}
   m_scrollingBackgroundRef: {fileID: 492764728}
+  m_rainParticleSystemRef: {fileID: 1995658191}
   m_slowMoFXMat: {fileID: 2100000, guid: 9ea93dc130164604e88c956a937f4a14, type: 2}
   m_lootBagPrefab: {fileID: 1016008954366094287, guid: e2f4586334f6adb4c9efbafffeb1bace, type: 3}
   m_lootBagBonusText: {fileID: 113517027}
@@ -7772,7 +7774,7 @@ Canvas:
   m_GameObject: {fileID: 869044382}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 1749459936}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -8176,7 +8178,7 @@ Canvas:
   m_GameObject: {fileID: 1027686379}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 1749459936}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -13453,7 +13455,7 @@ Canvas:
   m_GameObject: {fileID: 1262533491}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 1749459936}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -20955,7 +20957,7 @@ GameObject:
   - component: {fileID: 1995658191}
   - component: {fileID: 1995658190}
   m_Layer: 0
-  m_Name: Particle System
+  m_Name: Rain Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

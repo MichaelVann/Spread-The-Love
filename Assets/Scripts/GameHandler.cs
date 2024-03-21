@@ -20,6 +20,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] internal Color m_enlightenedColor;
     [SerializeField] internal Color m_berserkColor;
     [SerializeField] internal Color m_loveColorMax;
+    [SerializeField] internal Color m_loveColor2;
     [SerializeField] internal Color m_loveColor1;
     [SerializeField] internal Color m_neutralColor;
     [SerializeField] internal Color[] m_fearColors;

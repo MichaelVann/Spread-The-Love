@@ -48,6 +48,7 @@ public class UpgradeItem
         ProjectileSpeed,
         ShootSpread,
         BerserkShot,
+        BerserkShotSpread,
         FireRate,
         AutoShoot,
         MouseAim,

@@ -64,7 +64,7 @@ public class PlayerHandler : Soul
     internal const float m_startingFireRate = 1f;
     Ability m_abilityShoot;
     int m_shootSpread = 1;
-    float m_shootSpreadAngle = 5f;
+    const float m_shootSpreadAngle = 5f;
     bool m_autoShootUnlocked = false;
     bool m_autoShootEnabled = true;
     bool m_mouseAiming = false;
@@ -508,9 +508,16 @@ public class PlayerHandler : Soul
             
             if (GetUpgradeButton(UpgradeItem.UpgradeId.BerserkShot) && m_abilityBeserkShot.AttemptToActivate())
             {
-                BeserkShot beserkShot = Instantiate(m_beserkShotPrefab, m_shootSpawnPoint.position, Quaternion.identity).GetComponent<BeserkShot>();
-                beserkShot.Init(aimDirection * m_beserkShotSpeed + m_rigidBodyRef.velocity);
-                GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
+                int shootSpread = (int)GetUpgradeStrength(UpgradeItem.UpgradeId.BerserkShotSpread);
+                for (int i = 0; i < shootSpread; i++)
+                {
+                    float angle = i * (2 * m_shootSpreadAngle) - ((shootSpread - 1) * m_shootSpreadAngle);
+                    Vector2 velocity = aimDirection.normalized.RotateVector2(angle) * m_beserkShotSpeed + m_rigidBodyRef.velocity;
+
+                    BeserkShot beserkShot = Instantiate(m_beserkShotPrefab, m_shootSpawnPoint.position, Quaternion.identity).GetComponent<BeserkShot>();
+                    beserkShot.Init(velocity);
+                    GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
+                }
             }
         }
     }

@@ -41,10 +41,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Cutoff: 0
     - _DistortionAmount: 0
     - _Distortion_Amount: 0
-    - _Distortion_Strength: 1
-    - _VignettePower: 5
+    - _Distortion_Strength: 0.38
+    - _VignettePower: 4.79
     m_Colors:
     - _BaseColor: {r: 1, g: 0.5670938, b: 0, a: 1}
   m_BuildTextureStacks: []
