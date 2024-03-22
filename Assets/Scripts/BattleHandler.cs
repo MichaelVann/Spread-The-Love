@@ -114,6 +114,9 @@ public class BattleHandler : MonoBehaviour
     const float m_lootBagBonusIncrease = 0.1f;
     [SerializeField] TextMeshProUGUI m_lootBagBonusText;
 
+    //Debrief
+    [SerializeField] GameObject m_debriefHandlerRef;
+
     internal bool m_paused = false;
 
     internal Vector2 GetMapHalfSize() { return new Vector2(m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingColumns / 2f, m_streetSize / 2f + (m_buildingSize + m_streetSize) * m_buildingRows / 2f); }
@@ -129,6 +132,14 @@ public class BattleHandler : MonoBehaviour
     internal void IncreaseLootBagBonus() { m_lootBagBonus += m_lootBagBonusIncrease; UpdateLootBagBonusText(); m_lootBagPoppedParticleSystem.Play(); }
 
     void CutsceneEndedCallback() { m_cutsceneTimeFactor = 1f; m_mainCameraHandlerRef.EndTargetedZoom(); }
+
+
+    internal int GetScore() { return m_score; }
+    internal float GetLootBagBonus() { return m_lootBagBonus; }
+
+    internal int GetScorePlusLootBagBonus() { return (int)(m_score * (1f + m_lootBagBonus)); }
+
+    internal int GetTotalScoreEarnedThisBattle() { return m_vesselsLoved + GetScorePlusLootBagBonus(); }
 
     Vector3 GetBuildingPosition(int a_x, int a_y)
     {
@@ -179,6 +190,7 @@ public class BattleHandler : MonoBehaviour
         ChangeScore(0);
         Cursor.visible = GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
         UpdateLootBagBonusText();
+        m_debriefHandlerRef.SetActive(false);
     }
 
     void CheckForStartingCutscenes()
@@ -497,12 +509,12 @@ public class BattleHandler : MonoBehaviour
         SpawnEntities();
     }
 
-    void MoveToSamsara()
+    public void MoveToSamsara()
     {
-        GameHandler.ChangeScore(m_vesselsLoved + (int)(m_score* (1f + m_lootBagBonus)));
+        GameHandler.ChangeScore(GetTotalScoreEarnedThisBattle());
         m_gameEnded = true;
-        FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
         GameHandler.IncrementLivesLived();
+        FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
     }
 
     void UpdateUI()
@@ -535,7 +547,8 @@ public class BattleHandler : MonoBehaviour
         if (!m_gameEnding && m_battleTimer.Update())
         {
             m_gameEnding = true;
-            m_battleExplosionTimer = new vTimer(2);
+            m_battleExplosionTimer = new vTimer(2, true, true, false);
+            m_whiteOutImageRef.color = m_gameHandlerRef.m_fearColors[0];
             m_battleExplosionTimer.SetUsingUnscaledDeltaTime(true);
         }
         else
@@ -560,6 +573,12 @@ public class BattleHandler : MonoBehaviour
         m_slowMoFXMat.SetFloat("_Distortion_Amount", 1f - m_bulletTimeFactor);
     }
 
+    void InitialiseDebrief()
+    {
+        m_gameEnded = true;
+        m_debriefHandlerRef.SetActive(true);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -575,7 +594,7 @@ public class BattleHandler : MonoBehaviour
             {
                 if (m_battleExplosionTimer.Update())
                 {
-                    MoveToSamsara();
+                    InitialiseDebrief();
                 }
                 else
                 {
@@ -608,7 +627,10 @@ public class BattleHandler : MonoBehaviour
             CheckForStartingCutscenes();
         }
 
-        Cursor.visible = m_paused || GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
+        if (!m_gameEnded)
+        {
+            Cursor.visible = m_paused || GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.MouseAim);
+        }
     }
 
     void OpenPauseMenu()

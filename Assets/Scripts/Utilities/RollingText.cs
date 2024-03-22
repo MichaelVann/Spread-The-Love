@@ -25,6 +25,10 @@ public class RollingText : MonoBehaviour
     float m_destructionTime = 1f;
     vTimer m_destructionTimer;
 
+    bool m_rollFinished = false;
+
+    internal delegate void Delegate_OnRollFinish();
+    Delegate_OnRollFinish m_onRollFinishDelegate;
     internal void SetShownDecimals(int a_decimals) { m_shownDecimals = a_decimals; }
 
     public void SetDesiredValue(float a_value) { m_desiredValue = a_value; }
@@ -40,6 +44,8 @@ public class RollingText : MonoBehaviour
 
     internal void SetDestroyGameObjectOnFinish(bool a_value) { m_destroyGameObjectOnFinish = a_value; }
 
+    internal void SetOnRollFinishDelegate(Delegate_OnRollFinish a_delegate) { m_onRollFinishDelegate = a_delegate; }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -52,6 +58,7 @@ public class RollingText : MonoBehaviour
         SetCurrentValue(a_currentValue);
         SetDesiredValue(a_desiredValue);
         m_elapsedTime = 0f;
+        m_rollFinished = false;
     }
 
     // Update is called once per frame
@@ -60,7 +67,7 @@ public class RollingText : MonoBehaviour
         //If roll is not completed
         if (m_elapsedTime < m_rollTime )//m_desiredValue != m_currentValue && m_desiredValue > m_currentValue)
         {
-            m_elapsedTime += Time.deltaTime;
+            m_elapsedTime += Time.unscaledDeltaTime;
             float value = VLib.Eerp(m_currentValue, m_desiredValue, m_elapsedTime / m_rollTime, 3f);
 
             //m_currentValue = value;
@@ -71,18 +78,26 @@ public class RollingText : MonoBehaviour
             text += m_inBrackets ? ")" : ""; 
             m_localTextRef.text = text;
         }
-        else if (m_destroyGameObjectOnFinish)
+        else if (!m_rollFinished)
         {
-            if (m_destructionTimer == null)
+            if (m_destroyGameObjectOnFinish)
             {
-                m_destructionTimer = new vTimer(m_destructionTime);
+                if (m_destructionTimer == null)
+                {
+                    m_destructionTimer = new vTimer(m_destructionTime);
+                }
+                if (m_destructionTimer.Update())
+                {
+                    Destroy(gameObject);
+                }
+                Color currentColor = m_localTextRef.color;
+                m_localTextRef.color = new Color(currentColor.r, currentColor.g, currentColor.b, 1f - m_destructionTimer.GetCompletionPercentage());
             }
-            if (m_destructionTimer.Update())
+            if (m_onRollFinishDelegate != null)
             {
-                Destroy(gameObject);
+                m_onRollFinishDelegate.Invoke();
             }
-            Color currentColor = m_localTextRef.color;
-            m_localTextRef.color = new Color(currentColor.r, currentColor.g, currentColor.b, 1f-m_destructionTimer.GetCompletionPercentage());
+            m_rollFinished = true;
         }
     }
 }
