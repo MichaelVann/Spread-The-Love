@@ -9,6 +9,7 @@ public class DebriefHandler : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_loveEarnedText;
     [SerializeField] GameObject m_lootBagBonusRef;
     [SerializeField] GameObject m_continueButtonRef;
+    [SerializeField] ParticleSystem m_lootBagParticleSystem;
 
     int m_vesselsLoved = 0;
     int m_score = 0;
@@ -63,6 +64,7 @@ public class DebriefHandler : MonoBehaviour
         m_lootBagBonusRef.GetComponentInChildren<TextMeshProUGUI>().text = "+" + (m_battleHandlerRef.GetLootBagBonus() * 100f).ToString("f0") + "%";
         if (m_battleHandlerRef.GetLootBagBonus() > 0f)
         {
+            m_lootBagParticleSystem.Play();
             loveEarnedText.Refresh(m_score, m_battleHandlerRef.GetScorePlusLootBagBonus());
             loveEarnedText.SetOnRollFinishDelegate(StartDelayTimer);
             m_onDelayEndDelegate = ShowContinueButton;

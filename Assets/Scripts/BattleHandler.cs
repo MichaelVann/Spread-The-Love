@@ -478,6 +478,7 @@ public class BattleHandler : MonoBehaviour
     {
         if (GameHandler._livesLived > 0)
         {
+            m_lootBagsToSpawn = 10;
             while (VLib.vRandom(0, 1) == 0)
             {
                 m_lootBagsToSpawn++;
