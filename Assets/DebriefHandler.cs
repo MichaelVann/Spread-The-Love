@@ -83,12 +83,22 @@ public class DebriefHandler : MonoBehaviour
         Cursor.visible = true;
     }
 
+    public void ContinuePressed()
+    {
+        m_battleHandlerRef.MoveToSamsara();
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (!m_delayTimer.m_finished && m_delayTimer.Update())
         {
             m_onDelayEndDelegate.Invoke();
+        }
+
+        if (m_continueButtonRef.activeInHierarchy && Input.GetButton("Submit"))
+        {
+            ContinuePressed();
         }
     }
 }

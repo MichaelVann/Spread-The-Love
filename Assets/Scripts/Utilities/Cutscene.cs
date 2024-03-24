@@ -150,7 +150,7 @@ public class Cutscene : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetKeyUp(KeyCode.Space) || Input.GetButtonDown("Submit"))
         {
             DialogPressed();
         }

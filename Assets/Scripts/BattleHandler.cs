@@ -116,6 +116,8 @@ public class BattleHandler : MonoBehaviour
 
     //Debrief
     [SerializeField] GameObject m_debriefHandlerRef;
+    bool m_movedToSamsara = false;
+    bool m_enlightening = false;
 
     internal bool m_paused = false;
 
@@ -478,7 +480,6 @@ public class BattleHandler : MonoBehaviour
     {
         if (GameHandler._livesLived > 0)
         {
-            m_lootBagsToSpawn = 10;
             while (VLib.vRandom(0, 1) == 0)
             {
                 m_lootBagsToSpawn++;
@@ -512,10 +513,15 @@ public class BattleHandler : MonoBehaviour
 
     public void MoveToSamsara()
     {
-        GameHandler.ChangeScore(GetTotalScoreEarnedThisBattle());
-        m_gameEnded = true;
-        GameHandler.IncrementLivesLived();
-        FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
+        if (!m_movedToSamsara)
+        {
+            m_movedToSamsara = true;
+            int score = GetTotalScoreEarnedThisBattle();
+            GameHandler.ChangeScore(score);
+            m_gameEnded = true;
+            GameHandler.IncrementLivesLived();
+            FindObjectOfType<GameHandler>().TransitionScene(GameHandler.eScene.Samsara);
+        }
     }
 
     void UpdateUI()
@@ -533,6 +539,7 @@ public class BattleHandler : MonoBehaviour
     void Enlighten()
     {
         m_whiteOutImageRef.color = m_gameHandlerRef.m_loveColorMax;
+        m_enlightening = true;
         GameHandler.IncrementMapSize();
         FinishEarly();
         //ResetBattleExplosionTimer();
@@ -549,7 +556,10 @@ public class BattleHandler : MonoBehaviour
         {
             m_gameEnding = true;
             m_battleExplosionTimer = new vTimer(2, true, true, false);
-            m_whiteOutImageRef.color = m_gameHandlerRef.m_fearColors[0];
+            if (!m_enlightening)
+            {
+                m_whiteOutImageRef.color = m_gameHandlerRef.m_fearColors[0];
+            }
             m_battleExplosionTimer.SetUsingUnscaledDeltaTime(true);
         }
         else

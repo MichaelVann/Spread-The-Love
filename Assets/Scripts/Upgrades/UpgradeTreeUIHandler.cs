@@ -37,6 +37,9 @@ public class UpgradeTreeUIHandler : MonoBehaviour
 
     bool m_inited = false;
 
+    bool m_dPadUpWasDown = false;
+    bool m_dPadDownWasDown = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -229,14 +232,19 @@ public class UpgradeTreeUIHandler : MonoBehaviour
     void Update()
     {
         //RescaleContentContainer();
-        if (Input.GetKeyUp(KeyCode.W))
+
+        if (Input.GetKeyUp(KeyCode.W) || (Input.GetAxis("D Pad Y") < 1f && m_dPadUpWasDown))
         {
             RotateTreeSelection(true);
         }
-        if (Input.GetKeyUp(KeyCode.S))
+        if (Input.GetKeyUp(KeyCode.S) || (Input.GetAxis("D Pad Y") > -1f && m_dPadDownWasDown))
         {
             RotateTreeSelection(false);
         }
+
+        m_dPadUpWasDown = Input.GetAxis("D Pad Y") >= 1f;
+        m_dPadDownWasDown = Input.GetAxis("D Pad Y") <= -1f;
+
     }
 
     void RescaleContentContainer()

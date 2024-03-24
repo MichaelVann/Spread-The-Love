@@ -33,9 +33,9 @@ public class UpgradeTree
 
     void SetupUpgrades()
     {
-        UpgradeItem acceleration = NewUpgrade(UpgradeId.Acceleration, "Acceleration", 1.5f, 10, 0.25f, null, "Increases acceleration by 25% each rank.");
+        UpgradeItem acceleration = NewUpgrade(UpgradeId.Acceleration, "Acceleration", 1.5f, 20, 0.25f, null, "Increases acceleration by 25% each rank.");
         acceleration.SetStartingStrengthAndIfMultiplicative(1f, true);
-        UpgradeItem mass = NewUpgrade(UpgradeId.Mass, "Density", 1.5f, 10, 0.25f, acceleration, "Increases desnity by 25% for each rank. This helps maintain speed when colliding with the souls in the world.");
+        UpgradeItem mass = NewUpgrade(UpgradeId.Mass, "Density", 1.5f, 20, 0.25f, acceleration, "Increases desnity by 25% for each rank. This helps maintain speed when colliding with the souls in the world.");
         mass.SetStartingStrengthAndIfMultiplicative(25f, true);
         UpgradeItem braking = NewUpgrade(UpgradeId.Braking, "Braking", 2f, 10, 0.1f, mass, "Unlocks the ability to brake and increases braking strength by 10% each rank.");
         braking.SetStartingStrengthAndIfMultiplicative(1f, true);
@@ -57,24 +57,25 @@ public class UpgradeTree
         berserkShot.SetStartingStrengthAndIfMultiplicative(5f, false);
         UpgradeItem berserkShotSpread = NewUpgrade(UpgradeId.BerserkShotSpread, "B-Shot Spread", 6f, 10, 1, berserkShot, "Increases the berserk shots released by 1.");
         berserkShotSpread.SetStartingStrengthAndIfMultiplicative(1f, false);
-        UpgradeItem fireRate = NewUpgrade(UpgradeId.FireRate, "Fire Rate", 1.5f, 10, 0.25f, shooting, "Increases fire rate by 25% each rank.", false, 1.5f);
+        UpgradeItem fireRate = NewUpgrade(UpgradeId.FireRate, "Fire Rate", 1.5f, 15, 0.25f, shooting, "Increases fire rate by 25% each rank.", false, 1.5f);
         fireRate.SetStartingStrengthAndIfMultiplicative(1f, true);
         UpgradeItem autoShoot = NewUpgrade(UpgradeId.AutoShoot, "Auto Shoot", 3.5f, 1, 1f, fireRate, "Now love blast repeats automatically.", true);
         UpgradeItem mouseAim = NewUpgrade(UpgradeId.MouseAim, "Cursor Aim", 15f, 1, 1f, autoShoot, "Love blast heads towards the cursor.", true);
 
         //UpgradeItem vesselRadar = NewUpgrade(UpgradeItem.UpgradeId.Radar, "Radar", 30, 1, 1f, null, "Points towards the nearest lost soul.");
         //UpgradeItem minimap = NewUpgrade(UpgradeItem.UpgradeId.Minimap, "Minimap", 60, 1, 1f, vesselRadar, "Gives you an overview of the world.");
-        UpgradeItem additionalTime = NewUpgrade(UpgradeId.AdditionalTime, "Time Extension", 3f, 10, 10f, null, "Gives you an additional 10 seconds of time before rebirth per rank.");
-        UpgradeItem mindfulness = NewUpgrade(UpgradeId.Mindfulness, "Mindfulness", 3f, 10, 0.08f, additionalTime, "Slows time, allowing increased reaction time. Each rank further increases the amount time is slowed.");
+        UpgradeItem additionalTime = NewUpgrade(UpgradeId.AdditionalTime, "Time Extension", 3f, 15, 10f, null, "Gives you an additional 10 seconds of time before rebirth per rank.");
+        additionalTime.SetCostScaling(2.5f);
+        UpgradeItem mindfulness = NewUpgrade(UpgradeId.Mindfulness, "Mindfulness", 3f, 15, 0.08f, additionalTime, "Slows time, allowing increased reaction time. Each rank further increases the amount time is slowed.");
         mindfulness.SetStartingStrengthAndIfMultiplicative(2f, true);
 
         UpgradeItem snowPlough = NewUpgrade(UpgradeId.SnowPlough, "Snow Plough", 3f, 1, 1f, null, "Gives the ability to spawn a directional forcefield in the direction of travel.");
-        UpgradeItem snowPloughSize = NewUpgrade(UpgradeId.SnowPloughSize, "Size", 3f, 10, 0.1f, snowPlough, "Increases the size of the Snow Plough.");
+        UpgradeItem snowPloughSize = NewUpgrade(UpgradeId.SnowPloughSize, "Size", 3f, 25, 0.1f, snowPlough, "Increases the size of the Snow Plough.");
         snowPloughSize.SetStartingStrengthAndIfMultiplicative(1f, true);
-        UpgradeItem snowPloughCooldown = NewUpgrade(UpgradeId.SnowPloughCooldown, "Cooldown", 3f, 10, 0.05f, snowPlough, "Reduces the cooldown of the Snow Plough.");
+        UpgradeItem snowPloughCooldown = NewUpgrade(UpgradeId.SnowPloughCooldown, "Cooldown", 3f, 25, 0.05f, snowPlough, "Reduces the cooldown of the Snow Plough.");
         snowPloughCooldown.SetStartingStrengthAndIfMultiplicative(6f, true);
         snowPloughCooldown.SetReductive(true);
-        UpgradeItem snowPloughDuration = NewUpgrade(UpgradeId.SnowPloughDuration, "Duration", 3f, 10, 0.05f, snowPlough, "Increases the duration of the Snow Plough.");
+        UpgradeItem snowPloughDuration = NewUpgrade(UpgradeId.SnowPloughDuration, "Duration", 3f, 25, 0.05f, snowPlough, "Increases the duration of the Snow Plough.");
         snowPloughDuration.SetStartingStrengthAndIfMultiplicative(1.5f, true);
 
         //Keys

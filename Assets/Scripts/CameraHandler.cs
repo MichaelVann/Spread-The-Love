@@ -97,7 +97,6 @@ public class CameraHandler : MonoBehaviour
         if (m_targetToRegularZoomTransitionTimer != null)
         {
             lerp = m_targetToRegularZoomTransitionTimer.GetCompletionPercentage();
-            Debug.Log(lerp);
             startingLerpPos = m_targetZoomTransitioningIn ? m_targetZoomTransitioningInStartPos : m_targetedZoomPosition;
         }
 

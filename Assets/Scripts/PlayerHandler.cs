@@ -75,7 +75,7 @@ public class PlayerHandler : Soul
 
     //Beserk Shot
     Ability m_abilityBeserkShot;
-    const float m_beserkShotSpeed = 5f;
+    const float m_beserkShotSpeed = 15f;
     [SerializeField] GameObject m_beserkShotPrefab;
 
     //Snowplough
@@ -509,6 +509,8 @@ public class PlayerHandler : Soul
             if (GetUpgradeButton(UpgradeItem.UpgradeId.BerserkShot) && m_abilityBeserkShot.AttemptToActivate())
             {
                 int shootSpread = (int)GetUpgradeStrength(UpgradeItem.UpgradeId.BerserkShotSpread);
+                GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
+
                 for (int i = 0; i < shootSpread; i++)
                 {
                     float angle = i * (2 * m_shootSpreadAngle) - ((shootSpread - 1) * m_shootSpreadAngle);
@@ -516,7 +518,6 @@ public class PlayerHandler : Soul
 
                     BeserkShot beserkShot = Instantiate(m_beserkShotPrefab, m_shootSpawnPoint.position, Quaternion.identity).GetComponent<BeserkShot>();
                     beserkShot.Init(velocity);
-                    GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
                 }
             }
         }
