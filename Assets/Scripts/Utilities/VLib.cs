@@ -113,6 +113,12 @@ public static class VLib
         return retVal;
     }
 
+    public static Vector3 Eerp(Vector3 a_start, Vector3 a_end, float a_time, float a_exponent)
+    {
+        Vector3 retVal = Vector3.Lerp(a_start, a_end, Mathf.Pow(a_time, a_exponent));
+        return retVal;
+    }
+
     public static float SinTimeZeroToOne(float a_hertz = 1f)
     {
         return (Mathf.Sin(Time.time * a_hertz *2f * Mathf.PI) + 1) / 2f;

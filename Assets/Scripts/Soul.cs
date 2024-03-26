@@ -9,7 +9,7 @@ namespace Assets.Scripts
         //static internal Color m_afraidColorRef = new Color(0.1982f, 0.7641f, 0.5605f, 1f);
 
         protected int m_emotion;
-        protected const int m_maxLove = 3;
+        protected const int m_maxLove = 2;
         protected const int m_minLove = -4;
 
         internal int GetEmotion() { return m_emotion;}

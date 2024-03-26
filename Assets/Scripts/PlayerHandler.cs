@@ -75,7 +75,7 @@ public class PlayerHandler : Soul
 
     //Beserk Shot
     Ability m_abilityBeserkShot;
-    const float m_beserkShotSpeed = 15f;
+    const float m_beserkShotSpeed = 10f;
     [SerializeField] GameObject m_beserkShotPrefab;
 
     //Snowplough
@@ -252,7 +252,7 @@ public class PlayerHandler : Soul
                 shooting = true;
             }
 
-            if (shooting && m_abilityShoot.AttemptToActivate())
+            if (shooting && Time.timeScale > 0f && m_abilityShoot.AttemptToActivate())
             {
                 ShootVibe(aimDirection);
             }
@@ -318,7 +318,6 @@ public class PlayerHandler : Soul
                 m_driftTrailRightRef.emitting = true;
                 m_driftTrailLeftRef.emitting = false;
             }
-            m_driftSoundAudioSource.volume = m_driftSoundVolume;
         }
         else
         {
@@ -332,7 +331,6 @@ public class PlayerHandler : Soul
             }
             m_driftTrailLeftRef.emitting = false;
             m_driftTrailRightRef.emitting = false;
-            m_driftSoundAudioSource.volume = 0f;
         }
     }
 
@@ -506,7 +504,7 @@ public class PlayerHandler : Soul
             //}
             aimDirection = aimDirection.normalized;
             
-            if (GetUpgradeButton(UpgradeItem.UpgradeId.BerserkShot) && m_abilityBeserkShot.AttemptToActivate())
+            if (Time.timeScale > 0f && GetUpgradeButton(UpgradeItem.UpgradeId.BerserkShot) && m_abilityBeserkShot.AttemptToActivate())
             {
                 int shootSpread = (int)GetUpgradeStrength(UpgradeItem.UpgradeId.BerserkShotSpread);
                 GameHandler._audioManager.PlaySFX(m_fireSound, 0.5f);
@@ -557,7 +555,9 @@ public class PlayerHandler : Soul
             BulletTimeUpdate();
             BeserkShotUpdate();
             SnowPloughUpdate();
+            
         }
+        m_driftSoundAudioSource.volume = m_drifting && Time.timeScale > 0? m_driftSoundVolume : 0f;
     }
 
     void FixedUpdate()

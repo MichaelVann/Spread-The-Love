@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DebriefHandler : MonoBehaviour
@@ -23,17 +24,16 @@ public class DebriefHandler : MonoBehaviour
     {
         m_battleHandlerRef.GetComponent<BattleHandler>();
 
-        //Setup object active states
-        m_loveEarnedText.gameObject.SetActive(true);
-        m_lootBagBonusRef.SetActive(false);
+        ////Setup object active states
+        //m_lootBagBonusRef.SetActive(false);
         m_continueButtonRef.gameObject.SetActive(false);
-
         m_delayTimer = new vTimer(0.5f, true, true, true, true);
-        m_onDelayEndDelegate = SetupStartingScore;
+        m_delayTimer.m_finished = true;
+        m_onDelayEndDelegate = LootBagBonusAppeared;
         m_score = m_battleHandlerRef.GetScore();
     }
 
-    void StartDelayTimer()
+    internal void StartDelayTimer()
     {
         m_delayTimer.Reset();
     }
@@ -60,20 +60,20 @@ public class DebriefHandler : MonoBehaviour
 
     void LootBagBonusAppeared()
     {
-        RollingText loveEarnedText = m_loveEarnedText.GetComponent<RollingText>();
-        m_lootBagBonusRef.GetComponentInChildren<TextMeshProUGUI>().text = "+" + (m_battleHandlerRef.GetLootBagBonus() * 100f).ToString("f0") + "%";
+
         if (m_battleHandlerRef.GetLootBagBonus() > 0f)
         {
             m_lootBagParticleSystem.Play();
+            RollingText loveEarnedText = m_loveEarnedText.AddComponent<RollingText>();
+            m_lootBagBonusRef.GetComponentInChildren<TextMeshProUGUI>().text = "+" + (m_battleHandlerRef.GetLootBagBonus() * 100f).ToString("f0") + "%";
             loveEarnedText.Refresh(m_score, m_battleHandlerRef.GetScorePlusLootBagBonus());
             loveEarnedText.SetOnRollFinishDelegate(StartDelayTimer);
-            m_onDelayEndDelegate = ShowContinueButton;
         }
         else
         {
             StartDelayTimer();
-            m_onDelayEndDelegate = ShowContinueButton;
         }
+        m_onDelayEndDelegate = ShowContinueButton;
     }
 
     void ShowContinueButton()

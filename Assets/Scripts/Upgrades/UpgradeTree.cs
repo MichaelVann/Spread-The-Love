@@ -52,12 +52,15 @@ public class UpgradeTree
 
         UpgradeItem projectileSpeed = NewUpgrade(UpgradeId.ProjectileSpeed, "Projectile Speed", 1.5f, 10, 0.25f, shooting, "Increases projectile speed.", false);
         projectileSpeed.SetStartingStrengthAndIfMultiplicative(5f, true);
-        UpgradeItem shootSpread = NewUpgrade(UpgradeId.ShootSpread, "Blast Spread", 5f, 10, 1f, projectileSpeed, "Increases amount of love sent with each spread of kindness by 1.", false, 1.5f);
+        UpgradeItem shootSpread = NewUpgrade(UpgradeId.ShootSpread, "Blast Spread", 5f, 10, 1f, projectileSpeed, "Increases amount of love sent with each spread of kindness by 1.", false);
         UpgradeItem berserkShot = NewUpgrade(UpgradeId.BerserkShot, "Berserk Shot", 6f, 10, 1, shootSpread, "Gives the ability to send a vibe that sends a loved vessel into a love beserk. Each Rank increases beserk time by 1 second starting at 5 seconds.");
         berserkShot.SetStartingStrengthAndIfMultiplicative(5f, false);
         UpgradeItem berserkShotSpread = NewUpgrade(UpgradeId.BerserkShotSpread, "B-Shot Spread", 6f, 10, 1, berserkShot, "Increases the berserk shots released by 1.");
         berserkShotSpread.SetStartingStrengthAndIfMultiplicative(1f, false);
-        UpgradeItem fireRate = NewUpgrade(UpgradeId.FireRate, "Fire Rate", 1.5f, 15, 0.25f, shooting, "Increases fire rate by 25% each rank.", false, 1.5f);
+        UpgradeItem berserkShotPenetration = NewUpgrade(UpgradeId.BerserkShotPenetration, "B-Shot Pen", 30f, 3, 1, berserkShot, "Increases the berserk shots penetration by 1 emotion level.");
+        berserkShotPenetration.SetStartingStrengthAndIfMultiplicative(0f, false);
+
+        UpgradeItem fireRate = NewUpgrade(UpgradeId.FireRate, "Fire Rate", 1.5f, 15, 0.25f, shooting, "Increases fire rate by 25% each rank.", false);
         fireRate.SetStartingStrengthAndIfMultiplicative(1f, true);
         UpgradeItem autoShoot = NewUpgrade(UpgradeId.AutoShoot, "Auto Shoot", 3.5f, 1, 1f, fireRate, "Now love blast repeats automatically.", true);
         UpgradeItem mouseAim = NewUpgrade(UpgradeId.MouseAim, "Cursor Aim", 15f, 1, 1f, autoShoot, "Love blast heads towards the cursor.", true);

@@ -29,7 +29,6 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_tierText;
     [SerializeField] TextMeshProUGUI m_timeText;
     [SerializeField] TextMeshProUGUI m_speedText;
-    [SerializeField] SpreadPercentageBar m_spreadPercentageBarRef;
     [SerializeField] Image m_whiteOutImageRef;
     [SerializeField] internal GameObject m_worldTextCanvasRef;
     [SerializeField] ClockRadialCircle m_clockRadialCircle;
@@ -45,9 +44,16 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] Camera m_miniMapCameraRef;
 
     //Score
+    int m_score = 0;
+    [SerializeField] GameObject m_scoreReadoutRef;
     [SerializeField] TextMeshProUGUI m_scoreText;
     [SerializeField] ParticleSystem m_lootBagPoppedParticleSystem;
-    int m_score = 0;
+    [SerializeField] GameObject m_spreadPercentageReadoutRef;
+    [SerializeField] SpreadPercentageBar m_spreadPercentageBarRef;
+    [SerializeField] GameObject m_scoreReadoutLerpTargetRef;
+    [SerializeField] GameObject m_spreadReadoutLerpTargetRef;
+    Vector3 m_scoreReadoutStartingPos;
+    Vector3 m_spreadReadoutStartingPos;
 
     //Vessels
     int starterSouls = 20;
@@ -343,6 +349,8 @@ public class BattleHandler : MonoBehaviour
 
                 for (int k = 0; k < m_vesselsPerIntersection; k++)
                 {
+                    float angle = ((float)k / m_vesselsPerIntersection) * 360f;
+                    spawnPos += new Vector3(0f, 0.5f).RotateVector3In2D(angle);
                     SpawnVessel(spawnPos, vesselStrength);
                 }
             }
@@ -555,12 +563,18 @@ public class BattleHandler : MonoBehaviour
         if (!m_gameEnding && m_battleTimer.Update())
         {
             m_gameEnding = true;
+            m_debriefHandlerRef.SetActive(true);
             m_battleExplosionTimer = new vTimer(2, true, true, false);
             if (!m_enlightening)
             {
                 m_whiteOutImageRef.color = m_gameHandlerRef.m_fearColors[0];
             }
             m_battleExplosionTimer.SetUsingUnscaledDeltaTime(true);
+
+            m_scoreReadoutRef.transform.parent = m_debriefHandlerRef.transform;
+            m_scoreReadoutStartingPos = m_scoreReadoutRef.transform.position;
+            m_spreadPercentageReadoutRef.transform.parent = m_debriefHandlerRef.transform;
+            m_spreadReadoutStartingPos = m_spreadPercentageReadoutRef.transform.position;
         }
         else
         {
@@ -587,7 +601,10 @@ public class BattleHandler : MonoBehaviour
     void InitialiseDebrief()
     {
         m_gameEnded = true;
-        m_debriefHandlerRef.SetActive(true);
+        m_debriefHandlerRef.GetComponent<DebriefHandler>().StartDelayTimer();
+        m_gameEndingTimeFactor = 0f;
+        Color whiteoutColor = m_whiteOutImageRef.color;
+        m_whiteOutImageRef.color = new Color(whiteoutColor.r, whiteoutColor.g, whiteoutColor.b, 1f);
     }
 
     // Update is called once per frame
@@ -613,6 +630,9 @@ public class BattleHandler : MonoBehaviour
                     m_gameEndingTimeFactor = 1f - percentageFinished;
                     Color whiteoutColor = m_whiteOutImageRef.color;
                     m_whiteOutImageRef.color = new Color(whiteoutColor.r, whiteoutColor.g, whiteoutColor.b, percentageFinished);
+
+                    m_scoreReadoutRef.transform.position = VLib.Eerp(m_scoreReadoutStartingPos, m_scoreReadoutLerpTargetRef.transform.position, percentageFinished, 2f);
+                    m_spreadPercentageBarRef.transform.position = VLib.Eerp(m_spreadReadoutStartingPos, m_spreadReadoutLerpTargetRef.transform.position, percentageFinished, 2f);
                 }
             }
 
