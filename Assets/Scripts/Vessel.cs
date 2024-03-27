@@ -448,6 +448,9 @@ public class Vessel : Soul
         if (!a_wasLoved && isLoved)
         {
             m_battleHandlerRef.CrementLovedVessels(1);
+            RisingFadingText rft = Instantiate(m_risingTextPrefab, transform.position, Quaternion.identity, m_battleHandlerRef.m_worldTextCanvasRef.transform).GetComponent<RisingFadingText>();
+            rft.SetUp("+1", Color.white, m_gameHandlerRef.m_loveColorMax);
+            rft.SetOriginalScale(0.7f);
         }
         else if (a_wasLoved && !isLoved)
         {
@@ -484,30 +487,19 @@ public class Vessel : Soul
 
         //Rising Fading Text
         Color textColor = Color.white;
-        bool spawningText = false;
         if(deltaEmotion > 0)
         {
-            spawningText = true;
-            textColor = m_gameHandlerRef.m_loveColorMax;
             var main = m_loveExplosionRef.main;
-            main.startColor = textColor;
+            main.startColor = m_gameHandlerRef.m_loveColorMax;
             m_loveExplosionRef.Play();
             m_demotionProtectionActive = true;
             m_demotionProtectionTimer.Reset();
         }
         else if (deltaEmotion < 0)
         {
-            spawningText = true;
-            textColor = m_gameHandlerRef.m_fearColors[0];
             var main = m_loveExplosionRef.main;
-            main.startColor = textColor;
+            main.startColor = m_gameHandlerRef.m_fearColors[0];
             m_loveExplosionRef.Play();
-        }
-        if (spawningText) 
-        {
-            RisingFadingText rft = Instantiate(m_risingTextPrefab, transform.position, Quaternion.identity, m_battleHandlerRef.m_worldTextCanvasRef.transform).GetComponent<RisingFadingText>();
-            rft.SetUp(deltaEmotion > 0 ? "+" + deltaEmotion : deltaEmotion.ToString(), textColor, textColor);
-            rft.SetOriginalScale(0.7f);
         }
 
         if (deltaEmotion != 0)

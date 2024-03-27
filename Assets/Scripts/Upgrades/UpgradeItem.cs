@@ -50,6 +50,7 @@ public class UpgradeItem
         BerserkShot,
         BerserkShotSpread,
         BerserkShotPenetration,
+        BerserkShotCooldown,
         FireRate,
         AutoShoot,
         MouseAim,
@@ -60,7 +61,11 @@ public class UpgradeItem
         SnowPlough,
         SnowPloughSize,
         SnowPloughCooldown,
-        SnowPloughDuration
+        SnowPloughDuration,
+        Totem,
+        TotemFireRate,
+        TotemRadius,
+        TotemCooldown
     }
     public UpgradeId m_ID;
 

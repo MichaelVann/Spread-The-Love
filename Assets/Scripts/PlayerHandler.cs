@@ -82,6 +82,10 @@ public class PlayerHandler : Soul
     Ability m_abilitySnowPlough;
     [SerializeField] GameObject m_snowPloughRef;
 
+    //Totem
+    Ability m_abilityTotem;
+    [SerializeField] GameObject m_totemPrefab;
+
     //Speed Chime
     [SerializeField] AudioClip m_speedChimeAudioClip;
     float m_speedChimeTimerRepeatTime = 1.2f;
@@ -132,6 +136,9 @@ public class PlayerHandler : Soul
                 break;
             case UpgradeItem.UpgradeId.SnowPlough:
                 ability = m_abilitySnowPlough;
+                break;
+            case UpgradeItem.UpgradeId.Totem:
+                ability = m_abilityTotem;
                 break;
             default:
                 break;
@@ -194,11 +201,16 @@ public class PlayerHandler : Soul
         m_abilityBulletTime.SetUpResource(1f, 0.1f);
 
         m_abilityBeserkShot = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.BerserkShot));
-        m_abilityBeserkShot.SetUpCooldown(5f);
+        m_abilityBeserkShot.SetUpCooldown(GetUpgradeStrength(UpgradeItem.UpgradeId.BerserkShotCooldown));
 
+        //Snow Plough
         m_abilitySnowPlough = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.SnowPlough), 0f, GetUpgradeStrength(UpgradeItem.UpgradeId.SnowPloughDuration));
         m_abilitySnowPlough.SetUpCooldown(GetUpgradeStrength(UpgradeItem.UpgradeId.SnowPloughCooldown));
         m_snowPloughRef.GetComponent<SnowPlough>().SetScale(GetUpgradeStrength(UpgradeItem.UpgradeId.SnowPloughSize));
+
+        //Totem
+        m_abilityTotem = new Ability(GameHandler._upgradeTree.HasUpgrade(UpgradeItem.UpgradeId.Totem));
+        m_abilityTotem.SetUpCooldown(GetUpgradeStrength(UpgradeItem.UpgradeId.TotemCooldown));
     }
 
     // Start is called before the first frame update
@@ -543,6 +555,23 @@ public class PlayerHandler : Soul
         }
     }
 
+    void SpawnTotem()
+    {
+        Instantiate(m_totemPrefab, transform.position, Quaternion.identity);
+    }
+
+    void TotemUpdate()
+    {
+        if (m_abilityTotem.m_enabled)
+        {
+            m_abilityTotem.UpdateCooldown();
+            if (GetUpgradeButton(UpgradeItem.UpgradeId.Totem) && m_abilityTotem.AttemptToActivate())
+            {
+                SpawnTotem();
+            }
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -555,7 +584,7 @@ public class PlayerHandler : Soul
             BulletTimeUpdate();
             BeserkShotUpdate();
             SnowPloughUpdate();
-            
+            TotemUpdate();
         }
         m_driftSoundAudioSource.volume = m_drifting && Time.timeScale > 0? m_driftSoundVolume : 0f;
     }

@@ -12,7 +12,7 @@ public class ObjectShadow : MonoBehaviour
     protected const float _shadowDistance = 0.1f;
     protected const float _opacity = 0.75f;
 
-    [SerializeField] protected float m_height = 0f;
+    [SerializeField] internal float m_height = 0f;
     public void Awake()
     {
 

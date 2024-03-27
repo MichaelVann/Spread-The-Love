@@ -8,10 +8,11 @@ public class DebriefHandler : MonoBehaviour
 {
     [SerializeField] BattleHandler m_battleHandlerRef;
     [SerializeField] TextMeshProUGUI m_loveEarnedText;
-    [SerializeField] GameObject m_lootBagBonusRef;
+    [SerializeField] GameObject m_lootBagBonusIconRef;
     [SerializeField] GameObject m_continueButtonRef;
     [SerializeField] ParticleSystem m_lootBagParticleSystem;
-
+    [SerializeField] GameObject m_spreadLoveTextRef;
+    RollingText m_loveEarnedRollingText;
     int m_vesselsLoved = 0;
     int m_score = 0;
 
@@ -38,46 +39,40 @@ public class DebriefHandler : MonoBehaviour
         m_delayTimer.Reset();
     }
 
-    void SetupStartingScore()
-    {
-        m_loveEarnedText.text = m_score.ToString();
-        RollingText loveEarnedText = m_loveEarnedText.GetComponent<RollingText>();
-        loveEarnedText.SetCurrentValue(0);
-        loveEarnedText.SetDesiredValue(m_score);
-        loveEarnedText.SetRollTime(1f);
-        loveEarnedText.SetOnRollFinishDelegate(StartDelayTimer);
-        m_onDelayEndDelegate = ScoreEarnedTextRollFinished;
-    }
-
-    void ScoreEarnedTextRollFinished()
-    {
-        m_lootBagBonusRef.SetActive(true);
-        ZoomExpandComponent lootBagZoomExpandComponent = m_lootBagBonusRef.GetComponent<ZoomExpandComponent>();
-        lootBagZoomExpandComponent.Init();
-        lootBagZoomExpandComponent.SetFinishDelegate(LootBagBonusAppeared);
-        //m_onDelayEndDelegate = LootBagBonusAppeared;
-    }
-
     void LootBagBonusAppeared()
-    {
-
+    { 
         if (m_battleHandlerRef.GetLootBagBonus() > 0f)
         {
             m_lootBagParticleSystem.Play();
-            RollingText loveEarnedText = m_loveEarnedText.AddComponent<RollingText>();
-            m_lootBagBonusRef.GetComponentInChildren<TextMeshProUGUI>().text = "+" + (m_battleHandlerRef.GetLootBagBonus() * 100f).ToString("f0") + "%";
-            loveEarnedText.Refresh(m_score, m_battleHandlerRef.GetScorePlusLootBagBonus());
-            loveEarnedText.SetOnRollFinishDelegate(StartDelayTimer);
+            m_lootBagBonusIconRef.transform.localScale = new Vector3(1f, 1f, 1f);
+            m_loveEarnedRollingText = m_loveEarnedText.AddComponent<RollingText>();
+            m_loveEarnedRollingText.Refresh(m_score, m_battleHandlerRef.GetScorePlusLootBagBonus());
+            m_loveEarnedRollingText.SetOnRollFinishDelegate(StartDelayTimer);
         }
         else
         {
             StartDelayTimer();
         }
+        m_onDelayEndDelegate = ProcessSpreadBonus;
+    }
+
+    void ProcessSpreadBonus()
+    {
+        m_lootBagBonusIconRef.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        m_spreadLoveTextRef.transform.localScale = new Vector3(2f, 2f, 2f);
+        m_score = m_battleHandlerRef.GetScorePlusLootBagBonus();
+        if (m_loveEarnedRollingText == null)
+        {
+            m_loveEarnedRollingText = m_loveEarnedText.AddComponent<RollingText>();
+        }
+        m_loveEarnedRollingText.Refresh(m_score, m_battleHandlerRef.GetTotalScoreEarnedThisBattle());
+        m_loveEarnedRollingText.SetOnRollFinishDelegate(StartDelayTimer);
         m_onDelayEndDelegate = ShowContinueButton;
     }
 
     void ShowContinueButton()
     {
+        m_spreadLoveTextRef.transform.localScale = new Vector3(1f, 1f, 1f);
         m_continueButtonRef.SetActive(true);
         m_continueButtonRef.GetComponent<ZoomExpandComponent>().Init();
         Cursor.visible = true;

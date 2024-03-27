@@ -52,6 +52,10 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] SpreadPercentageBar m_spreadPercentageBarRef;
     [SerializeField] GameObject m_scoreReadoutLerpTargetRef;
     [SerializeField] GameObject m_spreadReadoutLerpTargetRef;
+    [SerializeField] Image m_scoreReadoutBackdropRef;
+    [SerializeField] Image m_spreadReadoutBackdropRef;
+    float m_scoreReadoutBackdropStartingAlpha;
+    float m_spreadReadoutBackdropStartingAlpha;
     Vector3 m_scoreReadoutStartingPos;
     Vector3 m_spreadReadoutStartingPos;
 
@@ -140,7 +144,6 @@ public class BattleHandler : MonoBehaviour
     internal void IncreaseLootBagBonus() { m_lootBagBonus += m_lootBagBonusIncrease; UpdateLootBagBonusText(); m_lootBagPoppedParticleSystem.Play(); }
 
     void CutsceneEndedCallback() { m_cutsceneTimeFactor = 1f; m_mainCameraHandlerRef.EndTargetedZoom(); }
-
 
     internal int GetScore() { return m_score; }
     internal float GetLootBagBonus() { return m_lootBagBonus; }
@@ -575,6 +578,8 @@ public class BattleHandler : MonoBehaviour
             m_scoreReadoutStartingPos = m_scoreReadoutRef.transform.position;
             m_spreadPercentageReadoutRef.transform.parent = m_debriefHandlerRef.transform;
             m_spreadReadoutStartingPos = m_spreadPercentageReadoutRef.transform.position;
+            m_scoreReadoutBackdropStartingAlpha = m_scoreReadoutBackdropRef.color.a;
+            m_spreadReadoutBackdropStartingAlpha = m_spreadReadoutBackdropRef.color.a;
         }
         else
         {
@@ -631,8 +636,13 @@ public class BattleHandler : MonoBehaviour
                     Color whiteoutColor = m_whiteOutImageRef.color;
                     m_whiteOutImageRef.color = new Color(whiteoutColor.r, whiteoutColor.g, whiteoutColor.b, percentageFinished);
 
-                    m_scoreReadoutRef.transform.position = VLib.Eerp(m_scoreReadoutStartingPos, m_scoreReadoutLerpTargetRef.transform.position, percentageFinished, 2f);
-                    m_spreadPercentageBarRef.transform.position = VLib.Eerp(m_spreadReadoutStartingPos, m_spreadReadoutLerpTargetRef.transform.position, percentageFinished, 2f);
+                    float exponent = 7f;
+                    m_scoreReadoutRef.transform.position = VLib.Eerp(m_scoreReadoutStartingPos, m_scoreReadoutLerpTargetRef.transform.position, percentageFinished, exponent);
+                    m_spreadPercentageBarRef.transform.position = VLib.Eerp(m_spreadReadoutStartingPos, m_spreadReadoutLerpTargetRef.transform.position, percentageFinished, exponent);
+                    Color scoreColor = m_scoreReadoutBackdropRef.color;
+                    Color spreadColor = m_spreadReadoutBackdropRef.color;
+                    m_scoreReadoutBackdropRef.color = new Color(scoreColor.r, scoreColor.g, scoreColor.b, VLib.Eerp(m_scoreReadoutBackdropStartingAlpha, 1f, percentageFinished, exponent));
+                    m_spreadReadoutBackdropRef.color = new Color(spreadColor.r, spreadColor.g, spreadColor.b, VLib.Eerp(m_spreadReadoutBackdropStartingAlpha, 1f, percentageFinished, exponent));
                 }
             }
 

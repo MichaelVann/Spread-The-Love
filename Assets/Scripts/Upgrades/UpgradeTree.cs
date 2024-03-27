@@ -55,10 +55,15 @@ public class UpgradeTree
         UpgradeItem shootSpread = NewUpgrade(UpgradeId.ShootSpread, "Blast Spread", 5f, 10, 1f, projectileSpeed, "Increases amount of love sent with each spread of kindness by 1.", false);
         UpgradeItem berserkShot = NewUpgrade(UpgradeId.BerserkShot, "Berserk Shot", 6f, 10, 1, shootSpread, "Gives the ability to send a vibe that sends a loved vessel into a love beserk. Each Rank increases beserk time by 1 second starting at 5 seconds.");
         berserkShot.SetStartingStrengthAndIfMultiplicative(5f, false);
-        UpgradeItem berserkShotSpread = NewUpgrade(UpgradeId.BerserkShotSpread, "B-Shot Spread", 6f, 10, 1, berserkShot, "Increases the berserk shots released by 1.");
+        UpgradeItem berserkShotSpread = NewUpgrade(UpgradeId.BerserkShotSpread, "B-Shot Spread", 12f, 10, 1, berserkShot, "Increases the berserk shots released by 1.");
         berserkShotSpread.SetStartingStrengthAndIfMultiplicative(1f, false);
         UpgradeItem berserkShotPenetration = NewUpgrade(UpgradeId.BerserkShotPenetration, "B-Shot Pen", 30f, 3, 1, berserkShot, "Increases the berserk shots penetration by 1 emotion level.");
         berserkShotPenetration.SetStartingStrengthAndIfMultiplicative(0f, false);
+        UpgradeItem berserkShotCooldown = NewUpgrade(UpgradeId.BerserkShotCooldown, "B-Shot Cooldown", 6f, 10, 1f, berserkShot, "Reduces the berserk shot's cooldown.");
+        berserkShotCooldown.SetStartingStrengthAndIfMultiplicative(12f, true);
+        berserkShotCooldown.SetReductive(true);
+
+
 
         UpgradeItem fireRate = NewUpgrade(UpgradeId.FireRate, "Fire Rate", 1.5f, 15, 0.25f, shooting, "Increases fire rate by 25% each rank.", false);
         fireRate.SetStartingStrengthAndIfMultiplicative(1f, true);
@@ -76,10 +81,20 @@ public class UpgradeTree
         UpgradeItem snowPloughSize = NewUpgrade(UpgradeId.SnowPloughSize, "Size", 3f, 25, 0.1f, snowPlough, "Increases the size of the Snow Plough.");
         snowPloughSize.SetStartingStrengthAndIfMultiplicative(1f, true);
         UpgradeItem snowPloughCooldown = NewUpgrade(UpgradeId.SnowPloughCooldown, "Cooldown", 3f, 25, 0.05f, snowPlough, "Reduces the cooldown of the Snow Plough.");
-        snowPloughCooldown.SetStartingStrengthAndIfMultiplicative(6f, true);
+        snowPloughCooldown.SetStartingStrengthAndIfMultiplicative(8f, true);
         snowPloughCooldown.SetReductive(true);
         UpgradeItem snowPloughDuration = NewUpgrade(UpgradeId.SnowPloughDuration, "Duration", 3f, 25, 0.05f, snowPlough, "Increases the duration of the Snow Plough.");
-        snowPloughDuration.SetStartingStrengthAndIfMultiplicative(1.5f, true);
+        snowPloughDuration.SetStartingStrengthAndIfMultiplicative(2f, true);
+
+        UpgradeItem totem = NewUpgrade(UpgradeId.Totem, "Totem", 3f, 1, 1f, null, "Throws a totem that periodically pulses and converts nearby vessels.");
+        UpgradeItem totemFireRate = NewUpgrade(UpgradeId.TotemFireRate, "Cycle Rate", 3f, 10, 0.25f, totem, "Increases the rate at which the totem pulses.");
+        totemFireRate.SetStartingStrengthAndIfMultiplicative(0.3f, true);
+        UpgradeItem totemRadius = NewUpgrade(UpgradeId.TotemRadius, "Radius", 3f, 10, 0.1f, totem, "Increases the radius of the totems effect.");
+        totemRadius.SetStartingStrengthAndIfMultiplicative(1f, true);
+        UpgradeItem totemCooldown = NewUpgrade(UpgradeId.TotemCooldown, "Cooldown", 3f, 10, 0.1f, totem, "Reduces the cooldown of dropping totems.");
+        totemCooldown.SetStartingStrengthAndIfMultiplicative(9f, true);
+        totemCooldown.SetReductive(true);
+
 
         //Keys
         braking.SetKey("S");
@@ -88,6 +103,7 @@ public class UpgradeTree
         mindfulness.SetKey("L Shift");
         berserkShot.SetKey("Q");
         snowPlough.SetKey("W");
+        totem.SetKey("E");
     }
 
     internal List<UpgradeItem> GetInitialUpgradeItems()
