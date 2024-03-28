@@ -78,26 +78,27 @@ public class RollingText : MonoBehaviour
             text += m_inBrackets ? ")" : ""; 
             m_localTextRef.text = text;
         }
-        else if (!m_rollFinished)
+        else if (!m_rollFinished)//Trigger end of roll effects
         {
             if (m_destroyGameObjectOnFinish)
             {
-                if (m_destructionTimer == null)
-                {
-                    m_destructionTimer = new vTimer(m_destructionTime);
-                }
-                if (m_destructionTimer.Update())
-                {
-                    Destroy(gameObject);
-                }
-                Color currentColor = m_localTextRef.color;
-                m_localTextRef.color = new Color(currentColor.r, currentColor.g, currentColor.b, 1f - m_destructionTimer.GetCompletionPercentage());
+                m_destructionTimer = new vTimer(m_destructionTime);
             }
             if (m_onRollFinishDelegate != null)
             {
                 m_onRollFinishDelegate.Invoke();
             }
             m_rollFinished = true;
+        }
+
+        if (m_destructionTimer != null)
+        {
+            if (m_destructionTimer.Update())
+            {
+                Destroy(gameObject);
+            }
+            Color currentColor = m_localTextRef.color;
+            m_localTextRef.color = new Color(currentColor.r, currentColor.g, currentColor.b, 1f - m_destructionTimer.GetCompletionPercentage());
         }
     }
 }

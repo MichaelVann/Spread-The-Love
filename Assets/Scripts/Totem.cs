@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Totem : MonoBehaviour
 {
@@ -60,6 +61,7 @@ public class Totem : MonoBehaviour
             {
                 m_functioning = true;
                 m_waveRef.SetActive(true);
+                m_waveRef.transform.localScale = new Vector3(0f, 0f, 1f);
             }
 
             Vector3 jumpVector = new Vector3(0f, Mathf.Sin(m_jumpTimer.GetCompletionPercentage() * Mathf.PI) * m_jumpHeight, 0f);

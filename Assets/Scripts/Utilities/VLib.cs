@@ -415,8 +415,6 @@ public static class VLib
             "Ruth",
             "Calli",
             "Aditi",
-            "Molly",
-            "Emma",
             "Naomi",
             "Zara",
         };

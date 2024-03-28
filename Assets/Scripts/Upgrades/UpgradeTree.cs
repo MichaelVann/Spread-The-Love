@@ -73,7 +73,7 @@ public class UpgradeTree
         //UpgradeItem vesselRadar = NewUpgrade(UpgradeItem.UpgradeId.Radar, "Radar", 30, 1, 1f, null, "Points towards the nearest lost soul.");
         //UpgradeItem minimap = NewUpgrade(UpgradeItem.UpgradeId.Minimap, "Minimap", 60, 1, 1f, vesselRadar, "Gives you an overview of the world.");
         UpgradeItem additionalTime = NewUpgrade(UpgradeId.AdditionalTime, "Time Extension", 3f, 15, 10f, null, "Gives you an additional 10 seconds of time before rebirth per rank.");
-        additionalTime.SetCostScaling(2.5f);
+        additionalTime.SetCostScaling(1.9f);
         UpgradeItem mindfulness = NewUpgrade(UpgradeId.Mindfulness, "Mindfulness", 3f, 15, 0.08f, additionalTime, "Slows time, allowing increased reaction time. Each rank further increases the amount time is slowed.");
         mindfulness.SetStartingStrengthAndIfMultiplicative(2f, true);
 

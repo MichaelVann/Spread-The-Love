@@ -233,11 +233,11 @@ public class UpgradeTreeUIHandler : MonoBehaviour
     {
         //RescaleContentContainer();
 
-        if (Input.GetKeyUp(KeyCode.W) || (Input.GetAxis("D Pad Y") < 1f && m_dPadUpWasDown))
+        if (Input.GetKeyDown(KeyCode.W) || (Input.GetAxis("D Pad Y") < 1f && m_dPadUpWasDown))
         {
             RotateTreeSelection(true);
         }
-        if (Input.GetKeyUp(KeyCode.S) || (Input.GetAxis("D Pad Y") > -1f && m_dPadDownWasDown))
+        if (Input.GetKeyDown(KeyCode.S) || (Input.GetAxis("D Pad Y") > -1f && m_dPadDownWasDown))
         {
             RotateTreeSelection(false);
         }
