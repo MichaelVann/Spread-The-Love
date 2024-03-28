@@ -90,6 +90,13 @@ public class UpgradeTreeUIHandler : MonoBehaviour
         Refresh();
     }
 
+    public void AttemptToRefundUpgrade(UpgradeItem a_upgradeItemRef)
+    {
+        m_upgradeTreeRef.AttemptToRefundUpgrade(a_upgradeItemRef);
+        m_selectedUpgradeNode.RunUpgradeEffect();
+        Refresh();
+    }
+
     void SpawnNode(UpgradeItem a_upgrade, Vector3 a_parentPos, int a_index, float a_parentHeight, float a_height, bool a_drawingConnection)
     {
         UpgradeUINode node = Instantiate(m_upgradeNodePrefab, m_contentTransform).GetComponent<UpgradeUINode>();

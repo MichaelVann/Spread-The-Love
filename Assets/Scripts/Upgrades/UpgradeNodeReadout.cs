@@ -22,6 +22,9 @@ public class UpgradeNodeReadout : MonoBehaviour
 
     [SerializeField] GameObject m_toggleButtonRef;
     [SerializeField] UICheckBox m_checkBoxRef;
+    [SerializeField] GameObject m_refundButton;
+    [SerializeField] TextMeshProUGUI m_refundButtonTextRef;
+    [SerializeField] GameObject m_confirmationBoxPrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -107,6 +110,9 @@ public class UpgradeNodeReadout : MonoBehaviour
 
         m_toggleButtonRef.SetActive(m_upgradeItemRef.m_owned && m_upgradeItemRef.m_toggleable);
         m_checkBoxRef.SetToggled(m_upgradeItemRef.m_toggled);
+        bool refundPossible = m_upgradeItemRef.m_level > 0;
+        refundPossible &= (m_upgradeItemRef.m_level > 1 || !m_upgradeItemRef.HasPurchasedChildren());
+        m_refundButton.SetActive(refundPossible);
     }
 
     public void Toggle()
@@ -122,5 +128,23 @@ public class UpgradeNodeReadout : MonoBehaviour
         m_upgradeTreeUIHandlerRef.AttemptToPurchaseUpgrade(m_upgradeItemRef);
         Refresh();
         GameHandler.AutoSaveCheck();
+    }
+
+    public void SpawnRefundConfirmation()
+    {
+        ConfirmationBox confirmationBox = Instantiate(m_confirmationBoxPrefab).GetComponent<ConfirmationBox>();
+        confirmationBox.SetDialogueText("Are you sure you want to refund a level of this upgrade?");
+        confirmationBox.SetDecisionCallbackDelegate(Refund);
+    }
+
+    public void Refund(bool a_refunding)
+    {
+        if (a_refunding)
+        {
+            m_upgradeTreeUIHandlerRef.AttemptToRefundUpgrade(m_upgradeItemRef);
+            Refresh();
+            GameHandler.AutoSaveCheck();
+            FindObjectOfType<SamsaraHandler>().RefreshUI();
+        }
     }
 }

@@ -43,7 +43,7 @@ Material:
     m_Floats:
     - _Cutoff: 0
     - _DistortionAmount: 0
-    - _Distortion_Amount: 0
+    - _Distortion_Amount: 0.0000988245
     - _Distortion_Strength: 0.38
     - _VignettePower: 4.79
     m_Colors:

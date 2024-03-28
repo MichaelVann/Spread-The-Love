@@ -13,6 +13,7 @@ public class SamsaraHandler : MonoBehaviour
     [SerializeField] TextMeshProUGUI m_accelerationText;
     [SerializeField] TextMeshProUGUI m_massText;
     [SerializeField] TextMeshProUGUI m_fireRateText;
+    [SerializeField] TextMeshProUGUI m_tierText;
     [SerializeField] TextMeshProUGUI m_livesLivedText;
     [SerializeField] LoveReadout m_loveReadoutRef;
     [SerializeField] GameObject m_optionsMenuPrefab;
@@ -39,6 +40,7 @@ public class SamsaraHandler : MonoBehaviour
     {
         Time.timeScale = 1.0f;
         m_hintCostText.text = m_hintCost.ToString();
+        m_tierText.text = GameHandler._mapSize.ToString();
         m_livesLivedText.text = GameHandler._livesLived.ToString();
         RefreshUI();
         Cursor.visible = true;

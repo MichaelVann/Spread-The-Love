@@ -259,9 +259,9 @@ public class BattleHandler : MonoBehaviour
         m_secondPassedTimer = new vTimer(1f);
         UpdateSpreadPercentageBar();
         m_tierText.text = "Tier " + GameHandler._mapSize;
-        if (GameHandler._mapSize <= 3)
+        if (GameHandler._mapSize <= 4)
         {
-            m_tierText.text += "/3";
+            m_tierText.text += "/4";
         }
         m_backgroundRef.size = GetMapHalfSize() * new Vector2(2f/m_backgroundRef.transform.localScale.x,2f/ m_backgroundRef.transform.localScale.y);
         UpdateRain();

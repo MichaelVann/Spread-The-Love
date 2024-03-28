@@ -117,9 +117,19 @@ public class UpgradeItem
     {
         int cost = m_cost;
         int deltaLevel = a_level - m_level;
-        for (int i = 0; i < deltaLevel; i++)
+        if (deltaLevel > 0)
         {
-            cost = (int)(cost * m_costScaling);
+            for (int i = 0; i < deltaLevel; i++)
+            {
+                cost = (int)(cost * m_costScaling);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < -deltaLevel; i++)
+            {
+                cost = (int)(cost * 1f/m_costScaling);
+            }
         }
         return cost;
     }
@@ -164,6 +174,21 @@ public class UpgradeItem
         }
 
         return readyToUpgradeCount;
+    }
+
+    internal bool HasPurchasedChildren()
+    {
+        bool result = false;
+
+        for (int i = 0; i < m_upgradeChildren.Count; i++)
+        {
+            if (m_upgradeChildren[i].m_level > 0)
+            {
+                result = true;
+            }
+        }
+
+        return result;
     }
 
     internal void AddChildUpgrade(UpgradeItem a_child)

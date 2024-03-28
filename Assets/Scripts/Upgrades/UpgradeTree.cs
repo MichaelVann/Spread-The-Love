@@ -7,6 +7,7 @@ public class UpgradeTree
 {
     internal List<UpgradeItem> m_upgradeItemList;
     const int m_baseUpgradePrice = 15;
+    const float m_refundMultiplier = 0.5f;
     // Start is called before the first frame update
 
     internal UpgradeItem GetUpgrade(UpgradeId a_upgradeId) { return m_upgradeItemList[(int)a_upgradeId]; }
@@ -59,7 +60,7 @@ public class UpgradeTree
         berserkShotSpread.SetStartingStrengthAndIfMultiplicative(1f, false);
         UpgradeItem berserkShotPenetration = NewUpgrade(UpgradeId.BerserkShotPenetration, "B-Shot Pen", 30f, 3, 1, berserkShot, "Increases the berserk shots penetration by 1 emotion level.");
         berserkShotPenetration.SetStartingStrengthAndIfMultiplicative(0f, false);
-        UpgradeItem berserkShotCooldown = NewUpgrade(UpgradeId.BerserkShotCooldown, "B-Shot Cooldown", 6f, 10, 1f, berserkShot, "Reduces the berserk shot's cooldown.");
+        UpgradeItem berserkShotCooldown = NewUpgrade(UpgradeId.BerserkShotCooldown, "B-Shot Cooldown", 6f, 10, 0.25f, berserkShot, "Reduces the berserk shot's cooldown.");
         berserkShotCooldown.SetStartingStrengthAndIfMultiplicative(12f, true);
         berserkShotCooldown.SetReductive(true);
 
@@ -80,18 +81,18 @@ public class UpgradeTree
         UpgradeItem snowPlough = NewUpgrade(UpgradeId.SnowPlough, "Snow Plough", 3f, 1, 1f, null, "Gives the ability to spawn a directional forcefield in the direction of travel.");
         UpgradeItem snowPloughSize = NewUpgrade(UpgradeId.SnowPloughSize, "Size", 3f, 25, 0.1f, snowPlough, "Increases the size of the Snow Plough.");
         snowPloughSize.SetStartingStrengthAndIfMultiplicative(1f, true);
-        UpgradeItem snowPloughCooldown = NewUpgrade(UpgradeId.SnowPloughCooldown, "Cooldown", 3f, 25, 0.05f, snowPlough, "Reduces the cooldown of the Snow Plough.");
+        UpgradeItem snowPloughCooldown = NewUpgrade(UpgradeId.SnowPloughCooldown, "Cooldown", 3f, 25, 0.25f, snowPlough, "Reduces the cooldown of the Snow Plough.");
         snowPloughCooldown.SetStartingStrengthAndIfMultiplicative(8f, true);
         snowPloughCooldown.SetReductive(true);
         UpgradeItem snowPloughDuration = NewUpgrade(UpgradeId.SnowPloughDuration, "Duration", 3f, 25, 0.05f, snowPlough, "Increases the duration of the Snow Plough.");
-        snowPloughDuration.SetStartingStrengthAndIfMultiplicative(2f, true);
+        snowPloughDuration.SetStartingStrengthAndIfMultiplicative(2.5f, true);
 
         UpgradeItem totem = NewUpgrade(UpgradeId.Totem, "Totem", 3f, 1, 1f, null, "Throws a totem that periodically pulses and converts nearby vessels.");
         UpgradeItem totemFireRate = NewUpgrade(UpgradeId.TotemFireRate, "Cycle Rate", 3f, 10, 0.25f, totem, "Increases the rate at which the totem pulses.");
         totemFireRate.SetStartingStrengthAndIfMultiplicative(0.3f, true);
         UpgradeItem totemRadius = NewUpgrade(UpgradeId.TotemRadius, "Radius", 3f, 10, 0.1f, totem, "Increases the radius of the totems effect.");
         totemRadius.SetStartingStrengthAndIfMultiplicative(1f, true);
-        UpgradeItem totemCooldown = NewUpgrade(UpgradeId.TotemCooldown, "Cooldown", 3f, 10, 0.1f, totem, "Reduces the cooldown of dropping totems.");
+        UpgradeItem totemCooldown = NewUpgrade(UpgradeId.TotemCooldown, "Cooldown", 3f, 10, 0.25f, totem, "Reduces the cooldown of dropping totems.");
         totemCooldown.SetStartingStrengthAndIfMultiplicative(9f, true);
         totemCooldown.SetReductive(true);
 
@@ -139,6 +140,22 @@ public class UpgradeTree
             if (!a_upgrade.m_owned)
             {
                 a_upgrade.SetOwned(true);
+            }
+            RefreshUpgrades();
+        }
+    }
+
+    internal void AttemptToRefundUpgrade(UpgradeItem a_upgrade)
+    {
+        if (a_upgrade.m_level > 0)
+        {
+            GameHandler.UpdateLastSeenScore();
+            GameHandler.ChangeScore((int)(a_upgrade.GetCostAtLevel(a_upgrade.m_level - 1) * m_refundMultiplier));
+            a_upgrade.m_level--;
+            a_upgrade.m_cost = a_upgrade.GetCostAtLevel(a_upgrade.m_level - 1);
+            if (a_upgrade.m_level == 0)
+            {
+                a_upgrade.SetOwned(false);
             }
             RefreshUpgrades();
         }
